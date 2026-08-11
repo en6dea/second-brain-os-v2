@@ -28,7 +28,7 @@ jobs:
         run: npm run lint
 
       - name: Проверка типов
-        run: npx tsc --noEmit -p tsconfig.app.json
+        run: npm run typecheck
 
       - name: Модульные тесты
         run: npm test
