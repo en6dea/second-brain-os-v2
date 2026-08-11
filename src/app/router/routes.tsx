@@ -117,17 +117,33 @@ const маршруты = [
           },
         ],
       },
+      {
+        path: 'knowledge',
+        lazy: async () => ({
+          Component: (await import('@/features/knowledge/KnowledgePage'))
+            .KnowledgePage,
+        }),
+      },
+      {
+        path: 'people',
+        lazy: async () => ({
+          Component: (await import('@/features/people/PeoplePage')).PeoplePage,
+        }),
+      },
+      {
+        path: 'learning',
+        lazy: async () => ({
+          Component: (await import('@/features/learning/LearningPage')).LearningPage,
+        }),
+      },
       // Разделы, которые ещё не построены. Страница честно описывает,
       // что в них будет и на каком этапе.
       ...[
         'calendar',
         'projects',
         'planning',
-        'people',
         'experience',
         'trading',
-        'knowledge',
-        'learning',
         'reviews',
         'analytics',
         '*',
