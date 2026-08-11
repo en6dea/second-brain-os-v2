@@ -163,14 +163,34 @@ const маршруты = [
             .AnalyticsPage,
         }),
       },
-      // Разделы, которые ещё не построены. Страница честно описывает,
-      // что в них будет и на каком этапе.
-      ...['projects', 'planning', 'experience', '*'].map((путь) => ({
-        path: путь,
+      {
+        path: 'projects',
+        lazy: async () => ({
+          Component: (await import('@/features/projects/ProjectsPage'))
+            .ProjectsPage,
+        }),
+      },
+      {
+        path: 'planning',
+        lazy: async () => ({
+          Component: (await import('@/features/planning/PlanningPage'))
+            .PlanningPage,
+        }),
+      },
+      {
+        path: 'experience',
+        lazy: async () => ({
+          Component: (await import('@/features/experience/ExperiencePage'))
+            .ExperiencePage,
+        }),
+      },
+      // Неизвестный адрес: страница объясняет, что такого раздела нет.
+      {
+        path: '*',
         lazy: async () => ({
           Component: (await import('@/features/planned/PlannedPage')).PlannedPage,
         }),
-      })),
+      },
     ],
   },
 ]

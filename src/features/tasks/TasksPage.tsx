@@ -77,6 +77,7 @@ export function TasksPage() {
 
   const задачи = useLiveQuery(() => база.tasks.toArray(), [])
   const цели = useLiveQuery(() => база.goals.toArray(), [])
+  const проекты = useLiveQuery(() => база.projects.toArray(), [])
 
   const отобранные = useMemo(() => {
     if (!задачи) return []
@@ -158,7 +159,7 @@ export function TasksPage() {
           длительностьМинут: null,
           состояние: 'новая',
           важность: черновик.важность ?? 'обычная',
-          проектId: null,
+          проектId: черновик.проектId ?? null,
           цельId: черновик.цельId ?? null,
           сфераId: null,
           выполненаВ: null,
@@ -346,6 +347,29 @@ export function TasksPage() {
                 </Select>
               </Field>
             </div>
+            <Field
+              подпись="Проект"
+              подсказка="Задачи проекта складываются в его прогресс"
+            >
+              <Select
+                value={черновик.проектId ?? ''}
+                onChange={(событие) =>
+                  установитьЧерновик({
+                    ...черновик,
+                    проектId: событие.target.value || null,
+                  })
+                }
+              >
+                <option value="">Без проекта</option>
+                {(проекты ?? [])
+                  .filter((проект) => проект.состояние === 'активен')
+                  .map((проект) => (
+                    <option key={проект.id} value={проект.id}>
+                      {проект.название}
+                    </option>
+                  ))}
+              </Select>
+            </Field>
             <Field
               подпись="Связать с целью"
               подсказка="Задача, не связанная с целью, — это просто дело"

@@ -48,12 +48,6 @@ export function Sidebar({ наПереход }: { наПереход?: () => voi
                     <span className="min-w-0 flex-1 truncate">
                       {пункт.название}
                     </span>
-                    {!пункт.готов ? (
-                      <span
-                        title="Раздел в плане — пока показывает, что в нём будет"
-                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-line-strong"
-                      />
-                    ) : null}
                   </NavLink>
                 </li>
               ))}
