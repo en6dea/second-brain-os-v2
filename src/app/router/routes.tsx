@@ -150,16 +150,20 @@ const маршруты = [
           Component: (await import('@/features/trading/TradingPage')).TradingPage,
         }),
       },
+      {
+        path: 'reviews',
+        lazy: async () => ({
+          Component: (await import('@/features/reviews/ReviewsPage')).ReviewsPage,
+        }),
+      },
       // Разделы, которые ещё не построены. Страница честно описывает,
       // что в них будет и на каком этапе.
-      ...['projects', 'planning', 'experience', 'reviews', 'analytics', '*'].map(
-        (путь) => ({
-          path: путь,
-          lazy: async () => ({
-            Component: (await import('@/features/planned/PlannedPage')).PlannedPage,
-          }),
+      ...['projects', 'planning', 'experience', 'analytics', '*'].map((путь) => ({
+        path: путь,
+        lazy: async () => ({
+          Component: (await import('@/features/planned/PlannedPage')).PlannedPage,
         }),
-      ),
+      })),
     ],
   },
 ]

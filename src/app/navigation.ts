@@ -130,7 +130,7 @@ export const МЕНЮ: ГруппаМеню[] = [
         путь: '/reviews',
         название: 'Обзоры',
         иконка: CircleDollarSign,
-        готов: false,
+        готов: true,
       },
       {
         путь: '/analytics',
