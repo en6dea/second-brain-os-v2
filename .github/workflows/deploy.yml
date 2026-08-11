@@ -1,0 +1,54 @@
+name: Публикация
+
+# Отдельная публикация второй версии. Прежнее приложение остаётся по своему
+# адресу и этим рабочим процессом не затрагивается.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  сборка:
+    name: Собрать
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Собрать для GitHub Pages
+        run: npm run build
+        env:
+          DEPLOY_TARGET: pages
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  публикация:
+    name: Опубликовать
+    needs: сборка
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.публикация.outputs.page_url }}
+    steps:
+      - id: публикация
+        uses: actions/deploy-pages@v4

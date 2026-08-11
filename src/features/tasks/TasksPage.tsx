@@ -1,0 +1,354 @@
+import { useMemo, useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { Check, ChevronRight, Plus, Trash2 } from 'lucide-react'
+import { база } from '@/core/db/db'
+import { новаяЗапись } from '@/core/db/repo'
+import type { Задача } from '@/core/db/types'
+import { деньКратко, сегодня, сдвинутьДень } from '@/core/calendar/CalendarRu'
+import { склонение } from '@/core/language/Plural'
+import { сейчас } from '@/core/db/RecordId'
+import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { cn } from '@/design-system/classNames'
+import {
+  Input,
+  Select,
+  Skeleton,
+  Badge,
+  Card,
+  Button,
+  IconButton,
+  Dialog,
+  Field,
+  EmptyState,
+  Segmented,
+  Textarea,
+} from '@/design-system/components'
+
+type Отбор = 'сегодня' | 'просрочено' | 'все' | 'сделано'
+
+export function TasksPage() {
+  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const день = сегодня()
+  const [отбор, установитьОтбор] = useState<Отбор>('сегодня')
+  const [черновик, установитьЧерновик] = useState<Partial<Задача> | null>(null)
+
+  const задачи = useLiveQuery(() => база.tasks.toArray(), [])
+  const цели = useLiveQuery(() => база.goals.toArray(), [])
+
+  const отобранные = useMemo(() => {
+    if (!задачи) return []
+    const открытые = (задача: Задача) =>
+      задача.состояние !== 'сделана' && задача.состояние !== 'отменена'
+    switch (отбор) {
+      case 'сегодня':
+        return задачи.filter(
+          (з) => открытые(з) && (з.дата === день || з.дата === null),
+        )
+      case 'просрочено':
+        return задачи.filter((з) => открытые(з) && з.дата !== null && з.дата < день)
+      case 'сделано':
+        return задачи.filter((з) => з.состояние === 'сделана')
+      default:
+        return задачи.filter(открытые)
+    }
+  }, [задачи, отбор, день])
+
+  if (!задачи) {
+    return (
+      <Card>
+        <Skeleton строк={5} />
+      </Card>
+    )
+  }
+
+  const просрочено = задачи.filter(
+    (з) =>
+      з.дата !== null &&
+      з.дата < день &&
+      з.состояние !== 'сделана' &&
+      з.состояние !== 'отменена',
+  ).length
+
+  async function переключить(задача: Задача) {
+    const сделана = задача.состояние === 'сделана'
+    await база.tasks.put({
+      ...задача,
+      состояние: сделана ? 'новая' : 'сделана',
+      выполненаВ: сделана ? null : сейчас(),
+      updatedAt: сейчас(),
+    })
+  }
+
+  async function перенести(задача: Задача) {
+    await база.tasks.put({
+      ...задача,
+      дата: сдвинутьДень(задача.дата ?? день, 1),
+      переносов: задача.переносов + 1,
+      updatedAt: сейчас(),
+    })
+    сообщить(
+      задача.переносов + 1 >= 3
+        ? `Перенесено. Это уже ${задача.переносов + 1}-й перенос — возможно, задача слишком крупная.`
+        : 'Перенесено на завтра',
+    )
+  }
+
+  async function сохранить() {
+    if (!черновик?.название?.trim()) return
+    if (черновик.id) {
+      const текущая = await база.tasks.get(черновик.id)
+      if (текущая) {
+        await база.tasks.put({
+          ...текущая,
+          ...черновик,
+          updatedAt: сейчас(),
+        } as Задача)
+        сообщить('Задача изменена')
+      }
+    } else {
+      await база.tasks.add(
+        новаяЗапись({
+          название: черновик.название.trim(),
+          заметка: черновик.заметка ?? '',
+          дата: черновик.дата ?? день,
+          время: null,
+          длительностьМинут: null,
+          состояние: 'новая',
+          важность: черновик.важность ?? 'обычная',
+          проектId: null,
+          цельId: черновик.цельId ?? null,
+          сфераId: null,
+          выполненаВ: null,
+          переносов: 0,
+          повтор: null,
+        }) as never,
+      )
+      сообщить('Задача добавлена')
+    }
+    установитьЧерновик(null)
+  }
+
+  return (
+    <div className="anim-rise space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-[20px] font-semibold text-ink">Задачи</h1>
+          <p className="mt-0.5 text-[13px] text-ink-3">
+            {отобранные.length}{' '}
+            {склонение(отобранные.length, 'задача', 'задачи', 'задач')} в отборе
+            {просрочено > 0 ? ` · просрочено: ${просрочено}` : ''}
+          </p>
+        </div>
+        <Button
+          вид="основная"
+          иконка={<Plus size={16} />}
+          onClick={() => установитьЧерновик({ дата: день })}
+        >
+          Задача
+        </Button>
+      </div>
+
+      <Segmented
+        значения={[
+          { ключ: 'сегодня' as const, подпись: 'Сегодня' },
+          {
+            ключ: 'просрочено' as const,
+            подпись: `Просрочено${просрочено ? ` · ${просрочено}` : ''}`,
+          },
+          { ключ: 'все' as const, подпись: 'Все открытые' },
+          { ключ: 'сделано' as const, подпись: 'Сделано' },
+        ]}
+        выбрано={отбор}
+        наВыбор={установитьОтбор}
+      />
+
+      <Card>
+        {отобранные.length === 0 ? (
+          <EmptyState
+            заголовок={
+              отбор === 'сегодня'
+                ? 'На сегодня задач нет'
+                : отбор === 'просрочено'
+                  ? 'Просроченных задач нет'
+                  : 'Пусто'
+            }
+            подпись="Добавьте задачу или проверьте другой отбор."
+          />
+        ) : (
+          <div className="divide-y divide-line">
+            {отобранные.map((задача) => {
+              const сделана = задача.состояние === 'сделана'
+              const просроченa =
+                задача.дата !== null && задача.дата < день && !сделана
+              return (
+                <div key={задача.id} className="flex items-center gap-3 px-5 py-3">
+                  <button
+                    type="button"
+                    onClick={() => переключить(задача)}
+                    aria-label={
+                      сделана ? 'Вернуть в работу' : 'Отметить выполненной'
+                    }
+                    className={cn(
+                      'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors',
+                      сделана
+                        ? 'border-transparent bg-good text-white'
+                        : 'border-line-strong hover:border-accent',
+                    )}
+                  >
+                    {сделана ? <Check size={13} /> : null}
+                  </button>
+
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={cn(
+                        'truncate text-[14px]',
+                        сделана ? 'text-ink-3 line-through' : 'text-ink',
+                      )}
+                    >
+                      {задача.название}
+                    </p>
+                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11.5px] text-ink-3">
+                      <span className={просроченa ? 'text-bad' : undefined}>
+                        {задача.дата ? деньКратко(задача.дата) : 'без даты'}
+                      </span>
+                      {задача.важность === 'высокая' ||
+                      задача.важность === 'срочная' ? (
+                        <Badge тон="внимание">{задача.важность}</Badge>
+                      ) : null}
+                      {задача.переносов >= 3 ? (
+                        <Badge тон="опасность">переносов: {задача.переносов}</Badge>
+                      ) : null}
+                    </p>
+                  </div>
+
+                  {!сделана ? (
+                    <IconButton
+                      подпись="Перенести на завтра"
+                      onClick={() => перенести(задача)}
+                    >
+                      <ChevronRight size={16} />
+                    </IconButton>
+                  ) : null}
+                  <IconButton
+                    подпись="Изменить задачу"
+                    onClick={() => установитьЧерновик(задача)}
+                  >
+                    <span className="text-[13px]">✎</span>
+                  </IconButton>
+                  <IconButton
+                    подпись="Удалить задачу"
+                    onClick={async () => {
+                      await база.tasks.delete(задача.id)
+                      сообщить('Задача удалена')
+                    }}
+                  >
+                    <Trash2 size={15} />
+                  </IconButton>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </Card>
+
+      <Dialog
+        открыто={черновик !== null}
+        наЗакрытие={() => установитьЧерновик(null)}
+        заголовок={черновик?.id ? 'Изменить задачу' : 'Новая задача'}
+        подвал={
+          <>
+            <Button вид="тихая" onClick={() => установитьЧерновик(null)}>
+              Отмена
+            </Button>
+            <Button
+              вид="основная"
+              onClick={сохранить}
+              disabled={!черновик?.название?.trim()}
+            >
+              Сохранить
+            </Button>
+          </>
+        }
+      >
+        {черновик ? (
+          <div className="space-y-4">
+            <Field подпись="Что нужно сделать" обязательное>
+              <Input
+                value={черновик.название ?? ''}
+                onChange={(событие) =>
+                  установитьЧерновик({
+                    ...черновик,
+                    название: событие.target.value,
+                  })
+                }
+                autoFocus
+              />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field подпись="Дата">
+                <Input
+                  type="date"
+                  value={черновик.дата ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      дата: событие.target.value || null,
+                    })
+                  }
+                />
+              </Field>
+              <Field подпись="Важность">
+                <Select
+                  value={черновик.важность ?? 'обычная'}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      важность: событие.target.value as Задача['важность'],
+                    })
+                  }
+                >
+                  <option value="низкая">Низкая</option>
+                  <option value="обычная">Обычная</option>
+                  <option value="высокая">Высокая</option>
+                  <option value="срочная">Срочная</option>
+                </Select>
+              </Field>
+            </div>
+            <Field
+              подпись="Связать с целью"
+              подсказка="Задача, не связанная с целью, — это просто дело"
+            >
+              <Select
+                value={черновик.цельId ?? ''}
+                onChange={(событие) =>
+                  установитьЧерновик({
+                    ...черновик,
+                    цельId: событие.target.value || null,
+                  })
+                }
+              >
+                <option value="">Без цели</option>
+                {(цели ?? [])
+                  .filter((цель) => цель.состояние === 'активна')
+                  .map((цель) => (
+                    <option key={цель.id} value={цель.id}>
+                      {цель.название}
+                    </option>
+                  ))}
+              </Select>
+            </Field>
+            <Field подпись="Заметка">
+              <Textarea
+                rows={3}
+                value={черновик.заметка ?? ''}
+                onChange={(событие) =>
+                  установитьЧерновик({ ...черновик, заметка: событие.target.value })
+                }
+              />
+            </Field>
+          </div>
+        ) : null}
+      </Dialog>
+    </div>
+  )
+}

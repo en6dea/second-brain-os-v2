@@ -1,0 +1,37 @@
+name: Проверка
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  проверка:
+    name: Типы, тесты и сборка
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить код
+        uses: actions/checkout@v4
+
+      - name: Настроить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Установить зависимости
+        run: npm ci
+
+      - name: Статическая проверка
+        run: npm run lint
+
+      - name: Проверка типов
+        run: npx tsc --noEmit -p tsconfig.app.json
+
+      - name: Модульные тесты
+        run: npm test
+
+      - name: Сборка
+        run: npm run build

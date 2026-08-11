@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#111210" />
+    <meta
+      name="description"
+      content="Второй мозг — личная панель управления жизнью: день, цели, привычки, деньги, знания и обзоры."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Второй мозг" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Три роли: заголовок (Golos Text), текст (Onest), показания (JetBrains Mono) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@500;600;700&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Второй мозг</title>
+    <script>
+      // Тема применяется до первой отрисовки, чтобы не было вспышки светлого фона.
+      ;(function () {
+        try {
+          var saved = localStorage.getItem('второй-мозг.тема') || 'system'
+          var dark =
+            saved === 'dark' ||
+            (saved === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

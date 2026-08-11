@@ -1,0 +1,363 @@
+import { useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { Plus, Target, Trash2 } from 'lucide-react'
+import { база } from '@/core/db/db'
+import { новаяЗапись } from '@/core/db/repo'
+import type { Цель } from '@/core/db/types'
+import { деньСловами, днейДо } from '@/core/calendar/CalendarRu'
+import { склонение } from '@/core/language/Plural'
+import { число } from '@/core/language/Numerals'
+import { сейчас } from '@/core/db/RecordId'
+import { использоватьИнтерфейс } from '@/app/providers/ui'
+import {
+  Input,
+  Select,
+  Skeleton,
+  Badge,
+  Card,
+  Button,
+  IconButton,
+  Dialog,
+  Field,
+  ProgressBar,
+  EmptyState,
+  Textarea,
+  CardHeader,
+} from '@/design-system/components'
+
+export function GoalsPage() {
+  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const [черновик, установитьЧерновик] = useState<Partial<Цель> | null>(null)
+
+  const данные = useLiveQuery(async () => {
+    const [цели, задачи, привычки] = await Promise.all([
+      база.goals.toArray(),
+      база.tasks.toArray(),
+      база.habits.toArray(),
+    ])
+    return { цели, задачи, привычки }
+  }, [])
+
+  if (!данные) {
+    return (
+      <Card>
+        <Skeleton строк={4} />
+      </Card>
+    )
+  }
+
+  const активные = данные.цели.filter((ц) => ц.состояние === 'активна')
+  const прочие = данные.цели.filter((ц) => ц.состояние !== 'активна')
+
+  async function сохранить() {
+    if (!черновик?.название?.trim()) return
+    if (черновик.id) {
+      const текущая = await база.goals.get(черновик.id)
+      if (текущая) {
+        await база.goals.put({
+          ...текущая,
+          ...черновик,
+          последняяАктивность: сейчас(),
+          updatedAt: сейчас(),
+        } as Цель)
+        сообщить('Цель обновлена')
+      }
+    } else {
+      await база.goals.add(
+        новаяЗапись({
+          название: черновик.название.trim(),
+          зачем: черновик.зачем ?? '',
+          сфераId: null,
+          состояние: 'активна',
+          срок: черновик.срок ?? null,
+          цель: черновик.цель ?? null,
+          текущее: черновик.текущее ?? null,
+          единица: черновик.единица ?? '',
+          порядок: данные?.цели.length ?? 0,
+          вехи: [],
+          последняяАктивность: сейчас(),
+        }) as never,
+      )
+      сообщить('Цель создана')
+    }
+    установитьЧерновик(null)
+  }
+
+  return (
+    <div className="anim-rise space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-[20px] font-semibold text-ink">Цели</h1>
+          <p className="mt-0.5 text-[13px] text-ink-3">
+            Цель связывает задачи и привычки в направление
+          </p>
+        </div>
+        <Button
+          вид="основная"
+          иконка={<Plus size={16} />}
+          onClick={() => установитьЧерновик({})}
+        >
+          Цель
+        </Button>
+      </div>
+
+      {активные.length === 0 ? (
+        <Card>
+          <EmptyState
+            иконка={<Target size={20} />}
+            заголовок="Активных целей нет"
+            подпись="Без цели задачи превращаются в поток дел без направления. Сформулируйте одну — с ответом на вопрос «зачем»."
+            действие={
+              <Button вид="контур" onClick={() => установитьЧерновик({})}>
+                Создать первую цель
+              </Button>
+            }
+          />
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {активные.map((цель) => {
+            const задачиЦели = данные.задачи.filter((з) => з.цельId === цель.id)
+            const сделано = задачиЦели.filter(
+              (з) => з.состояние === 'сделана',
+            ).length
+            const привычкиЦели = данные.привычки.filter((п) => п.цельId === цель.id)
+            const дней = днейДо(цель.срок)
+            const естьЧисло = цель.цель !== null && цель.цель > 0
+
+            return (
+              <Card key={цель.id}>
+                <CardHeader
+                  заголовок={цель.название}
+                  подпись={цель.зачем || 'Ответ на вопрос «зачем» не записан'}
+                  действие={
+                    <div className="flex gap-0.5">
+                      <IconButton
+                        подпись="Изменить цель"
+                        onClick={() => установитьЧерновик(цель)}
+                      >
+                        <span className="text-[13px]">✎</span>
+                      </IconButton>
+                      <IconButton
+                        подпись="Удалить цель"
+                        onClick={async () => {
+                          await база.goals.delete(цель.id)
+                          сообщить('Цель удалена. Задачи и привычки остались.')
+                        }}
+                      >
+                        <Trash2 size={15} />
+                      </IconButton>
+                    </div>
+                  }
+                />
+                <div className="space-y-3 px-5 pb-5">
+                  {естьЧисло ? (
+                    <div>
+                      <div className="mb-1.5 flex items-baseline justify-between text-[12px]">
+                        <span className="text-ink-3">Показатель</span>
+                        <span className="tnum text-ink-2">
+                          {число(цель.текущее ?? 0)} / {число(цель.цель)}{' '}
+                          {цель.единица}
+                        </span>
+                      </div>
+                      <ProgressBar
+                        значение={цель.текущее ?? 0}
+                        из={цель.цель ?? 1}
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-[12.5px] text-ink-3">
+                      Числового показателя нет — прогресс не рассчитывается.
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge>
+                      Задачи: {сделано}/{задачиЦели.length}
+                    </Badge>
+                    <Badge>Привычки: {привычкиЦели.length}</Badge>
+                    {цель.срок ? (
+                      <Badge
+                        тон={
+                          дней !== null && дней < 0
+                            ? 'опасность'
+                            : дней !== null && дней <= 14
+                              ? 'внимание'
+                              : 'нейтральный'
+                        }
+                      >
+                        {дней !== null && дней < 0
+                          ? `просрочена на ${Math.abs(дней)} ${склонение(Math.abs(дней), 'день', 'дня', 'дней')}`
+                          : `до ${деньСловами(цель.срок)}`}
+                      </Badge>
+                    ) : (
+                      <Badge>без срока</Badge>
+                    )}
+                  </div>
+
+                  {задачиЦели.length === 0 && привычкиЦели.length === 0 ? (
+                    <p className="rounded-2 bg-warn-soft px-3 py-2 text-[12px] text-warn">
+                      У цели нет ни одной задачи и ни одной привычки. Пока это
+                      только намерение.
+                    </p>
+                  ) : null}
+                </div>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+
+      {прочие.length > 0 ? (
+        <Card>
+          <CardHeader заголовок="Завершённые и отложенные" />
+          <div className="divide-y divide-line border-t border-line">
+            {прочие.map((цель) => (
+              <button
+                key={цель.id}
+                type="button"
+                onClick={() => установитьЧерновик(цель)}
+                className="flex w-full items-center justify-between px-5 py-3 text-left hover:bg-hover"
+              >
+                <span className="truncate text-[13.5px] text-ink-2">
+                  {цель.название}
+                </span>
+                <Badge
+                  тон={цель.состояние === 'достигнута' ? 'успех' : 'нейтральный'}
+                >
+                  {цель.состояние}
+                </Badge>
+              </button>
+            ))}
+          </div>
+        </Card>
+      ) : null}
+
+      <Dialog
+        открыто={черновик !== null}
+        наЗакрытие={() => установитьЧерновик(null)}
+        заголовок={черновик?.id ? 'Изменить цель' : 'Новая цель'}
+        подвал={
+          <>
+            <Button вид="тихая" onClick={() => установитьЧерновик(null)}>
+              Отмена
+            </Button>
+            <Button
+              вид="основная"
+              onClick={сохранить}
+              disabled={!черновик?.название?.trim()}
+            >
+              Сохранить
+            </Button>
+          </>
+        }
+      >
+        {черновик ? (
+          <div className="space-y-4">
+            <Field подпись="Чего вы хотите достичь" обязательное>
+              <Input
+                value={черновик.название ?? ''}
+                onChange={(событие) =>
+                  установитьЧерновик({
+                    ...черновик,
+                    название: событие.target.value,
+                  })
+                }
+                autoFocus
+              />
+            </Field>
+            <Field
+              подпись="Зачем это нужно"
+              подсказка="Цель без ответа «зачем» первой теряет силу"
+            >
+              <Textarea
+                rows={3}
+                value={черновик.зачем ?? ''}
+                onChange={(событие) =>
+                  установитьЧерновик({ ...черновик, зачем: событие.target.value })
+                }
+              />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field подпись="Цель (число)">
+                <Input
+                  type="number"
+                  value={черновик.цель ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      цель:
+                        событие.target.value === ''
+                          ? null
+                          : Number(событие.target.value),
+                    })
+                  }
+                  placeholder="не задано"
+                />
+              </Field>
+              <Field подпись="Сейчас">
+                <Input
+                  type="number"
+                  value={черновик.текущее ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      текущее:
+                        событие.target.value === ''
+                          ? null
+                          : Number(событие.target.value),
+                    })
+                  }
+                />
+              </Field>
+              <Field подпись="Единица">
+                <Input
+                  value={черновик.единица ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      единица: событие.target.value,
+                    })
+                  }
+                  placeholder="кг, часов, ₽"
+                />
+              </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field подпись="Срок">
+                <Input
+                  type="date"
+                  value={черновик.срок ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      срок: событие.target.value || null,
+                    })
+                  }
+                />
+              </Field>
+              {черновик.id ? (
+                <Field подпись="Состояние">
+                  <Select
+                    value={черновик.состояние ?? 'активна'}
+                    onChange={(событие) =>
+                      установитьЧерновик({
+                        ...черновик,
+                        состояние: событие.target.value as Цель['состояние'],
+                      })
+                    }
+                  >
+                    <option value="активна">Активна</option>
+                    <option value="достигнута">Достигнута</option>
+                    <option value="отложена">Отложена</option>
+                    <option value="отменена">Отменена</option>
+                  </Select>
+                </Field>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+      </Dialog>
+    </div>
+  )
+}

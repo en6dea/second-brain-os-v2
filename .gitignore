@@ -1,0 +1,58 @@
+# Зависимости и сборка
+node_modules
+dist
+dist-ssr
+dev-dist
+*.local
+coverage
+.vite
+playwright-report
+test-results
+
+# Логи
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Редакторы и система
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.suo
+*.sw?
+
+# --- БЕЗОПАСНОСТЬ: личные данные и ключи в репозиторий не попадают ---
+# Ключи и конфигурация окружения
+.env
+.env.*
+!.env.example
+firebase-config.js
+.firebaserc
+serviceAccount*.json
+*.pem
+*.key
+
+# Личные данные пользователя
+backup/
+backups/
+*.backup.json
+second-brain-backup*.json
+*-personal.json
+private/
+personal/
+
+# Банковские выписки и финансовые файлы
+*.csv
+!src/**/fixtures/*.csv
+!docs/**/*.csv
+statements/
+выписк*/
+
+# Снимки экрана сделок и личные документы
+screenshots/
+скриншот*/
+*.trade.png
