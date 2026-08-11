@@ -7,8 +7,10 @@ import type { Задача } from '@/core/db/types'
 import { деньКратко, сегодня, сдвинутьДень } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { cn } from '@/design-system/classNames'
+import { useОтклик } from '@/design-system/motion/CountUp'
+import { Ping } from '@/design-system/motion/Ping'
 import {
   Input,
   Select,
@@ -26,8 +28,49 @@ import {
 
 type Отбор = 'сегодня' | 'просрочено' | 'все' | 'сделано'
 
+/**
+ * Кружок выполнения.
+ *
+ * При закрытии задачи от кружка расходится импульс, а галочка прочерчивается.
+ * Возврат в работу проходит молча: отменённое действие не празднуют.
+ */
+function TaskCheck({
+  сделана,
+  наПереключение,
+}: {
+  сделана: boolean
+  наПереключение: () => void
+}) {
+  const [отклик, запустить] = useОтклик(900)
+
+  return (
+    <Ping активен={отклик} тон="успех" className="shrink-0">
+      <button
+        type="button"
+        aria-label={сделана ? 'Вернуть в работу' : 'Отметить выполненной'}
+        aria-pressed={сделана}
+        onClick={() => {
+          if (!сделана) запустить()
+          наПереключение()
+        }}
+        className={cn(
+          'flex h-5 w-5 items-center justify-center rounded-full border',
+          'transition-[background-color,border-color,transform] duration-150 active:scale-90',
+          сделана
+            ? 'border-transparent bg-good text-white'
+            : 'border-line-strong hover:border-accent hover:bg-accent-soft',
+        )}
+      >
+        {сделана ? (
+          <Check size={13} className={отклик ? 'прочерк' : undefined} />
+        ) : null}
+      </button>
+    </Ping>
+  )
+}
+
 export function TasksPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const день = сегодня()
   const [отбор, установитьОтбор] = useState<Отбор>('сегодня')
   const [черновик, установитьЧерновик] = useState<Partial<Задача> | null>(null)
@@ -182,21 +225,10 @@ export function TasksPage() {
                 задача.дата !== null && задача.дата < день && !сделана
               return (
                 <div key={задача.id} className="flex items-center gap-3 px-5 py-3">
-                  <button
-                    type="button"
-                    onClick={() => переключить(задача)}
-                    aria-label={
-                      сделана ? 'Вернуть в работу' : 'Отметить выполненной'
-                    }
-                    className={cn(
-                      'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors',
-                      сделана
-                        ? 'border-transparent bg-good text-white'
-                        : 'border-line-strong hover:border-accent',
-                    )}
-                  >
-                    {сделана ? <Check size={13} /> : null}
-                  </button>
+                  <TaskCheck
+                    сделана={сделана}
+                    наПереключение={() => переключить(задача)}
+                  />
 
                   <div className="min-w-0 flex-1">
                     <p

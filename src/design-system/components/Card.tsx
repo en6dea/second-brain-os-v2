@@ -4,13 +4,17 @@ import { cn } from '@/design-system/classNames'
 export function Card({
   className,
   children,
+  живая,
   ...остальное
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement> & {
+  /** Карточка, по которой можно щёлкнуть: приподнимается под курсором. */
+  живая?: boolean
+}) {
   return (
     <div
       className={cn(
         'bg-card border border-line rounded-4 shadow-1',
-        'transition-[border-color,box-shadow] duration-200',
+        живая ? 'живая-карта' : 'transition-[border-color,box-shadow] duration-200',
         className,
       )}
       {...остальное}

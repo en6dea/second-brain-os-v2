@@ -31,7 +31,7 @@ interface СостояниеТемы {
   установить: (режим: РежимТемы) => void
 }
 
-export const использоватьТему = create<СостояниеТемы>((set) => ({
+export const useТема = create<СостояниеТемы>((set) => ({
   режим: прочитать(),
   установить: (режим) => {
     try {
@@ -48,9 +48,9 @@ export const использоватьТему = create<СостояниеТем�
 export function слушатьСистемнуюТему() {
   const запрос = window.matchMedia('(prefers-color-scheme: dark)')
   const обработчик = () => {
-    if (использоватьТему.getState().режим === 'system') применить('system')
+    if (useТема.getState().режим === 'system') применить('system')
   }
   запрос.addEventListener('change', обработчик)
-  применить(использоватьТему.getState().режим)
+  применить(useТема.getState().режим)
   return () => запрос.removeEventListener('change', обработчик)
 }

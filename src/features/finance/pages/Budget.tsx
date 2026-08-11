@@ -11,7 +11,7 @@ import {
   текущийМесяц,
 } from '@/core/calendar/CalendarRu'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   MoneyInput,
   Skeleton,
@@ -26,7 +26,7 @@ import {
 } from '@/design-system/components'
 
 export function BudgetPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const месяц = текущийМесяц()
   const [плановыйДоход, установитьПлановыйДоход] = useState<string | null>(null)
 

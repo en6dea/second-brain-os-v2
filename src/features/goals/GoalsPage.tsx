@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Plus, Target, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
@@ -7,8 +7,10 @@ import type { Цель } from '@/core/db/types'
 import { деньСловами, днейДо } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { число } from '@/core/language/Numerals'
+import { useПлавноеЧисло } from '@/design-system/motion/CountUp'
+import { Flash } from '@/design-system/motion/Ping'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   Input,
   Select,
@@ -25,8 +27,59 @@ import {
   CardHeader,
 } from '@/design-system/components'
 
+/**
+ * Показатель цели.
+ *
+ * Число оседает при изменении. В момент, когда цель впервые достигнута,
+ * по строке один раз проходит свет — и больше не повторяется.
+ */
+function GoalMetric({
+  текущее,
+  целевое,
+  единица,
+}: {
+  текущее: number
+  целевое: number
+  единица: string
+}) {
+  const достигнута = целевое > 0 && текущее >= целевое
+  const былаДостигнута = useRef(достигнута)
+  const [проблеск, установитьПроблеск] = useState(false)
+
+  useEffect(() => {
+    if (достигнута && !былаДостигнута.current) {
+      установитьПроблеск(true)
+      const таймер = setTimeout(() => установитьПроблеск(false), 1200)
+      былаДостигнута.current = достигнута
+      return () => clearTimeout(таймер)
+    }
+    былаДостигнута.current = достигнута
+  }, [достигнута])
+
+  const плавное = useПлавноеЧисло(текущее)
+
+  return (
+    <div className="relative overflow-hidden rounded-2">
+      <Flash активен={проблеск} />
+      <div className="mb-1.5 flex items-baseline justify-between text-[12px]">
+        <span className="text-ink-3">
+          {достигнута ? 'Цель достигнута' : 'Показатель'}
+        </span>
+        <span className="tnum text-ink-2">
+          {число(Math.round(плавное))} / {число(целевое)} {единица}
+        </span>
+      </div>
+      <ProgressBar
+        значение={текущее}
+        из={целевое}
+        тон={достигнута ? 'успех' : 'нейтральный'}
+      />
+    </div>
+  )
+}
+
 export function GoalsPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [черновик, установитьЧерновик] = useState<Partial<Цель> | null>(null)
 
   const данные = useLiveQuery(async () => {
@@ -152,19 +205,11 @@ export function GoalsPage() {
                 />
                 <div className="space-y-3 px-5 pb-5">
                   {естьЧисло ? (
-                    <div>
-                      <div className="mb-1.5 flex items-baseline justify-between text-[12px]">
-                        <span className="text-ink-3">Показатель</span>
-                        <span className="tnum text-ink-2">
-                          {число(цель.текущее ?? 0)} / {число(цель.цель)}{' '}
-                          {цель.единица}
-                        </span>
-                      </div>
-                      <ProgressBar
-                        значение={цель.текущее ?? 0}
-                        из={цель.цель ?? 1}
-                      />
-                    </div>
+                    <GoalMetric
+                      текущее={цель.текущее ?? 0}
+                      целевое={цель.цель ?? 1}
+                      единица={цель.единица}
+                    />
                   ) : (
                     <p className="text-[12.5px] text-ink-3">
                       Числового показателя нет — прогресс не рассчитывается.

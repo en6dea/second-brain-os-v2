@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Check, Plus, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
@@ -9,8 +9,10 @@ import { границыНедели, сдвинутьДень, сегодня } 
 import { склонение } from '@/core/language/Plural'
 import { процент } from '@/core/money/Money'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { cn } from '@/design-system/classNames'
+import { useОтклик } from '@/design-system/motion/CountUp'
+import { Ping } from '@/design-system/motion/Ping'
 import {
   Input,
   Select,
@@ -27,8 +29,75 @@ import {
 
 const ДНИ = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 
+/**
+ * Клетка недельной сетки.
+ *
+ * Отметка отзывается импульсом, галочка прочерчивается. Отклик живёт внутри
+ * клетки: соседние ячейки при этом не перерисовываются.
+ */
+function HabitCell({
+  отмечено,
+  будущее,
+  подпись,
+  наОтметку,
+}: {
+  отмечено: boolean
+  будущее: boolean
+  подпись: string
+  наОтметку: () => void
+}) {
+  const [отклик, запустить] = useОтклик(900)
+
+  return (
+    <Ping активен={отклик} тон="успех">
+      <button
+        type="button"
+        disabled={будущее}
+        aria-label={подпись}
+        aria-pressed={отмечено}
+        onClick={() => {
+          if (!отмечено) запустить()
+          наОтметку()
+        }}
+        className={cn(
+          'inline-flex h-7 w-7 items-center justify-center rounded-2 border',
+          'transition-[background-color,border-color,transform] duration-150',
+          'active:scale-90',
+          отмечено
+            ? 'border-transparent bg-good text-white'
+            : будущее
+              ? 'border-line opacity-35'
+              : 'border-line hover:border-accent hover:bg-accent-soft',
+        )}
+      >
+        {отмечено ? (
+          <Check size={14} className={отклик ? 'прочерк' : undefined} />
+        ) : null}
+      </button>
+    </Ping>
+  )
+}
+
+/** Серия дней. При росте число подпрыгивает и на миг зеленеет. */
+function StreakCount({ длина }: { длина: number }) {
+  const предыдущая = useRef(длина)
+  const [подрос, установитьПодрос] = useState(false)
+
+  useEffect(() => {
+    if (длина > предыдущая.current) {
+      установитьПодрос(true)
+      const таймер = setTimeout(() => установитьПодрос(false), 640)
+      предыдущая.current = длина
+      return () => clearTimeout(таймер)
+    }
+    предыдущая.current = длина
+  }, [длина])
+
+  return <span className={подрос ? 'подрос' : undefined}>{длина}</span>
+}
+
 export function HabitsPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const день = сегодня()
   const [черновик, установитьЧерновик] = useState<Partial<Привычка> | null>(null)
 
@@ -206,32 +275,18 @@ export function HabitsPage() {
                         {привычка.норма} {привычка.единица} · {привычка.частота}
                       </span>
                     </td>
-                    {дниНедели.map((дата) => {
-                      const отмечено = (привычка.отметки[дата] ?? 0) > 0
-                      const будущее = дата > день
-                      return (
-                        <td key={дата} className="py-2.5 text-center">
-                          <button
-                            type="button"
-                            disabled={будущее}
-                            onClick={() => отметить(привычка, дата)}
-                            aria-label={`${привычка.название}, ${дата}`}
-                            className={cn(
-                              'inline-flex h-7 w-7 items-center justify-center rounded-2 border transition-colors',
-                              отмечено
-                                ? 'border-transparent bg-good text-white'
-                                : будущее
-                                  ? 'border-line opacity-35'
-                                  : 'border-line hover:border-accent',
-                            )}
-                          >
-                            {отмечено ? <Check size={14} /> : null}
-                          </button>
-                        </td>
-                      )
-                    })}
+                    {дниНедели.map((дата) => (
+                      <td key={дата} className="py-2.5 text-center">
+                        <HabitCell
+                          отмечено={(привычка.отметки[дата] ?? 0) > 0}
+                          будущее={дата > день}
+                          подпись={`${привычка.название}, ${дата}`}
+                          наОтметку={() => отметить(привычка, дата)}
+                        />
+                      </td>
+                    ))}
                     <td className="tnum px-3 py-2.5 text-right text-[13px] text-ink-2">
-                      {длинаСерии(привычка, день)}
+                      <StreakCount длина={длинаСерии(привычка, день)} />
                     </td>
                     <td className="px-2">
                       <IconButton

@@ -24,8 +24,8 @@ import {
   type РазборСтарогоФайла,
 } from '@/core/migrations/legacy'
 import { засеятьПоказательныеДанные } from '@/core/demo/seed'
-import { использоватьТему, type РежимТемы } from '@/app/providers/theme'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useТема, type РежимТемы } from '@/app/providers/theme'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { деньги, рублиВКопейки, копейкиВРубли } from '@/core/money/Money'
 import {
   Input,
@@ -49,8 +49,8 @@ const ТЕМЫ: { ключ: РежимТемы; подпись: string }[] = [
 ]
 
 export function SettingsPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
-  const { режим, установить } = использоватьТему()
+  const сообщить = useИнтерфейс((с) => с.сообщить)
+  const { режим, установить } = useТема()
 
   const [имя, установитьИмя] = useState<string | null>(null)
   const [резерв, установитьРезерв] = useState<string | null>(null)

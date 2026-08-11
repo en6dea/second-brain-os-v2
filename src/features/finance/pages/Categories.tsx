@@ -8,7 +8,7 @@ import { деньги, копейкиВРубли, рублиВКопейки } 
 import { границыМесяца, текущийМесяц } from '@/core/calendar/CalendarRu'
 import { расходыПоКатегориям } from '@/features/finance/model/calc'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   Input,
   MoneyInput,
@@ -35,7 +35,7 @@ interface Черновик {
 }
 
 export function CategoriesPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [черновик, установитьЧерновик] = useState<Черновик | null>(null)
   const месяц = текущийМесяц()
 

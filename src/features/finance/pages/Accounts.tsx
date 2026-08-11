@@ -7,7 +7,7 @@ import { СОБСТВЕННЫЕ_ТИПЫ, type Счёт, type ТипСчёта }
 import { расчётныйОстаток, итогПоСчетам } from '@/features/finance/model/calc'
 import { деньги, копейкиВРубли, рублиВКопейки } from '@/core/money/Money'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   Input,
   MoneyInput,
@@ -53,7 +53,7 @@ const пустойЧерновик: Черновик = {
 }
 
 export function AccountsPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [черновик, установитьЧерновик] = useState<Черновик | null>(null)
   const [кУдалению, установитьКУдалению] = useState<Счёт | null>(null)
 

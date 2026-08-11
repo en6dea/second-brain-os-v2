@@ -7,7 +7,7 @@ import type { ВидЗаписиДневника, ЗаписьДневника }
 import { деньСловами, сегодня } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   Input,
   Select,
@@ -33,7 +33,7 @@ const ВИДЫ: { ключ: ВидЗаписиДневника; подпись: 
 ]
 
 export function JournalPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [отбор, установитьОтбор] = useState<'все' | ВидЗаписиДневника>('все')
   const [черновик, установитьЧерновик] = useState<Partial<ЗаписьДневника> | null>(
     null,

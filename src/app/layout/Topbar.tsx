@@ -1,7 +1,7 @@
 import { Menu, Moon, Plus, Search, Sun, SunMoon } from 'lucide-react'
 import { Button, IconButton } from '@/design-system/components'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
-import { использоватьТему, type РежимТемы } from '@/app/providers/theme'
+import { useИнтерфейс } from '@/app/providers/ui'
+import { useТема, type РежимТемы } from '@/app/providers/theme'
 import { приветствие } from '@/core/calendar/CalendarRu'
 
 const следующаяТема: Record<РежимТемы, РежимТемы> = {
@@ -17,12 +17,10 @@ const подписьТемы: Record<РежимТемы, string> = {
 }
 
 export function Topbar({ имя }: { имя: string }) {
-  const { режим, установить } = использоватьТему()
-  const открытьМеню = использоватьИнтерфейс((с) => с.открытьМеню)
-  const открытьКомандноеОкно = использоватьИнтерфейс((с) => с.открытьКомандноеОкно)
-  const открытьБыстроеДобавление = использоватьИнтерфейс(
-    (с) => с.открытьБыстроеДобавление,
-  )
+  const { режим, установить } = useТема()
+  const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
+  const открытьКомандноеОкно = useИнтерфейс((с) => с.открытьКомандноеОкно)
+  const открытьБыстроеДобавление = useИнтерфейс((с) => с.открытьБыстроеДобавление)
 
   const Иконка = режим === 'light' ? Sun : режим === 'dark' ? Moon : SunMoon
 

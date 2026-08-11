@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/design-system/classNames'
+import { useПлавноеЧисло } from '@/design-system/motion/CountUp'
 
 type Тон =
   'нейтральный' | 'успех' | 'опасность' | 'внимание' | 'сведения' | 'знание'
@@ -86,6 +87,18 @@ export function KnownScale({
   )
 }
 
+/** Число, оседающее на новом значении. Итог всегда равен посчитанному. */
+function SettlingNumber({
+  число,
+  запись,
+}: {
+  число: number
+  запись: (значение: number) => string
+}) {
+  const текущее = useПлавноеЧисло(число)
+  return <>{запись(текущее)}</>
+}
+
 /**
  * Показание прибора.
  *
@@ -100,15 +113,18 @@ export function Metric({
   тон = 'нейтральный',
   иконка,
   шкала,
+  счётчик,
   className,
 }: {
   подпись: string
-  значение: ReactNode
+  значение?: ReactNode
   источник?: string
   единица?: string
   тон?: Тон
   иконка?: ReactNode
   шкала?: { известно: number; неизвестно: number }
+  /** Число, которое оседает при изменении, и способ его записи. */
+  счётчик?: { число: number; запись: (значение: number) => string }
   className?: string
 }) {
   const цветЗначения =
@@ -134,7 +150,7 @@ export function Metric({
           цветЗначения,
         )}
       >
-        {значение}
+        {счётчик ? <SettlingNumber {...счётчик} /> : значение}
       </div>
       {источник ? (
         <div className="mt-0.5 text-[11px] leading-snug text-ink-3">{источник}</div>

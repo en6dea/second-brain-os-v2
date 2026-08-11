@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { рублиВКопейки } from '@/core/money/Money'
 import { сегодня } from '@/core/calendar/CalendarRu'
 import {
@@ -38,9 +38,9 @@ const ВИДЫ: { ключ: Вид; подпись: string }[] = [
 ]
 
 export function QuickAdd() {
-  const открыто = использоватьИнтерфейс((с) => с.быстроеДобавление)
-  const открыть = использоватьИнтерфейс((с) => с.открытьБыстроеДобавление)
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const открыто = useИнтерфейс((с) => с.быстроеДобавление)
+  const открыть = useИнтерфейс((с) => с.открытьБыстроеДобавление)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
 
   const [вид, установитьВид] = useState<Вид>('задача')
   const [название, установитьНазвание] = useState('')

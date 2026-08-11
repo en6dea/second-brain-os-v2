@@ -10,7 +10,7 @@ import {
 import { деньги, рублиВКопейки } from '@/core/money/Money'
 import { деньСловами, сегодня } from '@/core/calendar/CalendarRu'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   MoneyInput,
   Select,
@@ -25,7 +25,7 @@ import {
 } from '@/design-system/components'
 
 export function ReconciliationPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [счётId, установитьСчёт] = useState('')
   const [фактический, установитьФактический] = useState('')
   const [итог, установитьИтог] = useState<ReturnType<

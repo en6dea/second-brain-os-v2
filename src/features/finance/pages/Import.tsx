@@ -11,7 +11,7 @@ import {
 import { деньги } from '@/core/money/Money'
 import { деньКратко } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { cn } from '@/design-system/classNames'
 import {
   Select,
@@ -36,7 +36,7 @@ interface СтрокаКИмпорту {
 }
 
 export function ImportPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [разбор, установитьРазбор] = useState<РазборВыписки | null>(null)
   const [строки, установитьСтроки] = useState<СтрокаКИмпорту[]>([])
   const [счётId, установитьСчёт] = useState('')

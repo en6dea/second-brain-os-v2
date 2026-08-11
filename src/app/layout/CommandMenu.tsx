@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { CornerDownLeft, Search } from 'lucide-react'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { ВСЕ_ПУНКТЫ } from '@/app/navigation'
 import { искать, type НайденноеСовпадение } from '@/core/search/search'
 import { cn } from '@/design-system/classNames'
@@ -16,11 +16,9 @@ interface Строка {
 }
 
 export function CommandMenu() {
-  const открыто = использоватьИнтерфейс((с) => с.командноеОкно)
-  const открыть = использоватьИнтерфейс((с) => с.открытьКомандноеОкно)
-  const открытьБыстроеДобавление = использоватьИнтерфейс(
-    (с) => с.открытьБыстроеДобавление,
-  )
+  const открыто = useИнтерфейс((с) => с.командноеОкно)
+  const открыть = useИнтерфейс((с) => с.открытьКомандноеОкно)
+  const открытьБыстроеДобавление = useИнтерфейс((с) => с.открытьБыстроеДобавление)
   const перейти = useNavigate()
 
   const [запрос, установитьЗапрос] = useState('')

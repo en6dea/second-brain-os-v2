@@ -41,6 +41,7 @@ import {
 } from '@/design-system/components'
 import type { Сигнал, УровеньСигнала } from '@/core/db/types'
 import { cn } from '@/design-system/classNames'
+import { AmbientField } from '@/design-system/motion/AmbientField'
 
 const иконкаСигнала: Record<УровеньСигнала, typeof Info> = {
   критично: AlertTriangle,
@@ -148,8 +149,9 @@ export function DashboardPage() {
     <div className="anim-rise space-y-7">
       {/* --- Сейчас --- */}
       <section>
-        <Card className="overflow-hidden">
-          <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <Card className="relative overflow-hidden">
+          <AmbientField />
+          <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="min-w-0">
               <p className="text-[12px] text-ink-3 first-letter:uppercase">
                 {деньНедели(день)}, {деньСловами(день)}
@@ -172,7 +174,7 @@ export function DashboardPage() {
             ) : null}
           </div>
 
-          <div className="grid grid-cols-2 gap-px border-t border-line bg-line sm:grid-cols-4">
+          <div className="relative grid grid-cols-2 gap-px border-t border-line bg-line sm:grid-cols-4">
             <div className="bg-card p-4">
               <Metric
                 единица="шт · задачи"
@@ -266,7 +268,7 @@ export function DashboardPage() {
             <Metric
               единица="₽ · остаток"
               подпись="Собственные деньги"
-              значение={деньги(счета.собственные)}
+              счётчик={{ число: счета.собственные, запись: деньги }}
               источник={
                 данные.счета.length === 0
                   ? 'счетов ещё нет — сумма неизвестна'
@@ -283,21 +285,21 @@ export function DashboardPage() {
             <Metric
               единица="₽ · свободно"
               подпись="Можно тратить"
-              значение={деньги(свободно)}
+              счётчик={{ число: свободно, запись: деньги }}
               источник="собственные − обязательства − резерв"
               тон={свободно < 0 ? 'опасность' : 'нейтральный'}
             />
             <Metric
               единица="₽ · за месяц"
               подпись="Получено"
-              значение={деньги(периодМесяца.доходы)}
+              счётчик={{ число: периодМесяца.доходы, запись: деньги }}
               источник={`${периодМесяца.операций} ${склонение(периодМесяца.операций, 'операция', 'операции', 'операций')}`}
               тон={периодМесяца.доходы > 0 ? 'успех' : 'нейтральный'}
             />
             <Metric
               единица="₽ · за месяц"
               подпись="Израсходовано"
-              значение={деньги(периодМесяца.расходы)}
+              счётчик={{ число: периодМесяца.расходы, запись: деньги }}
               источник="переводы не в счёт"
               тон={
                 периодМесяца.расходы > периодМесяца.доходы
@@ -454,9 +456,15 @@ export function DashboardPage() {
 function SignalRow({ сигнал }: { сигнал: Сигнал }) {
   const Иконка = иконкаСигнала[сигнал.уровень]
   const содержимое = (
-    <Card className="h-full p-4 transition-colors hover:border-line-strong">
+    <Card живая className="h-full p-4">
       <div className="flex items-start gap-3">
-        <span className={cn('mt-0.5 shrink-0', тонСигнала[сигнал.уровень])}>
+        <span
+          className={cn(
+            'mt-0.5 shrink-0',
+            тонСигнала[сигнал.уровень],
+            сигнал.уровень === 'критично' && 'дыхание',
+          )}
+        >
           <Иконка size={17} />
         </span>
         <div className="min-w-0">

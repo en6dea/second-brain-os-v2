@@ -7,7 +7,7 @@ import type { Входящее } from '@/core/db/types'
 import { сегодня } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   Input,
   Skeleton,
@@ -20,7 +20,7 @@ import {
 } from '@/design-system/components'
 
 export function InboxPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [новая, установитьНовую] = useState('')
 
   const записи = useLiveQuery(

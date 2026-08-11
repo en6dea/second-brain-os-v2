@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { Brain } from 'lucide-react'
 import { МЕНЮ } from '@/app/navigation'
 import { cn } from '@/design-system/classNames'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 
 export function Sidebar({ наПереход }: { наПереход?: () => void }) {
   return (
@@ -65,9 +65,7 @@ export function Sidebar({ наПереход }: { наПереход?: () => voi
       <div className="border-t border-line px-4 py-3">
         <button
           type="button"
-          onClick={() =>
-            использоватьИнтерфейс.getState().открытьКомандноеОкно(true)
-          }
+          onClick={() => useИнтерфейс.getState().открытьКомандноеОкно(true)}
           className="flex w-full items-center justify-between rounded-2 border border-line px-2.5 py-1.5 text-left text-[12px] text-ink-3 transition-colors hover:border-line-strong hover:text-ink-2"
         >
           <span>Поиск и команды</span>

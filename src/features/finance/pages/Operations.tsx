@@ -9,7 +9,7 @@ import { деньги, копейкиВРубли, рублиВКопейки } 
 import { деньКратко, сегодня } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { сейчас } from '@/core/db/RecordId'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { cn } from '@/design-system/classNames'
 import {
   Input,
@@ -71,7 +71,7 @@ function пустой(): Черновик {
 }
 
 export function OperationsPage() {
-  const сообщить = использоватьИнтерфейс((с) => с.сообщить)
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [параметры, установитьПараметры] = useSearchParams()
   const [черновик, установитьЧерновик] = useState<Черновик | null>(null)
   const [кУдалению, установитьКУдалению] = useState<Операция | null>(null)

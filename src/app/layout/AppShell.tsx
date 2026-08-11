@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Inbox, LayoutDashboard, ListChecks, Repeat, Wallet, X } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
-import { использоватьИнтерфейс } from '@/app/providers/ui'
+import { useИнтерфейс } from '@/app/providers/ui'
 import { слушатьСистемнуюТему } from '@/app/providers/theme'
 import { подготовитьПервыйЗапуск, читатьПрофиль } from '@/core/db/repo'
 import { cn } from '@/design-system/classNames'
@@ -21,10 +21,12 @@ const МЕНЮ_ТЕЛЕФОНА = [
 ]
 
 export function AppShell() {
-  const менюОткрыто = использоватьИнтерфейс((с) => с.менюНаТелефоне)
-  const открытьМеню = использоватьИнтерфейс((с) => с.открытьМеню)
-  const уведомление = использоватьИнтерфейс((с) => с.уведомление)
-  const открытьКомандноеОкно = использоватьИнтерфейс((с) => с.открытьКомандноеОкно)
+  const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
+  const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
+  const уведомление = useИнтерфейс((с) => с.уведомление)
+  const открытьКомандноеОкно = useИнтерфейс((с) => с.открытьКомандноеОкно)
+
+  const расположение = useLocation()
 
   // Подготовка первого запуска пишет в базу, поэтому выполняется отдельно:
   // внутри живого запроса запись запрещена.
@@ -82,7 +84,10 @@ export function AppShell() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar имя={профиль?.имя ?? ''} />
         <main className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-5 lg:pb-8">
-          <div className="mx-auto w-full max-w-[1180px]">
+          <div
+            key={расположение.pathname}
+            className="вход-раздела mx-auto w-full max-w-[1180px]"
+          >
             <Outlet />
           </div>
         </main>
