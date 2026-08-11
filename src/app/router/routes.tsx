@@ -133,26 +133,33 @@ const маршруты = [
       {
         path: 'learning',
         lazy: async () => ({
-          Component: (await import('@/features/learning/LearningPage')).LearningPage,
+          Component: (await import('@/features/learning/LearningPage'))
+            .LearningPage,
+        }),
+      },
+      {
+        path: 'calendar',
+        lazy: async () => ({
+          Component: (await import('@/features/calendar/CalendarPage'))
+            .CalendarPage,
+        }),
+      },
+      {
+        path: 'trading',
+        lazy: async () => ({
+          Component: (await import('@/features/trading/TradingPage')).TradingPage,
         }),
       },
       // Разделы, которые ещё не построены. Страница честно описывает,
       // что в них будет и на каком этапе.
-      ...[
-        'calendar',
-        'projects',
-        'planning',
-        'experience',
-        'trading',
-        'reviews',
-        'analytics',
-        '*',
-      ].map((путь) => ({
-        path: путь,
-        lazy: async () => ({
-          Component: (await import('@/features/planned/PlannedPage')).PlannedPage,
+      ...['projects', 'planning', 'experience', 'reviews', 'analytics', '*'].map(
+        (путь) => ({
+          path: путь,
+          lazy: async () => ({
+            Component: (await import('@/features/planned/PlannedPage')).PlannedPage,
+          }),
         }),
-      })),
+      ),
     ],
   },
 ]
