@@ -36,30 +36,48 @@
 
 ## Соответствие коллекций
 
-| Прежняя коллекция                                                                    | Куда попадёт                            |
-| ------------------------------------------------------------------------------------ | --------------------------------------- |
-| `tasks`                                                                              | Задачи                                  |
-| `inbox`                                                                              | Входящие                                |
-| `goals`                                                                              | Цели                                    |
-| `habits`                                                                             | Привычки                                |
-| `financeAccounts`                                                                    | Счета                                   |
-| `operations`                                                                         | Операции                                |
-| `financeCategories`                                                                  | Категории денег                         |
-| `debts`                                                                              | Обязательства                           |
-| `debtPayments`                                                                       | Платежи по обязательствам               |
-| `people`                                                                             | Люди                                    |
-| `notes`, `ideas`, `documents`, `books`, `films`, `wishes`, `trips`, `knowledgeLinks` | Знания, с пометкой прежней коллекции    |
-| `learningMaterials`                                                                  | Обучение                                |
-| `personal`                                                                           | Дневник, вид «день», признак «личное»   |
-| `subconsciousEntries`                                                                | Дневник, вид «подсознание»              |
-| `settings`                                                                           | Сохраняются целиком в `legacy` настроек |
+Карта составлена по разбору настоящего рабочего хранилища, а не по документации
+прежнего проекта: в данных нашлись коллекции, которых в ней нет.
 
-Коллекции, для которых во второй версии пока нет раздела (`gameLife`,
-`discipline`, `polinaDays`, `coupleActivities`, `habitWishlist`,
-`planTemplates`, `lifePlans`, `financeReservations`, `financeWeeklyReviews`,
-`financeMonthBudgets`, `deferredPurchases`, `purchases`, `archive`,
-`bookSessions`), показываются в предпросмотре с пометкой «сохранится как есть».
-Их данные не теряются.
+| Прежняя коллекция                                                                                      | Куда попадёт                                            |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `operations`                                                                                           | Операции                                                |
+| `financeCategories`, `categories`                                                                      | Категории денег, без дублей по названию                 |
+| `financeAccounts`                                                                                      | Счета; `reconciledAt` становится датой подтверждения    |
+| `debts`, `debtPayments`                                                                                | Обязательства и платежи по ним                          |
+| `financePlans`, `plannedExpenses`                                                                      | Плановые платежи                                        |
+| `budgets`                                                                                              | Лимиты сводятся в бюджет месяца                         |
+| `tasks`                                                                                                | Задачи; `goalId` связывается с целью                    |
+| `goals`                                                                                                | Цели; `stages` становятся вехами                        |
+| `habits` + `habitLogs`                                                                                 | Привычки: оба источника отметок сводятся в один словарь |
+| `habitWishlist`                                                                                        | Разбор                                                  |
+| `calendarEvents`                                                                                       | События                                                 |
+| `spheres`                                                                                              | Сферы жизни                                             |
+| `people`, `clients`                                                                                    | Люди                                                    |
+| `notes`, `ideas`, `books`, `films`, `trips`, `wishes`, `links`, `documents`, `resources`, `interviews` | Знания, с пометкой прежней коллекции                    |
+| `learningMaterials`                                                                                    | Обучение                                                |
+| `journal`, `journalEntries`, `personal`, `weeklyReviews`, `reviews`, `reports`, `sleepEntries`         | Дневник                                                 |
+| `subconsciousEntries`, `subconsciousDiary`                                                             | Дневник, вид «подсознание»                              |
+| `trades`, `tradingAccounts`                                                                            | Сделки                                                  |
+| `inbox`, `archive`                                                                                     | Разбор                                                  |
+| `settings`                                                                                             | Сохраняются целиком в `legacy` настроек                 |
+
+### Узкие поля собираются в текст
+
+Запись подсознания в прежней версии состояла из полутора десятков полей:
+`theme, question, answer, emotion, trigger, body, thought, fear, cause,
+pattern, need, summary, nextStep, promise`. Каждое переносится подписанной
+строкой в текст записи, а исходные значения остаются в `legacy`.
+
+Так же собираются люди (обещания, подарки, интересы), идеи и материалы обучения.
+
+### Коллекции без раздела
+
+`actionLog`, `polinaDays`, `polinaWishes`, `polinaPayments`, `coupleActivities`,
+`rewardLedger`, `undoStack`, `states`, `folders`, `planningFolders`,
+`financeWeeklyReviews`, `budgetPlans` — показываются в предпросмотре с пометкой
+«сохранится как есть» и складываются целиком в `legacy` настроек. Ни одна
+запись не теряется.
 
 ## Преобразования
 
