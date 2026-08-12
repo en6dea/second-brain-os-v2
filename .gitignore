@@ -36,23 +36,26 @@ serviceAccount*.json
 *.pem
 *.key
 
-# Личные данные пользователя
-backup/
-backups/
+# Личные данные пользователя.
+# Косая черта в начале обязательна: правило без неё срабатывает на любой
+# вложенной папке с таким именем, а не только в корне. Без якоря `backup/`
+# исключал и src/core/backup — исходный код переставал попадать в репозиторий.
+/backup/
+/backups/
 *.backup.json
 second-brain-backup*.json
 *-personal.json
-private/
-personal/
+/private/
+/personal/
 
 # Банковские выписки и финансовые файлы
 *.csv
 !src/**/fixtures/*.csv
 !docs/**/*.csv
-statements/
-выписк*/
+/statements/
+/выписк*/
 
 # Снимки экрана сделок и личные документы
-screenshots/
-скриншот*/
+/screenshots/
+/скриншот*/
 *.trade.png

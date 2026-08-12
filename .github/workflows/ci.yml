@@ -27,6 +27,9 @@ jobs:
       - name: Установить зависимости
         run: npm ci
 
+      - name: Весь код в репозитории
+        run: npm run check:tracked
+
       - name: Статическая проверка
         run: npm run lint
 
