@@ -4,6 +4,8 @@ import type {
   Вложение,
   Входящее,
   Вызов,
+  ДелоВдвоём,
+  ДеньПартнёра,
   ЗаписьДневника,
   ЗаписьЗнания,
   Задача,
@@ -17,6 +19,7 @@ import type {
   Операция,
   Опыт,
   План,
+  ПланВдвоём,
   ПлановыйПлатёж,
   ПлатёжПоОбязательству,
   Папка,
@@ -58,6 +61,10 @@ export class БазаВторойМозг extends Dexie {
   experiences!: EntityTable<Опыт, 'id'>
   challenges!: EntityTable<Вызов, 'id'>
   reminders!: EntityTable<Напоминание, 'id'>
+
+  partnerDays!: EntityTable<ДеньПартнёра, 'id'>
+  coupleActivities!: EntityTable<ДелоВдвоём, 'id'>
+  couplePlans!: EntityTable<ПланВдвоём, 'id'>
 
   accounts!: EntityTable<Счёт, 'id'>
   operations!: EntityTable<Операция, 'id'>
@@ -147,6 +154,24 @@ export class БазаВторойМозг extends Dexie {
               запись.показыватьПостеры = true
           })
       })
+
+    // Версия 3: раздел отношений — дни близкого человека, дела вдвоём и планы
+    // вдвоём. У опыта появилось поле «чей»: в игре с новым опытом каждый
+    // выбирает за себя. Прежние записи опыта остаются моими.
+    this.version(3)
+      .stores({
+        partnerDays: 'id, дата, человекId, цикл',
+        coupleActivities: 'id, дата, состояние',
+        couplePlans: 'id, горизонт, период, [горизонт+период]',
+      })
+      .upgrade(async (перенос) => {
+        await перенос
+          .table('experiences')
+          .toCollection()
+          .modify((запись: { чей?: string }) => {
+            if (запись.чей === undefined) запись.чей = ''
+          })
+      })
   }
 }
 
@@ -169,6 +194,9 @@ export const ТАБЛИЦЫ = [
   'experiences',
   'challenges',
   'reminders',
+  'partnerDays',
+  'coupleActivities',
+  'couplePlans',
   'accounts',
   'operations',
   'moneyCategories',
@@ -205,6 +233,9 @@ export const НАЗВАНИЯ_ТАБЛИЦ: Record<ИмяТаблицы, string>
   experiences: 'Новый опыт',
   challenges: 'Вызовы месяца',
   reminders: 'Напоминания',
+  partnerDays: 'Дни близкого человека',
+  coupleActivities: 'Дела вдвоём',
+  couplePlans: 'Планы вдвоём',
   accounts: 'Счета',
   operations: 'Операции',
   moneyCategories: 'Категории денег',

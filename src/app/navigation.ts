@@ -6,6 +6,7 @@ import {
   CircleDollarSign,
   Compass,
   GraduationCap,
+  HeartHandshake,
   Inbox,
   LayoutDashboard,
   LineChart,
@@ -74,6 +75,11 @@ export const МЕНЮ: ГруппаМеню[] = [
     пункты: [
       { путь: '/habits', название: 'Привычки', иконка: Repeat },
       { путь: '/people', название: 'Люди', иконка: Users },
+      {
+        путь: '/relationship',
+        название: 'Отношения',
+        иконка: HeartHandshake,
+      },
       {
         путь: '/experience',
         название: 'Опыт и вызовы',

@@ -125,6 +125,13 @@ const маршруты = [
         }),
       },
       {
+        path: 'relationship',
+        lazy: async () => ({
+          Component: (await import('@/features/relationship/RelationshipPage'))
+            .RelationshipPage,
+        }),
+      },
+      {
         path: 'people',
         lazy: async () => ({
           Component: (await import('@/features/people/PeoplePage')).PeoplePage,

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { CheckCircle2, FileUp, Upload } from 'lucide-react'
+import { ArrowLeftRight, CheckCircle2, FileUp, Upload } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
 import { разобратьВыписку, type РазборВыписки } from '@/features/finance/model/csv'
@@ -34,6 +34,8 @@ interface СтрокаКИмпорту {
   категорияId: string
   /** Откуда взялась подсказка. Пусто — оснований не нашлось. */
   основание: string
+  /** Почему строка признана доходом или расходом. */
+  основаниеЗнака: string
   уверенность: number
   дубль: boolean
   включена: boolean
@@ -66,7 +68,17 @@ export function ImportPage() {
     const безКатегории = строки.filter((с) => с.включена && !с.категорияId).length
     const подсказано = строки.filter((с) => с.основание).length
     const уверенно = строки.filter((с) => с.уверенность >= 0.6).length
-    return { дублей, кВключению, безКатегории, подсказано, уверенно }
+    const доходов = строки.filter((с) => с.сумма > 0).length
+    const расходов = строки.length - доходов
+    return {
+      дублей,
+      кВключению,
+      безКатегории,
+      подсказано,
+      уверенно,
+      доходов,
+      расходов,
+    }
   }, [строки])
 
   async function прочитатьФайл(файл: File) {
@@ -112,6 +124,7 @@ export function ImportPage() {
             описание: строка.описание,
             категорияId: подсказка?.категорияId ?? '',
             основание: подсказка?.основание ?? '',
+            основаниеЗнака: строка.основаниеЗнака,
             уверенность: подсказка?.уверенность ?? 0,
             дубль,
             включена: !дубль,
@@ -121,6 +134,27 @@ export function ImportPage() {
     } catch {
       установитьОшибку('Не удалось прочитать файл. Ожидается текстовый файл CSV.')
     }
+  }
+
+  /**
+   * Переворот направления для всей выписки.
+   *
+   * Нужен там, где в файле знака нет вовсе: приложение приняло строки за
+   * расходы, а это оказался, например, отчёт о поступлениях. Одно нажатие
+   * вместо правки каждой строки.
+   */
+  function перевернутьНаправление() {
+    установитьСтроки((текущие) =>
+      текущие.map((строка) => ({
+        ...строка,
+        сумма: -строка.сумма,
+        // Категория подбиралась под прежнее направление и больше не подходит.
+        категорияId: '',
+        основание: '',
+        основаниеЗнака: 'направление изменено вручную',
+      })),
+    )
+    сообщить('Доходы и расходы поменялись местами')
   }
 
   /**
@@ -282,6 +316,32 @@ export function ImportPage() {
             </div>
 
             <div className="border-t border-line px-5 py-4">
+              <div className="mb-4 rounded-3 border border-line bg-sunken p-4">
+                <p className="text-[13px] font-medium text-ink">
+                  Направление операций
+                </p>
+                <p className="mt-1 text-[12.5px] leading-relaxed text-ink-2">
+                  Расходов: {статистика.расходов}, доходов: {статистика.доходов}.{' '}
+                  {разбор.знакНадёжен
+                    ? 'Знак взят из файла — из отдельных столбцов прихода и расхода, столбца направления или минуса у суммы.'
+                    : 'В файле нет ни знака у суммы, ни столбца направления. Строки приняты за расходы — так чаще всего и бывает в выписке.'}
+                </p>
+                {разбор.предупреждения.map((текст) => (
+                  <p key={текст} className="mt-2 text-[12.5px] leading-relaxed text-bad">
+                    {текст}
+                  </p>
+                ))}
+                <Button
+                  вид="обычная"
+                  размер="малый"
+                  className="mt-3"
+                  иконка={<ArrowLeftRight size={14} />}
+                  onClick={перевернутьНаправление}
+                >
+                  Поменять доходы и расходы местами
+                </Button>
+              </div>
+
               <p className="mb-3 text-[12.5px] leading-relaxed text-ink-3">
                 Категории предложены по вашим прошлым операциям: подсказано{' '}
                 {статистика.подсказано} из {строки.length}, уверенно —{' '}
@@ -407,13 +467,18 @@ export function ImportPage() {
                         </option>
                       ))}
                   </select>
-                  <span
-                    className={cn(
-                      'tnum w-[110px] shrink-0 text-right text-[13px] font-semibold',
-                      строка.сумма >= 0 ? 'text-good' : 'text-ink',
-                    )}
-                  >
-                    {деньги(строка.сумма, { знак: true })}
+                  <span className="w-[130px] shrink-0 text-right">
+                    <span
+                      className={cn(
+                        'tnum block text-[13px] font-semibold',
+                        строка.сумма >= 0 ? 'text-good' : 'text-ink',
+                      )}
+                    >
+                      {деньги(строка.сумма, { знак: true })}
+                    </span>
+                    <span className="block truncate text-[10.5px] text-ink-3">
+                      {строка.основаниеЗнака}
+                    </span>
                   </span>
                 </div>
               ))}

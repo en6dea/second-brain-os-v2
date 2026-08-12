@@ -23,6 +23,7 @@ import {
 import { деньги, деньгиКратко } from '@/core/money/Money'
 import {
   границыМесяца,
+  месяцКоротко,
   месяцСловами,
   текущийМесяц,
 } from '@/core/calendar/CalendarRu'
@@ -88,8 +89,12 @@ export function FinanceOverview() {
       const ключ = предыдущийМесяц(месяц, 5 - шаг)
       const границыМ = границыМесяца(ключ)
       const итогМ = итогПериода(данные.операции, границыМ.от, границыМ.до)
+      // Подпись — короткое имя месяца. Номер «03» на оси читается как число
+      // месяца, и весь график начинает выглядеть графиком за одни сутки.
+      const сменаГода = ключ.slice(0, 4) !== месяц.slice(0, 4)
       return {
-        месяц: ключ.slice(5),
+        месяц: ключ,
+        подпись: месяцКоротко(ключ, сменаГода),
         доходы: итогМ.доходы / 100,
         расходы: итогМ.расходы / 100,
       }
@@ -164,8 +169,8 @@ export function FinanceOverview() {
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <Card>
           <CardHeader
-            заголовок={`Движение за ${месяцСловами(месяц)}`}
-            подпись="Переводы между своими счетами не считаются ни доходом, ни расходом"
+            заголовок="Движение денег"
+            подпись={`Показатели — за ${месяцСловами(месяц)}. Переводы между своими счетами не считаются ни доходом, ни расходом`}
           />
           <div className="grid grid-cols-3 gap-4 px-5 pb-4">
             <Metric
@@ -192,6 +197,14 @@ export function FinanceOverview() {
           </div>
 
           {естьОперации ? (
+            <div className="px-5 pt-1 pb-4">
+              <p className="mb-1 text-[11px] font-semibold tracking-[0.14em] text-ink-3 uppercase">
+                По месяцам · последние 6
+              </p>
+            </div>
+          ) : null}
+
+          {естьОперации ? (
             <div className="h-[180px] px-2 pb-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={посчитано.помесячно}>
@@ -201,7 +214,7 @@ export function FinanceOverview() {
                     stroke="var(--line-soft)"
                   />
                   <XAxis
-                    dataKey="месяц"
+                    dataKey="подпись"
                     tick={{ fontSize: 11, fill: 'var(--ink-3)' }}
                     axisLine={false}
                     tickLine={false}

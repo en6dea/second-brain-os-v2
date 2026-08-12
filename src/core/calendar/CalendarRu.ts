@@ -42,6 +42,15 @@ export function месяцСловами(месяц: string): string {
   return format(parseISO(`${месяц}-01T12:00:00`), 'LLLL yyyy', { locale: ru })
 }
 
+/**
+ * Короткое имя месяца для подписей на осях: «март», «янв. 26».
+ * Год добавляется только при смене года — иначе он лишний шум.
+ */
+export function месяцКоротко(месяц: string, показыватьГод = false): string {
+  const образец = показыватьГод ? 'LLL yy' : 'LLL'
+  return format(parseISO(`${месяц}-01T12:00:00`), образец, { locale: ru })
+}
+
 export function сдвинутьДень(значение: ДатаДень, дней: number): ДатаДень {
   return format(addDays(кДате(значение), дней), 'yyyy-MM-dd')
 }
