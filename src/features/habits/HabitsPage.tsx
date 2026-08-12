@@ -276,7 +276,7 @@ export function HabitsPage() {
                             подпись={привычка.название}
                             размер="значок"
                             показывать={показыватьПостеры}
-                            className="h-7 w-7"
+                            className="h-10 w-10"
                           />
                         ) : null}
                         <button

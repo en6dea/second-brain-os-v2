@@ -177,7 +177,6 @@ export function LearningPage() {
                       адрес={материал.постер ?? ''}
                       подпись={материал.название}
                       показывать={показыватьПостеры}
-                      className="h-[52px] w-[38px]"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-[14px] text-ink">{материал.название}</p>

@@ -29,14 +29,17 @@ export function Poster({
   const [сломалась, установитьСломалась] = useState(false)
 
   const размеры = {
-    значок: 'h-10 w-10 rounded-full text-[13px]',
-    карточка: 'h-[68px] w-[48px] rounded-2 text-[15px]',
-    полоса: 'h-full w-full rounded-3 text-[18px]',
+    значок: 'h-14 w-14 rounded-full text-[17px]',
+    карточка: 'h-[112px] w-[78px] rounded-3 text-[20px]',
+    полоса: 'h-full w-full rounded-3 text-[22px]',
   }
 
+  // Тонкая обводка и тень отделяют обложку от фона карточки: без них тёмная
+  // картинка сливается с поверхностью и перестаёт читаться как объект.
   const общее = cn(
     'flex shrink-0 items-center justify-center overflow-hidden',
     'bg-sunken font-semibold text-ink-3 select-none',
+    'border border-line shadow-1',
     размеры[размер],
     className,
   )
@@ -44,7 +47,7 @@ export function Poster({
   if (!адрес || !показывать || сломалась) {
     return (
       <span className={общее} aria-hidden={запасное ? undefined : 'true'}>
-        {запасное ?? <ImageOff size={размер === 'значок' ? 14 : 18} />}
+        {запасное ?? <ImageOff size={размер === 'значок' ? 18 : 24} />}
       </span>
     )
   }

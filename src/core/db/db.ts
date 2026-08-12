@@ -5,6 +5,7 @@ import type {
   Входящее,
   Вызов,
   ДелоВдвоём,
+  Замысел,
   ДеньПартнёра,
   ЗаписьДневника,
   ЗаписьЗнания,
@@ -65,6 +66,8 @@ export class БазаВторойМозг extends Dexie {
   partnerDays!: EntityTable<ДеньПартнёра, 'id'>
   coupleActivities!: EntityTable<ДелоВдвоём, 'id'>
   couplePlans!: EntityTable<ПланВдвоём, 'id'>
+
+  intentions!: EntityTable<Замысел, 'id'>
 
   accounts!: EntityTable<Счёт, 'id'>
   operations!: EntityTable<Операция, 'id'>
@@ -202,6 +205,13 @@ export class БазаВторойМозг extends Dexie {
             if (запись.своиУтверждения === undefined) запись.своиУтверждения = []
           })
       })
+
+    // Версия 5: универсальный планер. Покупка, поездка, проект, событие и
+    // обычный план живут в одной таблице: поля у них одни и те же, а вид
+    // меняет только подсказки и сводку.
+    this.version(5).stores({
+      intentions: 'id, вид, состояние, датаЦели',
+    })
   }
 }
 
@@ -227,6 +237,7 @@ export const ТАБЛИЦЫ = [
   'partnerDays',
   'coupleActivities',
   'couplePlans',
+  'intentions',
   'accounts',
   'operations',
   'moneyCategories',
@@ -266,6 +277,7 @@ export const НАЗВАНИЯ_ТАБЛИЦ: Record<ИмяТаблицы, string>
   partnerDays: 'Дни близкого человека',
   coupleActivities: 'Дела вдвоём',
   couplePlans: 'Планы вдвоём',
+  intentions: 'Планер',
   accounts: 'Счета',
   operations: 'Операции',
   moneyCategories: 'Категории денег',
