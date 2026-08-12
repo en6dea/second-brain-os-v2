@@ -27,10 +27,21 @@ export function Dialog({
 }) {
   const ссылка = useRef<HTMLDivElement>(null)
 
+  /**
+   * Обработчик закрытия приходит новой функцией на каждую перерисовку —
+   * родитель почти всегда передаёт стрелку прямо в разметке. Если положить
+   * его в зависимости эффекта, эффект будет срабатывать на каждый введённый
+   * символ и уводить фокус из поля на само окно: набрать удаётся только по
+   * одной букве. Поэтому обработчик живёт в ссылке, а эффект зависит только
+   * от того, открыто окно или нет.
+   */
+  const закрытие = useRef(наЗакрытие)
+  закрытие.current = наЗакрытие
+
   useEffect(() => {
     if (!открыто) return
     const наКлавишу = (событие: KeyboardEvent) => {
-      if (событие.key === 'Escape') наЗакрытие()
+      if (событие.key === 'Escape') закрытие.current()
     }
     document.addEventListener('keydown', наКлавишу)
     const прежний = document.body.style.overflow
@@ -40,7 +51,7 @@ export function Dialog({
       document.removeEventListener('keydown', наКлавишу)
       document.body.style.overflow = прежний
     }
-  }, [открыто, наЗакрытие])
+  }, [открыто])
 
   if (!открыто) return null
 

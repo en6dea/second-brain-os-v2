@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
+  Trash2,
+} from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { база } from '@/core/db/db'
 import {
   деньСловами,
@@ -11,8 +18,11 @@ import {
 } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { деньги } from '@/core/money/Money'
+import { сейчас } from '@/core/db/RecordId'
+import { useИнтерфейс } from '@/app/providers/ui'
 import {
   Badge,
+  Button,
   Card,
   CardHeader,
   Dialog,
@@ -32,6 +42,8 @@ interface ОтметкаДня {
   название: string
   подпись: string
   сделано: boolean
+  /** Куда ведёт запись, если её нужно открыть целиком. */
+  ссылка: string
 }
 
 const ЦВЕТ: Record<ВидОтметки, string> = {
@@ -76,6 +88,7 @@ function сдвинутьМесяц(месяц: string, шаг: number): string 
 }
 
 export function CalendarPage() {
+  const сообщить = useИнтерфейс((с) => с.сообщить)
   const [месяц, установитьМесяц] = useState(текущийМесяц())
   const [выбранныйДень, установитьДень] = useState<string | null>(null)
   const день = сегодня()
@@ -109,6 +122,7 @@ export function CalendarPage() {
         название: задача.название,
         подпись: задача.время ?? 'задача',
         сделано: задача.состояние === 'сделана',
+        ссылка: '/tasks',
       })
     }
     for (const событие of данные.события) {
@@ -118,6 +132,7 @@ export function CalendarPage() {
         название: событие.название,
         подпись: событие.время ?? 'весь день',
         сделано: false,
+        ссылка: '/calendar',
       })
     }
     for (const платёж of данные.платежи) {
@@ -127,6 +142,7 @@ export function CalendarPage() {
         название: платёж.название,
         подпись: деньги(платёж.сумма),
         сделано: платёж.оплачен,
+        ссылка: '/finance/budget',
       })
     }
     for (const обязательство of данные.обязательства) {
@@ -137,6 +153,7 @@ export function CalendarPage() {
         название: обязательство.название,
         подпись: деньги(обязательство.минимальныйПлатёж),
         сделано: false,
+        ссылка: '/obligations',
       })
     }
 
@@ -149,6 +166,86 @@ export function CalendarPage() {
         <Skeleton строк={6} />
       </Card>
     )
+  }
+
+  /* --- Действия над записью дня --- */
+
+  async function переключитьЗадачу(id: string) {
+    const задача = await база.tasks.get(id)
+    if (!задача) return
+    const сделана = задача.состояние === 'сделана'
+    await база.tasks.put({
+      ...задача,
+      состояние: сделана ? 'новая' : 'сделана',
+      выполненаВ: сделана ? null : сейчас(),
+      updatedAt: сейчас(),
+    })
+    сообщить(сделана ? 'Задача вернулась в работу' : 'Задача выполнена')
+  }
+
+  async function перенестиЗадачу(id: string, дней: number) {
+    const задача = await база.tasks.get(id)
+    if (!задача) return
+    await база.tasks.put({
+      ...задача,
+      дата: сдвинутьДень(задача.дата ?? день, дней),
+      переносов: задача.переносов + 1,
+      updatedAt: сейчас(),
+    })
+    установитьДень(null)
+    сообщить(
+      задача.переносов + 1 >= 3
+        ? `Перенесено. Это уже ${задача.переносов + 1}-й перенос — возможно, задача слишком крупная.`
+        : дней === 1
+          ? 'Перенесено на завтра'
+          : 'Перенесено на неделю вперёд',
+    )
+  }
+
+  async function переключитьПлатёж(id: string) {
+    const платёж = await база.plannedPayments.get(id)
+    if (!платёж) return
+    await база.plannedPayments.put({
+      ...платёж,
+      оплачен: !платёж.оплачен,
+      updatedAt: сейчас(),
+    })
+    сообщить(
+      платёж.оплачен
+        ? 'Отметка оплаты снята'
+        : 'Отмечено оплаченным. Операция при этом не создаётся: план не равен расходу',
+    )
+  }
+
+  async function удалить(отметка: ОтметкаДня) {
+    switch (отметка.вид) {
+      case 'задача':
+        await база.tasks.delete(отметка.id)
+        break
+      case 'событие':
+        await база.events.delete(отметка.id)
+        break
+      case 'платёж':
+        await база.plannedPayments.delete(отметка.id)
+        break
+      case 'обязательство': // Обязательство не удаляем: у него своя история платежей.
+      // Убираем только дату ближайшего платежа.
+      {
+        const обязательство = await база.obligations.get(отметка.id)
+        if (обязательство) {
+          await база.obligations.put({
+            ...обязательство,
+            датаСледующегоПлатежа: null,
+            updatedAt: сейчас(),
+          })
+        }
+        сообщить('Дата платежа убрана. Само обязательство осталось')
+        установитьДень(null)
+        return
+      }
+    }
+    сообщить('Удалено')
+    установитьДень(null)
   }
 
   const дни = сеткаМесяца(месяц)
@@ -300,22 +397,74 @@ export function CalendarPage() {
         ) : (
           <div className="divide-y divide-line">
             {отметкиДня.map((отметка) => (
-              <div
-                key={отметка.id}
-                className="flex items-center justify-between gap-3 py-2.5"
-              >
-                <div className="min-w-0">
-                  <p
-                    className={cn(
-                      'truncate text-[13.5px]',
-                      отметка.сделано ? 'text-ink-3 line-through' : 'text-ink',
-                    )}
+              <div key={отметка.id} className="py-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <Link
+                    to={отметка.ссылка}
+                    onClick={() => установитьДень(null)}
+                    className="min-w-0 flex-1"
                   >
-                    {отметка.название}
-                  </p>
-                  <p className="text-[11.5px] text-ink-3">{отметка.подпись}</p>
+                    <p
+                      className={cn(
+                        'truncate text-[13.5px] hover:text-accent',
+                        отметка.сделано ? 'text-ink-3 line-through' : 'text-ink',
+                      )}
+                    >
+                      {отметка.название}
+                    </p>
+                    <p className="text-[11.5px] text-ink-3">{отметка.подпись}</p>
+                  </Link>
+                  <Badge тон={ТОН[отметка.вид]}>{отметка.вид}</Badge>
                 </div>
-                <Badge тон={ТОН[отметка.вид]}>{отметка.вид}</Badge>
+
+                {/* Действия прямо здесь: чтобы не уходить в раздел ради галочки */}
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {отметка.вид === 'задача' ? (
+                    <>
+                      <Button
+                        размер="малый"
+                        иконка={<Check size={14} />}
+                        onClick={() => переключитьЗадачу(отметка.id)}
+                      >
+                        {отметка.сделано ? 'Вернуть в работу' : 'Выполнить'}
+                      </Button>
+                      <Button
+                        размер="малый"
+                        иконка={<ChevronsRight size={14} />}
+                        onClick={() => перенестиЗадачу(отметка.id, 1)}
+                      >
+                        На завтра
+                      </Button>
+                      <Button
+                        размер="малый"
+                        onClick={() => перенестиЗадачу(отметка.id, 7)}
+                      >
+                        На неделю
+                      </Button>
+                    </>
+                  ) : null}
+
+                  {отметка.вид === 'платёж' ? (
+                    <Button
+                      размер="малый"
+                      иконка={<Check size={14} />}
+                      onClick={() => переключитьПлатёж(отметка.id)}
+                    >
+                      {отметка.сделано
+                        ? 'Снять отметку оплаты'
+                        : 'Отметить оплаченным'}
+                    </Button>
+                  ) : null}
+
+                  <Button
+                    размер="малый"
+                    вид="опасная"
+                    иконка={<Trash2 size={14} />}
+                    onClick={() => удалить(отметка)}
+                  >
+                    Удалить
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
