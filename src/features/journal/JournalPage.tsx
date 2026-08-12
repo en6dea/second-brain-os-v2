@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Lock, Plus, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
-import { новаяЗапись } from '@/core/db/repo'
+import { SelfTalkCard } from './SelfTalkCard'
+import { новаяЗапись, читатьНастройки } from '@/core/db/repo'
 import type { ВидЗаписиДневника, ЗаписьДневника } from '@/core/db/types'
 import { деньСловами, сегодня } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
@@ -43,6 +44,7 @@ export function JournalPage() {
     () => база.journal.orderBy('дата').reverse().toArray(),
     [],
   )
+  const настройки = useLiveQuery(() => читатьНастройки(), [])
 
   const отобранные = useMemo(() => {
     if (!записи) return []
@@ -79,6 +81,10 @@ export function JournalPage() {
           настроение: черновик.настроение ?? null,
           сон: черновик.сон ?? null,
           личное: черновик.личное ?? true,
+          утверждение: '',
+          чтоЧувствую: '',
+          чтоДумаю: '',
+          согласие: null,
         }) as never,
       )
       сообщить('Запись сохранена')
@@ -105,6 +111,15 @@ export function JournalPage() {
           Запись
         </Button>
       </div>
+
+      <SelfTalkCard
+        key={
+          записи.find((з) => з.дата === сегодня() && з.вид === 'подсознание')?.id ??
+          'новая'
+        }
+        записи={записи}
+        своиУтверждения={настройки?.своиУтверждения ?? []}
+      />
 
       <div className="-mx-1 overflow-x-auto px-1 pb-1">
         <Segmented

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Plus, Target, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
+import { SmartReview, WhereToStart } from './SmartReview'
 import { новаяЗапись } from '@/core/db/repo'
 import type { Цель } from '@/core/db/types'
 import { деньСловами, днейДо } from '@/core/calendar/CalendarRu'
@@ -78,6 +79,25 @@ function GoalMetric({
       />
     </div>
   )
+}
+
+/** Заготовка для разбора черновика: у новой цели ещё нет ни одного поля. */
+const ПУСТАЯ_ЦЕЛЬ: Цель = {
+  id: '',
+  createdAt: '',
+  updatedAt: '',
+  название: '',
+  зачем: '',
+  сфераId: null,
+  состояние: 'активна',
+  срок: null,
+  цель: null,
+  текущее: null,
+  единица: '',
+  порядок: 0,
+  вехи: [],
+  последняяАктивность: null,
+  постер: '',
 }
 
 export function GoalsPage() {
@@ -157,6 +177,8 @@ export function GoalsPage() {
           Цель
         </Button>
       </div>
+
+      <WhereToStart цели={активные} наПравку={установитьЧерновик} />
 
       {активные.length === 0 ? (
         <Card>
@@ -315,6 +337,14 @@ export function GoalsPage() {
       >
         {черновик ? (
           <div className="space-y-4">
+            <SmartReview
+              цель={
+                {
+                  ...ПУСТАЯ_ЦЕЛЬ,
+                  ...черновик,
+                } as Цель
+              }
+            />
             <Field подпись="Чего вы хотите достичь" обязательное>
               <Input
                 value={черновик.название ?? ''}
