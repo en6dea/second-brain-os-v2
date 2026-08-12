@@ -8,6 +8,7 @@ import { склонение } from '@/core/language/Plural'
 import { число } from '@/core/language/Numerals'
 import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
+import { читатьНастройки } from '@/core/db/repo'
 import {
   Badge,
   Button,
@@ -19,6 +20,7 @@ import {
   IconButton,
   Input,
   Metric,
+  Poster,
   ProgressBar,
   Select,
   Skeleton,
@@ -42,6 +44,8 @@ export function LearningPage() {
   )
 
   const материалы = useLiveQuery(() => база.learning.toArray(), [])
+  const настройки = useLiveQuery(() => читатьНастройки(), [])
+  const показыватьПостеры = настройки?.показыватьПостеры !== false
 
   if (!материалы) {
     return (
@@ -79,6 +83,7 @@ export function LearningPage() {
           часов: черновик.часов ?? null,
           цельId: null,
           заметка: черновик.заметка ?? '',
+          постер: черновик.постер ?? '',
         }) as never,
       )
       сообщить('Материал добавлен')
@@ -154,16 +159,28 @@ export function LearningPage() {
             {материалы
               .sort((а, б) => а.состояние.localeCompare(б.состояние))
               .map((материал) => (
-                <div key={материал.id} className="px-5 py-3.5">
+                <div
+                  key={материал.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => установитьЧерновик(материал)}
+                  onKeyDown={(событие) => {
+                    if (событие.key === 'Enter' || событие.key === ' ') {
+                      событие.preventDefault()
+                      установитьЧерновик(материал)
+                    }
+                  }}
+                  className="cursor-pointer px-5 py-3.5 transition-colors hover:bg-hover"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-3">
+                    <Poster
+                      адрес={материал.постер ?? ''}
+                      подпись={материал.название}
+                      показывать={показыватьПостеры}
+                      className="h-[52px] w-[38px]"
+                    />
                     <div className="min-w-0 flex-1">
-                      <button
-                        type="button"
-                        onClick={() => установитьЧерновик(материал)}
-                        className="text-left text-[14px] text-ink hover:text-accent"
-                      >
-                        {материал.название}
-                      </button>
+                      <p className="text-[14px] text-ink">{материал.название}</p>
                       <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11.5px] text-ink-3">
                         <Badge
                           тон={
@@ -189,7 +206,8 @@ export function LearningPage() {
                     </div>
                     <IconButton
                       подпись={`Удалить ${материал.название}`}
-                      onClick={async () => {
+                      onClick={async (событие) => {
+                        событие.stopPropagation()
                         await база.learning.delete(материал.id)
                         сообщить('Материал удалён')
                       }}
@@ -330,6 +348,29 @@ export function LearningPage() {
                   }
                 />
               </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              <Field
+                подпись="Обложка по адресу"
+                подсказка="Обложка книги или курса. Грузится с чужого сервера"
+              >
+                <Input
+                  value={черновик.постер ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      постер: событие.target.value,
+                    })
+                  }
+                  placeholder="https://…"
+                />
+              </Field>
+              <Poster
+                адрес={черновик.постер ?? ''}
+                подпись="Предпросмотр"
+                показывать={показыватьПостеры}
+                className="h-[52px] w-[38px]"
+              />
             </div>
             <Field подпись="Выводы и что применить">
               <Textarea

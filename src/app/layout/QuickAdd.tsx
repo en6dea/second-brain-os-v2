@@ -134,6 +134,7 @@ export function QuickAdd() {
               вид: 'заметка',
               текст: текст.trim(),
               ссылка: '',
+              постер: '',
               меткиId: [],
               папкаId: null,
               проектId: null,
@@ -184,6 +185,7 @@ export function QuickAdd() {
               единица: '',
               порядок: 0,
               вехи: [],
+              постер: '',
               последняяАктивность: new Date().toISOString(),
             }) as never,
           )
@@ -204,6 +206,7 @@ export function QuickAdd() {
               цельId: null,
               сфераId: null,
               активна: true,
+              постер: '',
               отметки: {},
             }) as never,
           )

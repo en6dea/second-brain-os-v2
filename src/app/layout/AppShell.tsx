@@ -9,6 +9,7 @@ import { QuickAdd } from './QuickAdd'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { слушатьСистемнуюТему } from '@/app/providers/theme'
 import { подготовитьПервыйЗапуск, читатьПрофиль } from '@/core/db/repo'
+import { запроситьПостоянноеХранение } from '@/core/db/Persistence'
 import { cn } from '@/design-system/classNames'
 import { IconButton } from '@/design-system/components'
 
@@ -32,6 +33,9 @@ export function AppShell() {
   // внутри живого запроса запись запрещена.
   useEffect(() => {
     void подготовитьПервыйЗапуск()
+    // Без этого браузер вправе вытеснить хранилище при нехватке места,
+    // и данные исчезнут без предупреждения.
+    void запроситьПостоянноеХранение()
   }, [])
 
   const профиль = useLiveQuery(() => читатьПрофиль(), [])

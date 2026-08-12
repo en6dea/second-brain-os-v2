@@ -10,6 +10,7 @@ import { склонение } from '@/core/language/Plural'
 import { процент } from '@/core/money/Money'
 import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
+import { читатьНастройки } from '@/core/db/repo'
 import { cn } from '@/design-system/classNames'
 import { useОтклик } from '@/design-system/motion/CountUp'
 import { Ping } from '@/design-system/motion/Ping'
@@ -21,6 +22,7 @@ import {
   Button,
   IconButton,
   Metric,
+  Poster,
   Dialog,
   Field,
   EmptyState,
@@ -103,6 +105,8 @@ export function HabitsPage() {
 
   const привычки = useLiveQuery(() => база.habits.toArray(), [])
   const цели = useLiveQuery(() => база.goals.toArray(), [])
+  const настройки = useLiveQuery(() => читатьНастройки(), [])
+  const показыватьПостеры = настройки?.показыватьПостеры !== false
 
   if (!привычки) {
     return (
@@ -159,6 +163,7 @@ export function HabitsPage() {
           цельId: черновик.цельId ?? null,
           сфераId: null,
           активна: true,
+          постер: черновик.постер ?? '',
           отметки: {},
         }) as never,
       )
@@ -264,13 +269,24 @@ export function HabitsPage() {
                     className="border-b border-line last:border-0"
                   >
                     <td className="px-5 py-2.5">
-                      <button
-                        type="button"
-                        onClick={() => установитьЧерновик(привычка)}
-                        className="max-w-[220px] truncate text-left text-[13.5px] text-ink hover:text-accent"
-                      >
-                        {привычка.название}
-                      </button>
+                      <span className="flex items-center gap-2">
+                        {привычка.постер ? (
+                          <Poster
+                            адрес={привычка.постер}
+                            подпись={привычка.название}
+                            размер="значок"
+                            показывать={показыватьПостеры}
+                            className="h-7 w-7"
+                          />
+                        ) : null}
+                        <button
+                          type="button"
+                          onClick={() => установитьЧерновик(привычка)}
+                          className="max-w-[200px] truncate text-left text-[13.5px] text-ink hover:text-accent"
+                        >
+                          {привычка.название}
+                        </button>
+                      </span>
                       <span className="block text-[11px] text-ink-3">
                         {привычка.норма} {привычка.единица} · {привычка.частота}
                       </span>
@@ -306,6 +322,83 @@ export function HabitsPage() {
           </div>
         )}
       </Card>
+
+      {активные.length > 0 ? (
+        <Card>
+          <CardHeader
+            заголовок="Последние восемь недель"
+            подпись="Доля отмеченных дней в каждой неделе — видно, где привычка просела"
+          />
+          <div className="divide-y divide-line border-t border-line">
+            {активные.map((привычка) => {
+              const недели = Array.from({ length: 8 }, (_, шаг) => {
+                const конецНедели = сдвинутьДень(неделя.от, (шаг - 7) * 7 + 6)
+                const началоНедели = сдвинутьДень(конецНедели, -6)
+                let отмечено = 0
+                let прошло = 0
+                for (let д = 0; д < 7; д += 1) {
+                  const дата = сдвинутьДень(началоНедели, д)
+                  if (дата > день) continue
+                  прошло += 1
+                  if ((привычка.отметки[дата] ?? 0) > 0) отмечено += 1
+                }
+                return { началоНедели, конецНедели, отмечено, прошло }
+              })
+
+              return (
+                <div key={привычка.id} className="px-5 py-3.5">
+                  <div className="mb-2 flex items-baseline justify-between gap-3">
+                    <span className="truncate text-[13.5px] text-ink">
+                      {привычка.название}
+                    </span>
+                    <span className="tnum text-[12px] text-ink-3">
+                      за 8 недель: {недели.reduce((и, н) => и + н.отмечено, 0)} из{' '}
+                      {недели.reduce((и, н) => и + н.прошло, 0)}
+                    </span>
+                  </div>
+                  <div className="flex items-end gap-1">
+                    {недели.map((н) => {
+                      const доля = н.прошло > 0 ? н.отмечено / н.прошло : 0
+                      const текущая = н.конецНедели >= неделя.от
+                      return (
+                        <span
+                          key={н.началоНедели}
+                          title={`${н.началоНедели} — ${н.конецНедели}: ${н.отмечено} из ${н.прошло}`}
+                          className="flex flex-1 flex-col items-center gap-1"
+                        >
+                          <span className="flex h-9 w-full items-end overflow-hidden rounded-[4px] bg-sunken">
+                            <span
+                              className={cn(
+                                'w-full rounded-[4px] transition-[height] duration-500',
+                                н.прошло === 0
+                                  ? ''
+                                  : доля >= 0.8
+                                    ? 'bg-good'
+                                    : доля >= 0.4
+                                      ? 'bg-warn'
+                                      : 'bg-bad',
+                              )}
+                              style={{ height: `${Math.round(доля * 100)}%` }}
+                            />
+                          </span>
+                          <span
+                            className={cn(
+                              'text-[9.5px]',
+                              текущая ? 'text-accent' : 'text-ink-3',
+                            )}
+                          >
+                            {н.началоНедели.slice(8)}.{н.началоНедели.slice(5, 7)}
+                          </span>
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </Card>
+      ) : null}
 
       <Dialog
         открыто={черновик !== null}
@@ -366,6 +459,29 @@ export function HabitsPage() {
                   placeholder="раз, минут, страниц"
                 />
               </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              <Field
+                подпись="Картинка по адресу"
+                подсказка="Грузится с чужого сервера"
+              >
+                <Input
+                  value={черновик.постер ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      постер: событие.target.value,
+                    })
+                  }
+                  placeholder="https://…"
+                />
+              </Field>
+              <Poster
+                адрес={черновик.постер ?? ''}
+                подпись="Предпросмотр"
+                размер="значок"
+                показывать={показыватьПостеры}
+              />
             </div>
             <Field
               подпись="Связать с целью"

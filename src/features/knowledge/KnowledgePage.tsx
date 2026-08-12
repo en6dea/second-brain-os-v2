@@ -8,6 +8,7 @@ import { деньКратко } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
+import { читатьНастройки } from '@/core/db/repo'
 import {
   Badge,
   Button,
@@ -19,6 +20,7 @@ import {
   Input,
   Segmented,
   Select,
+  Poster,
   Skeleton,
   Textarea,
 } from '@/design-system/components'
@@ -26,7 +28,7 @@ import {
 const ВИДЫ: { ключ: ВидЗнания; подпись: string }[] = [
   { ключ: 'заметка', подпись: 'Заметки' },
   { ключ: 'книга', подпись: 'Книги' },
-  { ключ: 'статья', подпись: 'Статьи' },
+  { ключ: 'фильм', подпись: 'Фильмы' },
   { ключ: 'ссылка', подпись: 'Ссылки' },
   { ключ: 'инсайт', подпись: 'Инсайты' },
   { ключ: 'инструкция', подпись: 'Инструкции' },
@@ -36,7 +38,7 @@ const ВИДЫ: { ключ: ВидЗнания; подпись: string }[] = [
 const ТОН_ВИДА: Record<ВидЗнания, 'знание' | 'сведения' | 'нейтральный'> = {
   заметка: 'нейтральный',
   книга: 'знание',
-  статья: 'сведения',
+  фильм: 'сведения',
   ссылка: 'сведения',
   инсайт: 'знание',
   инструкция: 'нейтральный',
@@ -53,6 +55,8 @@ export function KnowledgePage() {
   const [открытая, установитьОткрытую] = useState<ЗаписьЗнания | null>(null)
 
   const записи = useLiveQuery(() => база.knowledge.toArray(), [])
+  const настройки = useLiveQuery(() => читатьНастройки(), [])
+  const показыватьПостеры = настройки?.показыватьПостеры !== false
 
   const отобранные = useMemo(() => {
     if (!записи) return []
@@ -109,6 +113,7 @@ export function KnowledgePage() {
           проектId: null,
           цельId: null,
           избранное: false,
+          постер: черновик.постер ?? '',
         }) as never,
       )
       сообщить('Запись добавлена')
@@ -185,6 +190,11 @@ export function KnowledgePage() {
               onClick={() => установитьОткрытую(запись)}
             >
               <div className="flex items-start justify-between gap-3">
+                <Poster
+                  адрес={запись.постер ?? ''}
+                  подпись={запись.заголовок}
+                  показывать={показыватьПостеры}
+                />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge тон={ТОН_ВИДА[запись.вид]}>{запись.вид}</Badge>
@@ -255,6 +265,14 @@ export function KnowledgePage() {
       >
         {открытая ? (
           <div className="space-y-4">
+            {открытая.постер && показыватьПостеры ? (
+              <img
+                src={открытая.постер}
+                alt={открытая.заголовок}
+                referrerPolicy="no-referrer"
+                className="max-h-[320px] rounded-3 border border-line object-contain"
+              />
+            ) : null}
             {открытая.ссылка ? (
               <a
                 href={открытая.ссылка}
@@ -363,6 +381,28 @@ export function KnowledgePage() {
                   placeholder="Необязательно"
                 />
               </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              <Field
+                подпись="Обложка по адресу"
+                подсказка="Постер фильма или обложка книги. Картинка грузится с чужого сервера"
+              >
+                <Input
+                  value={черновик.постер ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      постер: событие.target.value,
+                    })
+                  }
+                  placeholder="https://…"
+                />
+              </Field>
+              <Poster
+                адрес={черновик.постер ?? ''}
+                подпись="Предпросмотр обложки"
+                показывать={показыватьПостеры}
+              />
             </div>
             <Field подпись="Текст">
               <Textarea

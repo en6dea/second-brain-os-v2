@@ -19,3 +19,4 @@ export {
   Segmented,
 } from './Form'
 export { Dialog } from './Dialog'
+export { Poster } from './Poster'

@@ -11,6 +11,7 @@ import { useПлавноеЧисло } from '@/design-system/motion/CountUp'
 import { Flash } from '@/design-system/motion/Ping'
 import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
+import { читатьНастройки } from '@/core/db/repo'
 import {
   Input,
   Select,
@@ -22,6 +23,7 @@ import {
   Dialog,
   Field,
   ProgressBar,
+  Poster,
   EmptyState,
   Textarea,
   CardHeader,
@@ -83,12 +85,13 @@ export function GoalsPage() {
   const [черновик, установитьЧерновик] = useState<Partial<Цель> | null>(null)
 
   const данные = useLiveQuery(async () => {
-    const [цели, задачи, привычки] = await Promise.all([
+    const [цели, задачи, привычки, настройки] = await Promise.all([
       база.goals.toArray(),
       база.tasks.toArray(),
       база.habits.toArray(),
+      читатьНастройки(),
     ])
-    return { цели, задачи, привычки }
+    return { цели, задачи, привычки, настройки }
   }, [])
 
   if (!данные) {
@@ -129,6 +132,7 @@ export function GoalsPage() {
           порядок: данные?.цели.length ?? 0,
           вехи: [],
           последняяАктивность: сейчас(),
+          постер: черновик.постер ?? '',
         }) as never,
       )
       сообщить('Цель создана')
@@ -181,7 +185,19 @@ export function GoalsPage() {
             return (
               <Card key={цель.id}>
                 <CardHeader
-                  заголовок={цель.название}
+                  заголовок={
+                    <span className="flex items-center gap-2.5">
+                      {цель.постер ? (
+                        <Poster
+                          адрес={цель.постер}
+                          подпись={цель.название}
+                          размер="значок"
+                          показывать={данные.настройки.показыватьПостеры !== false}
+                        />
+                      ) : null}
+                      <span className="min-w-0 truncate">{цель.название}</span>
+                    </span>
+                  }
                   подпись={цель.зачем || 'Ответ на вопрос «зачем» не записан'}
                   действие={
                     <div className="flex gap-0.5">
@@ -311,6 +327,29 @@ export function GoalsPage() {
                 autoFocus
               />
             </Field>
+            <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              <Field
+                подпись="Картинка цели по адресу"
+                подсказка="Чтобы цель была перед глазами. Грузится с чужого сервера"
+              >
+                <Input
+                  value={черновик.постер ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      постер: событие.target.value,
+                    })
+                  }
+                  placeholder="https://…"
+                />
+              </Field>
+              <Poster
+                адрес={черновик.постер ?? ''}
+                подпись="Предпросмотр"
+                размер="значок"
+                показывать={данные.настройки.показыватьПостеры !== false}
+              />
+            </div>
             <Field
               подпись="Зачем это нужно"
               подсказка="Цель без ответа «зачем» первой теряет силу"

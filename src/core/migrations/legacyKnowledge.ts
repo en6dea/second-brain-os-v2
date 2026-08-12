@@ -60,7 +60,7 @@ const ИСТОЧНИКИ: { ключ: string; вид: ВидЗнания; час
   },
   {
     ключ: 'films',
-    вид: 'статья',
+    вид: 'фильм',
     части: [
       ['note', ''],
       ['type', 'Вид'],
@@ -125,6 +125,7 @@ export async function перенестиЗнания(
           вид: источник.вид,
           текст: собратьТекст(строка, источник.части),
           ссылка: текст(строка.url) || текст(строка.target),
+          постер: текст(строка.imageUrl) || текст(строка.image),
           меткиId: [],
           папкаId: null,
           проектId: null,
@@ -140,6 +141,8 @@ export async function перенестиЗнания(
               'url',
               'target',
               'pinned',
+              'imageUrl',
+              'image',
               ...источник.части.map(([ключ]) => ключ),
             ]),
           },
@@ -170,6 +173,7 @@ export async function перенестиОбучение(
         прогресс: числоИлиNull(строка.progress) ?? 0,
         часов: числоИлиNull(строка.duration),
         цельId: null,
+        постер: текст(строка.imageUrl) || текст(строка.image),
         заметка: собратьТекст(строка, [
           ['summary', 'Кратко'],
           ['keyPoints', 'Главные мысли'],
@@ -191,6 +195,8 @@ export async function перенестиОбучение(
           'dateCompleted',
           'progress',
           'duration',
+          'imageUrl',
+          'image',
           'summary',
           'keyPoints',
           'terms',

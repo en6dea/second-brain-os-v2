@@ -96,6 +96,7 @@ export async function засеятьПоказательныеДанные() {
     единица: '₽',
     порядок: 0,
     вехи: [],
+    постер: '',
     последняяАктивность: new Date().toISOString(),
   })
   await база.goals.put(цель as never)
@@ -149,6 +150,7 @@ export async function засеятьПоказательныеДанные() {
       цельId: null,
       сфераId: null,
       активна: true,
+      постер: '',
       отметки,
     }) as never,
   )

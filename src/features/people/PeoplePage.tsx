@@ -8,6 +8,7 @@ import { деньСловами, днейДо, сегодня } from '@/core/cal
 import { склонение } from '@/core/language/Plural'
 import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
+import { читатьНастройки } from '@/core/db/repo'
 import {
   Badge,
   Button,
@@ -17,6 +18,7 @@ import {
   Field,
   IconButton,
   Input,
+  Poster,
   Skeleton,
   Textarea,
 } from '@/design-system/components'
@@ -41,6 +43,8 @@ export function PeoplePage() {
   const [открытый, установитьОткрытого] = useState<Человек | null>(null)
 
   const люди = useLiveQuery(() => база.people.toArray(), [])
+  const настройки = useLiveQuery(() => читатьНастройки(), [])
+  const показыватьПостеры = настройки?.показыватьПостеры !== false
 
   const отобранные = useMemo(() => {
     if (!люди) return []
@@ -103,6 +107,7 @@ export function PeoplePage() {
           подарки: черновик.подарки ?? '',
           последнийКонтакт: черновик.последнийКонтакт ?? null,
           напоминатьЧерезДней: черновик.напоминатьЧерезДней ?? null,
+          постер: черновик.постер ?? '',
         }) as never,
       )
       сообщить('Человек добавлен')
@@ -176,9 +181,14 @@ export function PeoplePage() {
                 onClick={() => установитьОткрытого(человек)}
               >
                 <div className="flex items-start gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[13px] font-semibold text-accent">
-                    {человек.имя.slice(0, 1).toUpperCase()}
-                  </span>
+                  <Poster
+                    адрес={человек.постер ?? ''}
+                    подпись={человек.имя}
+                    размер="значок"
+                    запасное={человек.имя.slice(0, 1).toUpperCase()}
+                    показывать={показыватьПостеры}
+                    className="bg-accent-soft text-accent"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[14px] font-medium text-ink">
                       {человек.имя}
@@ -234,6 +244,19 @@ export function PeoplePage() {
       >
         {открытый ? (
           <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Poster
+                адрес={открытый.постер ?? ''}
+                подпись={открытый.имя}
+                размер="карточка"
+                запасное={открытый.имя.slice(0, 1).toUpperCase()}
+                показывать={показыватьПостеры}
+                className="bg-accent-soft text-accent"
+              />
+              <p className="text-[12.5px] text-ink-3">
+                {открытый.отношения || 'Кем приходится — не записано'}
+              </p>
+            </div>
             <div className="flex flex-wrap gap-2">
               {открытый.телефон ? (
                 <a
@@ -378,6 +401,31 @@ export function PeoplePage() {
                   }
                 />
               </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              <Field
+                подпись="Фотография по адресу"
+                подсказка="Картинка грузится с чужого сервера"
+              >
+                <Input
+                  value={черновик.постер ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      постер: событие.target.value,
+                    })
+                  }
+                  placeholder="https://…"
+                />
+              </Field>
+              <Poster
+                адрес={черновик.постер ?? ''}
+                подпись="Предпросмотр"
+                размер="значок"
+                запасное={(черновик.имя ?? '?').slice(0, 1).toUpperCase()}
+                показывать={показыватьПостеры}
+                className="bg-accent-soft text-accent"
+              />
             </div>
             <Field подпись="О человеке">
               <Textarea

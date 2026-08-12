@@ -107,6 +107,7 @@ export async function перенестиЦели(
       единица: текст(строка.unit),
       порядок: индекс,
       вехи: этапыВВехи(строка.stages),
+      постер: текст(строка.imageUrl) || текст(строка.image),
       последняяАктивность:
         текст(строка.lastActivityAt) || текст(строка.updatedAt) || null,
       ...времяЗаписи(строка),
@@ -125,6 +126,8 @@ export async function перенестиЦели(
         'unit',
         'stages',
         'lastActivityAt',
+        'imageUrl',
+        'image',
       ]),
     }) as Цель
     новые.push(запись)
@@ -257,6 +260,9 @@ export async function перенестиПривычки(
         цельId: цельПоСтаромуId.get(текст(строка.goalId)) ?? null,
         сфераId: null,
         активна: строка.active !== false,
+        постер: текст(строка.imageUrl) || текст(строка.icon).startsWith('http')
+          ? текст(строка.imageUrl) || текст(строка.icon)
+          : '',
         отметки,
         ...времяЗаписи(строка),
         legacy: остаток(строка, [
@@ -376,6 +382,7 @@ export async function перенестиЛюдей(
       напоминатьЧерезДней:
         числоИлиNull(строка.contactCadenceDays) ??
         числоИлиNull(строка.birthdayReminderDays),
+      постер: текст(строка.avatar) || текст(строка.photo),
       ...времяЗаписи(строка),
       legacy: остаток(строка, [
         ...СЛУЖЕБНЫЕ,
@@ -406,6 +413,8 @@ export async function перенестиЛюдей(
         'lastContact',
         'contactCadenceDays',
         'birthdayReminderDays',
+        'avatar',
+        'photo',
       ]),
     }) as Человек
 
