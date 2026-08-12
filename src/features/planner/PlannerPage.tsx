@@ -7,6 +7,7 @@ import { сейчас } from '@/core/db/RecordId'
 import type { Замысел, ВидЗамысла } from '@/core/db/types'
 import { деньКратко } from '@/core/calendar/CalendarRu'
 import { деньгиКратко } from '@/core/money/Money'
+import { склонение } from '@/core/language/Plural'
 import { свестиЗамысел, следующийПункт } from './model/Planner'
 import { IntentionDialog } from './IntentionDialog'
 import { useИнтерфейс } from '@/app/providers/ui'
@@ -93,6 +94,7 @@ export function PlannerPage() {
               вид: отбор === 'все' ? 'план' : отбор,
               состояние: 'обдумываю',
               пункты: [],
+              вдвоём: false,
             })
           }
         >
@@ -169,6 +171,7 @@ export function PlannerPage() {
                 <div className="space-y-3 px-5 pb-5">
                   <div className="flex flex-wrap gap-1.5">
                     <Badge>{замысел.вид}</Badge>
+                    {замысел.вдвоём ? <Badge тон="знание">вдвоём</Badge> : null}
                     <Badge тон={ТОН_СОСТОЯНИЯ[замысел.состояние]}>
                       {замысел.состояние}
                     </Badge>
@@ -181,9 +184,13 @@ export function PlannerPage() {
                         }
                       >
                         {деньКратко(замысел.датаЦели)}
-                        {сводка.днейДоЦели !== null && !закрыт
-                          ? ` · ${сводка.днейДоЦели} дн.`
-                          : ''}
+                        {сводка.днейДоЦели === null || закрыт
+                          ? ''
+                          : сводка.днейДоЦели < 0
+                            ? ` · просрочено на ${Math.abs(сводка.днейДоЦели)} ${склонение(Math.abs(сводка.днейДоЦели), 'день', 'дня', 'дней')}`
+                            : сводка.днейДоЦели === 0
+                              ? ' · сегодня'
+                              : ` · через ${сводка.днейДоЦели} ${склонение(сводка.днейДоЦели, 'день', 'дня', 'дней')}`}
                       </Badge>
                     ) : null}
                   </div>
@@ -274,7 +281,8 @@ export function PlannerPage() {
               сообщить('Замысел изменён')
             }
           } else {
-            await база.intentions.add(новаяЗапись(замысел) as never)
+            const { id: _без, ...поля } = замысел
+            await база.intentions.add(новаяЗапись(поля) as never)
             сообщить('Замысел заведён')
           }
           установитьЧерновик(null)

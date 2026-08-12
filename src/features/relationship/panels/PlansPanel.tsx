@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
-import { CalendarRange, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CalendarRange, Check, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
 import { сейчас } from '@/core/db/RecordId'
-import type { ГоризонтВдвоём, ПланВдвоём } from '@/core/db/types'
+import type { Замысел, ГоризонтВдвоём, ПланВдвоём } from '@/core/db/types'
+import { замыслыПериода, свестиЗамысел } from '@/features/planner/model/Planner'
+import { IntentionDialog } from '@/features/planner/IntentionDialog'
 import {
+  границыМесяца,
   границыНедели,
   деньКратко,
   деньСловами,
@@ -64,9 +67,11 @@ function названиеПериода(горизонт: ГоризонтВдв
  */
 export function PlansPanel({
   планы,
+  замыслы,
   имяПартнёра,
 }: {
   планы: ПланВдвоём[]
+  замыслы: Замысел[]
   имяПартнёра: string
 }) {
   const сообщить = useИнтерфейс((с) => с.сообщить)
@@ -74,6 +79,26 @@ export function PlansPanel({
   const [якорь, установитьЯкорь] = useState(сегодня())
 
   const период = ключПериода(горизонт, якорь)
+  const [черновикЗамысла, установитьЧерновикЗамысла] =
+    useState<Partial<Замысел> | null>(null)
+
+  // Границы периода нужны, чтобы понять, какие совместные замыслы к нему
+  // относятся. Замысел без даты не относится ни к одному.
+  const границы = useMemo(() => {
+    if (горизонт === 'день') return { от: якорь, до: якорь }
+    if (горизонт === 'неделя') return границыНедели(якорь)
+    return границыМесяца(якорь.slice(0, 7))
+  }, [горизонт, якорь])
+
+  const совместные = useMemo(
+    () =>
+      замыслыПериода(
+        замыслы.filter((замысел) => замысел.вдвоём),
+        границы.от,
+        границы.до,
+      ),
+    [замыслы, границы],
+  )
 
   const текущий = useMemo(
     () =>
@@ -212,6 +237,110 @@ export function PlansPanel({
           </div>
         </CardBody>
       </Card>
+
+      <Card>
+        <CardHeader
+          заголовок="Замыслы вдвоём"
+          подпись={
+            совместные.length === 0
+              ? 'В этом периоде общих замыслов нет'
+              : `Из планера — заведён один раз, виден в обоих разделах`
+          }
+          действие={
+            <Button
+              вид="контур"
+              размер="малый"
+              иконка={<Plus size={14} />}
+              onClick={() =>
+                установитьЧерновикЗамысла({
+                  вид: 'поездка',
+                  состояние: 'обдумываю',
+                  пункты: [],
+                  вдвоём: true,
+                  // Внутри текущего периода разумнее сегодня, чем его начало:
+                  // иначе новый замысел рождается просроченным.
+                  датаЦели:
+                    сегодня() >= границы.от && сегодня() <= границы.до
+                      ? сегодня()
+                      : границы.от,
+                })
+              }
+            >
+              Завести
+            </Button>
+          }
+        />
+        {совместные.length === 0 ? (
+          <CardBody>
+            <p className="text-[12.5px] leading-relaxed text-ink-3">
+              Поездка, покупка или событие, которое делаете вдвоём, заводится
+              здесь и живёт в планере — заполнять дважды не нужно.
+            </p>
+          </CardBody>
+        ) : (
+          <ul className="divide-y divide-line border-t border-line">
+            {совместные.map((замысел) => {
+              const сводка = свестиЗамысел(замысел)
+              return (
+                <li key={замысел.id} className="px-5 py-3.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => установитьЧерновикЗамысла({ ...замысел })}
+                      className="text-[13.5px] font-medium text-ink hover:text-accent"
+                    >
+                      {замысел.название}
+                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <Badge>{замысел.вид}</Badge>
+                      <Badge
+                        тон={замысел.состояние === 'сделано' ? 'успех' : 'нейтральный'}
+                      >
+                        {замысел.состояние}
+                      </Badge>
+                    </div>
+                  </div>
+                  <p className="mt-1 text-[12px] text-ink-3">
+                    {деньКратко(замысел.датаЦели)}
+                    {сводка.готовность === null
+                      ? ' · пунктов нет'
+                      : ` · ${сводка.выполнено} из ${сводка.всегоПунктов} пунктов`}
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </Card>
+
+      <IntentionDialog
+        key={черновикЗамысла?.id ?? 'новый'}
+        черновик={черновикЗамысла}
+        наЗакрытие={() => установитьЧерновикЗамысла(null)}
+        наСохранение={async (замысел) => {
+          if (замысел.id) {
+            const текущий = await база.intentions.get(замысел.id)
+            if (текущий) {
+              await база.intentions.put({
+                ...текущий,
+                ...замысел,
+                updatedAt: сейчас(),
+              } as Замысел)
+              сообщить('Замысел изменён')
+            }
+          } else {
+            const { id: _без, ...поля } = замысел
+            await база.intentions.add(новаяЗапись(поля) as never)
+            сообщить('Замысел заведён')
+          }
+          установитьЧерновикЗамысла(null)
+        }}
+        наУдаление={async (id) => {
+          await база.intentions.delete(id)
+          сообщить('Замысел удалён')
+          установитьЧерновикЗамысла(null)
+        }}
+      />
 
       <Card>
         <CardHeader

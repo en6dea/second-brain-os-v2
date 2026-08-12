@@ -26,14 +26,15 @@ export function RelationshipPage() {
   const [вкладка, установитьВкладку] = useState<Вкладка>('дни')
 
   const данные = useLiveQuery(async () => {
-    const [дни, дела, планы, люди, опыт] = await Promise.all([
+    const [дни, дела, планы, люди, опыт, замыслы] = await Promise.all([
       база.partnerDays.toArray(),
       база.coupleActivities.toArray(),
       база.couplePlans.toArray(),
       база.people.toArray(),
       база.experiences.toArray(),
+      база.intentions.toArray(),
     ])
-    return { дни, дела, планы, люди, опыт }
+    return { дни, дела, планы, люди, опыт, замыслы }
   }, [])
 
   if (!данные) {
@@ -89,7 +90,11 @@ export function RelationshipPage() {
           имяПартнёра={имяПартнёра}
         />
       ) : (
-        <PlansPanel планы={данные.планы} имяПартнёра={имяПартнёра} />
+        <PlansPanel
+          планы={данные.планы}
+          замыслы={данные.замыслы}
+          имяПартнёра={имяПартнёра}
+        />
       )}
     </div>
   )
