@@ -125,6 +125,12 @@ const маршруты = [
         }),
       },
       {
+        path: 'quick',
+        lazy: async () => ({
+          Component: (await import('@/features/quick/QuickPage')).QuickPage,
+        }),
+      },
+      {
         path: 'planner',
         lazy: async () => ({
           Component: (await import('@/features/planner/PlannerPage')).PlannerPage,

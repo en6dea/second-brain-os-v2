@@ -20,6 +20,7 @@ import {
   Target,
   Users,
   Wallet,
+  Zap,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -47,6 +48,7 @@ export const МЕНЮ: ГруппаМеню[] = [
     пункты: [
       { путь: '/', название: 'Главная', иконка: LayoutDashboard },
       { путь: '/inbox', название: 'Разбор', иконка: Inbox },
+      { путь: '/quick', название: 'Быстрый ввод', иконка: Zap },
       {
         путь: '/calendar',
         название: 'Календарь',
