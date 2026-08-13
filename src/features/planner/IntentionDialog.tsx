@@ -8,8 +8,15 @@ import type {
 } from '@/core/db/types'
 import { новыйId } from '@/core/db/RecordId'
 import { деньгиКратко, копейкиВРубли, рублиВКопейки } from '@/core/money/Money'
-import { откладыватьВНеделю, подсказкиПунктов, свестиЗамысел } from './model/Planner'
+import {
+  откладыватьВНеделю,
+  подсказкиПунктов,
+  свестиЗамысел,
+} from './model/Planner'
 import { cn } from '@/design-system/classNames'
+import { ЗНАЧОК } from '@/design-system/iconSize'
+import { useОтклик } from '@/design-system/motion/CountUp'
+import { Ping } from '@/design-system/motion/Ping'
 import {
   Button,
   Dialog,
@@ -36,6 +43,50 @@ function вРубли(значение: number | null | undefined): string {
   return значение === null || значение === undefined
     ? ''
     : String(копейкиВРубли(значение) ?? '')
+}
+
+/**
+ * Отметка пункта замысла.
+ *
+ * Кольцо расходится от отметки, галочка прочерчивается. Раньше планер молчал:
+ * пункт отмечался, и на экране не происходило ничего — то же движение уже было
+ * написано для задач и привычек, сюда его просто не позвали.
+ */
+function PointCheck({
+  название,
+  выполнен,
+  наПереключение,
+}: {
+  название: string
+  выполнен: boolean
+  наПереключение: () => void
+}) {
+  const [отклик, запустить] = useОтклик(900)
+
+  return (
+    <Ping активен={отклик} тон="успех" className="shrink-0">
+      <button
+        type="button"
+        aria-label={`Отметить пункт «${название}»`}
+        aria-pressed={выполнен}
+        onClick={() => {
+          if (!выполнен) запустить()
+          наПереключение()
+        }}
+        className={cn(
+          'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-1 border',
+          'transition-[background-color,border-color,transform] duration-150 active:scale-90',
+          выполнен
+            ? 'border-transparent bg-good text-white'
+            : 'border-line hover:border-accent hover:bg-accent-soft',
+        )}
+      >
+        {выполнен ? (
+          <Check size={ЗНАЧОК.подпись} className={отклик ? 'прочерк' : undefined} />
+        ) : null}
+      </button>
+    </Ping>
+  )
 }
 
 function собрать(черновик: Partial<Замысел>): Замысел {
@@ -288,20 +339,13 @@ export function IntentionDialog({
                   key={пункт.id}
                   className="flex flex-wrap items-center gap-2 rounded-2 border border-line px-2.5 py-2"
                 >
-                  <button
-                    type="button"
-                    aria-label={`Отметить пункт «${пункт.название}»`}
-                    aria-pressed={пункт.выполнен}
-                    onClick={() => изменитьПункт(пункт.id, { выполнен: !пункт.выполнен })}
-                    className={cn(
-                      'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[7px] border transition-colors',
-                      пункт.выполнен
-                        ? 'border-transparent bg-good text-white'
-                        : 'border-line hover:border-accent',
-                    )}
-                  >
-                    {пункт.выполнен ? <Check size={12} /> : null}
-                  </button>
+                  <PointCheck
+                    название={пункт.название}
+                    выполнен={пункт.выполнен}
+                    наПереключение={() =>
+                      изменитьПункт(пункт.id, { выполнен: !пункт.выполнен })
+                    }
+                  />
 
                   <input
                     value={пункт.название}
@@ -319,7 +363,9 @@ export function IntentionDialog({
                     type="date"
                     value={пункт.срок ?? ''}
                     onChange={(событие) =>
-                      изменитьПункт(пункт.id, { срок: событие.target.value || null })
+                      изменитьПункт(пункт.id, {
+                        срок: событие.target.value || null,
+                      })
                     }
                     aria-label="Срок пункта"
                     className="h-7 shrink-0 rounded-2 border border-line bg-card px-2 text-[12px] text-ink-2"

@@ -16,10 +16,13 @@ const виды: Record<Вид, string> = {
   опасная: 'bg-bad-soft text-bad border border-transparent hover:brightness-95',
 }
 
+// Средний — размер по умолчанию, и он же попадает в подвал каждого окна.
+// 44 px: то же правило, что и у полей ввода, иначе главная кнопка формы
+// оказывается меньше всего, что над ней.
 const размеры: Record<Размер, string> = {
-  малый: 'h-8 px-3 text-[13px] gap-1.5 rounded-[10px]',
-  средний: 'h-10 px-4 text-sm gap-2 rounded-2',
-  большой: 'h-12 px-5 text-[15px] gap-2.5 rounded-3',
+  малый: 'h-8 px-3 text-meta gap-1.5 rounded-2',
+  средний: 'h-11 px-4 text-body gap-2 rounded-2',
+  большой: 'h-12 px-5 text-lead gap-2.5 rounded-3',
 }
 
 export interface СвойстваКнопки extends ButtonHTMLAttributes<HTMLButtonElement> {

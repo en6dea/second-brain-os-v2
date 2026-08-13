@@ -1,5 +1,7 @@
 import { Menu, Moon, Plus, Search, Sun, SunMoon } from 'lucide-react'
 import { Button, IconButton } from '@/design-system/components'
+import { ЗНАЧОК } from '@/design-system/iconSize'
+import { модификатор } from '@/app/keyboard'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { useТема, type РежимТемы } from '@/app/providers/theme'
 import { приветствие } from '@/core/calendar/CalendarRu'
@@ -31,11 +33,11 @@ export function Topbar({ имя }: { имя: string }) {
         className="lg:hidden"
         onClick={() => открытьМеню(true)}
       >
-        <Menu size={18} />
+        <Menu size={ЗНАЧОК.крупный} />
       </IconButton>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[14px] font-medium text-ink">
+        <p className="truncate text-body font-medium text-ink">
           {приветствие()}
           {имя ? `, ${имя}` : ''}
         </p>
@@ -44,12 +46,12 @@ export function Topbar({ имя }: { имя: string }) {
       <button
         type="button"
         onClick={() => открытьКомандноеОкно(true)}
-        className="hidden items-center gap-2 rounded-2 border border-line bg-card px-3 py-1.5 text-[13px] text-ink-3 transition-colors hover:border-line-strong hover:text-ink-2 md:flex"
+        className="hidden items-center gap-2 rounded-2 border border-line bg-card px-3 py-1.5 text-meta text-ink-3 transition-colors hover:border-line-strong hover:text-ink-2 md:flex"
       >
-        <Search size={14} />
+        <Search size={ЗНАЧОК.строка} />
         <span>Найти или выполнить</span>
-        <kbd className="ml-4 rounded border border-line bg-sunken px-1.5 py-0.5 text-[10px]">
-          Ctrl K
+        <kbd className="ml-4 rounded border border-line bg-sunken px-1.5 py-0.5 text-micro">
+          {модификатор()} K
         </kbd>
       </button>
 
@@ -58,20 +60,20 @@ export function Topbar({ имя }: { имя: string }) {
         className="md:hidden"
         onClick={() => открытьКомандноеОкно(true)}
       >
-        <Search size={18} />
+        <Search size={ЗНАЧОК.крупный} />
       </IconButton>
 
       <IconButton
         подпись={подписьТемы[режим]}
         onClick={() => установить(следующаяТема[режим])}
       >
-        <Иконка size={18} />
+        <Иконка size={ЗНАЧОК.крупный} />
       </IconButton>
 
       <Button
         вид="основная"
         размер="малый"
-        иконка={<Plus size={16} />}
+        иконка={<Plus size={ЗНАЧОК.основной} />}
         onClick={() => открытьБыстроеДобавление(true)}
       >
         <span className="hidden sm:inline">Добавить</span>

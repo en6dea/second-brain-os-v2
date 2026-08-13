@@ -43,12 +43,10 @@ export function CardHeader({
       )}
     >
       <div className="min-w-0">
-        <h2 className="text-[15px] leading-tight font-semibold text-ink">
+        <h2 className="text-lead leading-tight font-semibold text-ink">
           {заголовок}
         </h2>
-        {подпись ? (
-          <p className="mt-0.5 text-[13px] text-ink-3">{подпись}</p>
-        ) : null}
+        {подпись ? <p className="mt-0.5 text-body text-ink-3">{подпись}</p> : null}
       </div>
       {действие ? <div className="shrink-0">{действие}</div> : null}
     </div>
@@ -75,7 +73,7 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-3">
-      <h2 className="text-[11px] font-semibold tracking-[0.14em] text-ink-3 uppercase">
+      <h2 className="text-caption font-semibold tracking-[0.14em] text-ink-3 uppercase">
         {children}
       </h2>
       {действие}

@@ -9,7 +9,7 @@ import {
 import { cn } from '@/design-system/classNames'
 
 const базаПоля =
-  'w-full bg-card border border-line rounded-2 px-3 text-sm text-ink ' +
+  'w-full bg-card border border-line rounded-2 px-3 text-lead text-ink ' +
   'placeholder:text-ink-3 transition-colors duration-150 ' +
   'hover:border-line-strong focus:border-accent focus:outline-none ' +
   'disabled:opacity-50 disabled:pointer-events-none'
@@ -31,15 +31,15 @@ export function Field({
 }) {
   return (
     <label className={cn('block', className)}>
-      <span className="mb-1.5 flex items-center gap-1 text-[13px] font-medium text-ink-2">
+      <span className="mb-1.5 flex items-center gap-1 text-body font-medium text-ink-2">
         {подпись}
         {обязательное ? <span className="text-bad">*</span> : null}
       </span>
       {children}
       {ошибка ? (
-        <span className="mt-1 block text-[12px] text-bad">{ошибка}</span>
+        <span className="mt-1 block text-meta text-bad">{ошибка}</span>
       ) : подсказка ? (
-        <span className="mt-1 block text-[12px] text-ink-3">{подсказка}</span>
+        <span className="mt-1 block text-meta text-ink-3">{подсказка}</span>
       ) : null}
     </label>
   )
@@ -50,7 +50,7 @@ export const Input = forwardRef<
   InputHTMLAttributes<HTMLInputElement>
 >(function Input({ className, ...остальное }, ref) {
   return (
-    <input ref={ref} className={cn(базаПоля, 'h-10', className)} {...остальное} />
+    <input ref={ref} className={cn(базаПоля, 'h-11', className)} {...остальное} />
   )
 })
 
@@ -75,7 +75,7 @@ export const Select = forwardRef<
   return (
     <select
       ref={ref}
-      className={cn(базаПоля, 'h-10 cursor-pointer pr-8', className)}
+      className={cn(базаПоля, 'h-11 cursor-pointer pr-8', className)}
       {...остальное}
     >
       {children}
@@ -104,10 +104,10 @@ export const MoneyInput = forwardRef<
           const очищено = событие.target.value.replace(/[^\d.,\-\s]/g, '')
           onChange(очищено)
         }}
-        className={cn(базаПоля, 'tnum h-10 pr-8 text-right', className)}
+        className={cn(базаПоля, 'tnum h-11 pr-8 text-right', className)}
         {...остальное}
       />
-      <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-ink-3">
+      <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-lead text-ink-3">
         ₽
       </span>
     </div>
@@ -130,11 +130,11 @@ export function Switch({
   return (
     <div className="flex items-start justify-between gap-4 py-2.5">
       <div className="min-w-0">
-        <label htmlFor={id} className="cursor-pointer text-sm text-ink">
+        <label htmlFor={id} className="cursor-pointer text-body text-ink">
           {подпись}
         </label>
         {описание ? (
-          <p className="mt-0.5 text-[12px] text-ink-3">{описание}</p>
+          <p className="mt-0.5 text-meta text-ink-3">{описание}</p>
         ) : null}
       </div>
       <button
@@ -160,23 +160,33 @@ export function Switch({
   )
 }
 
-/** Группа взаимоисключающих значений. */
+/**
+ * Группа взаимоисключающих значений.
+ *
+ * `размер="поле"` — когда это поле формы, а не переключатель вида: палец
+ * попадает в 44 px, и группа занимает всю ширину, как остальные поля.
+ * По умолчанию компактный: в шапке раздела крупные вкладки только мешают.
+ */
 export function Segmented<T extends string>({
   значения,
   выбрано,
   наВыбор,
+  размер = 'компактный',
   className,
 }: {
   значения: { ключ: T; подпись: string }[]
   выбрано: T
   наВыбор: (ключ: T) => void
+  размер?: 'компактный' | 'поле'
   className?: string
 }) {
+  const поле = размер === 'поле'
   return (
     <div
       role="tablist"
       className={cn(
-        'inline-flex items-center gap-0.5 rounded-2 border border-line bg-sunken p-0.5',
+        'items-center gap-0.5 rounded-2 border border-line bg-sunken p-0.5',
+        поле ? 'flex w-full' : 'inline-flex',
         className,
       )}
     >
@@ -188,7 +198,8 @@ export function Segmented<T extends string>({
           aria-selected={выбрано === элемент.ключ}
           onClick={() => наВыбор(элемент.ключ)}
           className={cn(
-            'rounded-[10px] px-3 py-1.5 text-[13px] font-medium transition-colors duration-150',
+            'rounded-1 font-medium transition-colors duration-150',
+            поле ? 'h-11 flex-1 px-2 text-meta' : 'px-3 py-1.5 text-meta',
             выбрано === элемент.ключ
               ? 'bg-card text-ink shadow-1'
               : 'text-ink-3 hover:text-ink-2',

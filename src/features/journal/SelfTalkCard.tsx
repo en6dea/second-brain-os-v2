@@ -8,6 +8,8 @@ import { сегодня } from '@/core/calendar/CalendarRu'
 import { другоеУтверждение, утверждениеДня } from './model/Prompts'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { cn } from '@/design-system/classNames'
+import { useОтклик } from '@/design-system/motion/CountUp'
+import { Flash } from '@/design-system/motion/Ping'
 import {
   Badge,
   Button,
@@ -42,6 +44,7 @@ export function SelfTalkCard({
   своиУтверждения: string[]
 }) {
   const сообщить = useИнтерфейс((с) => с.сообщить)
+  const [отклик, запуститьОтклик] = useОтклик(900)
   const день = сегодня()
 
   const сегодняшняя =
@@ -95,10 +98,14 @@ export function SelfTalkCard({
       await база.journal.add(новаяЗапись(поля) as never)
       сообщить('Разговор записан')
     }
+    запуститьОтклик()
   }
 
   return (
-    <Card>
+    // Проблеск по карточке: ответ записан. Раньше дневник на сохранение
+    // не отзывался ничем, кроме строки внизу экрана.
+    <Card className="relative overflow-hidden">
+      <Flash активен={отклик} />
       <CardHeader
         заголовок="Разговор с собой"
         подпись={

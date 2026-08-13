@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/design-system/classNames'
+import { ЗНАЧОК } from '@/design-system/iconSize'
 import { IconButton } from './Button'
 
 /**
@@ -86,15 +87,15 @@ export function Dialog({
       >
         <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
           <div className="min-w-0">
-            <h2 className="text-[16px] leading-tight font-semibold text-ink">
+            <h2 className="text-lead leading-tight font-semibold text-ink">
               {заголовок}
             </h2>
             {подпись ? (
-              <p className="mt-0.5 text-[13px] text-ink-3">{подпись}</p>
+              <p className="mt-0.5 text-body text-ink-3">{подпись}</p>
             ) : null}
           </div>
           <IconButton подпись="Закрыть" onClick={наЗакрытие}>
-            <X size={18} />
+            <X size={ЗНАЧОК.крупный} />
           </IconButton>
         </div>
 

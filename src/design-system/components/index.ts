@@ -18,5 +18,6 @@ export {
   Switch,
   Segmented,
 } from './Form'
+export { Scale } from './Scale'
 export { Dialog } from './Dialog'
 export { Poster } from './Poster'
