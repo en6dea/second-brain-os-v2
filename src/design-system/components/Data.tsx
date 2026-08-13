@@ -27,7 +27,7 @@ export function Badge({
     <span
       className={cn(
         'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5',
-        'text-[12px] leading-5 font-medium whitespace-nowrap',
+        'text-meta leading-5 font-medium whitespace-nowrap',
         тона[тон],
         className,
       )}
@@ -77,7 +77,7 @@ export function KnownScale({
           <div className="h-full flex-1" style={{ background: 'var(--hatch)' }} />
         ) : null}
       </div>
-      <div className="mt-1 flex items-center justify-between text-[10.5px] text-ink-3">
+      <div className="mt-1 flex items-center justify-between text-micro text-ink-3">
         <span>{подписьИзвестного ?? `известно ${известно}`}</span>
         {неизвестно > 0 ? (
           <span>{подписьНеизвестного ?? `не заполнено ${неизвестно}`}</span>
@@ -139,21 +139,23 @@ export function Metric({
   return (
     <div className={cn('min-w-0', className)}>
       {единица ? <div className="unit mb-1">{единица}</div> : null}
-      <div className="flex items-center gap-1.5 text-[12px] text-ink-3">
+      <div className="flex items-center gap-1.5 text-meta text-ink-3">
         {иконка}
         <span className="truncate">{подпись}</span>
       </div>
       <div
         className={cn(
           // На узких экранах показание уменьшается, чтобы сумма не обрезалась.
-          'tnum mt-1 text-[18.5px] leading-tight font-medium sm:text-[21px]',
+          'tnum mt-1 text-read leading-tight font-medium sm:text-gauge',
           цветЗначения,
         )}
       >
         {счётчик ? <SettlingNumber {...счётчик} /> : значение}
       </div>
       {источник ? (
-        <div className="mt-0.5 text-[11px] leading-snug text-ink-3">{источник}</div>
+        <div className="mt-0.5 text-caption leading-snug text-ink-3">
+          {источник}
+        </div>
       ) : null}
       {шкала ? (
         <KnownScale известно={шкала.известно} неизвестно={шкала.неизвестно} />
@@ -186,7 +188,7 @@ export function ProgressBar({
   return (
     <div>
       {подпись ? (
-        <div className="mb-1.5 flex items-baseline justify-between text-[12px] text-ink-3">
+        <div className="mb-1.5 flex items-baseline justify-between text-meta text-ink-3">
           <span>{подпись}</span>
           <span className="tnum">{Math.round(доля)}%</span>
         </div>
@@ -219,9 +221,9 @@ export function EmptyState({
           {иконка}
         </div>
       ) : null}
-      <p className="text-sm font-medium text-ink">{заголовок}</p>
+      <p className="text-lead font-medium text-ink">{заголовок}</p>
       {подпись ? (
-        <p className="mt-1 max-w-sm text-[13px] text-ink-3">{подпись}</p>
+        <p className="mt-1 max-w-sm text-body text-ink-3">{подпись}</p>
       ) : null}
       {действие ? <div className="mt-4">{действие}</div> : null}
     </div>
@@ -252,7 +254,7 @@ export function ErrorNote({
 }) {
   return (
     <div className="rounded-3 border border-bad/30 bg-bad-soft px-4 py-3">
-      <p className="text-[13px] text-bad">{текст}</p>
+      <p className="text-body text-bad">{текст}</p>
       {действие ? <div className="mt-2">{действие}</div> : null}
     </div>
   )

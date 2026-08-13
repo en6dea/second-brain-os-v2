@@ -30,6 +30,12 @@ jobs:
       - name: Весь код в репозитории
         run: npm run check:tracked
 
+      - name: Контраст текста
+        run: npm run check:contrast
+
+      - name: Шкала размеров
+        run: npm run check:scale
+
       - name: Статическая проверка
         run: npm run lint
 

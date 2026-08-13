@@ -71,8 +71,8 @@ export function RelationshipPage() {
               onClick={() => установитьВкладку(вариант.ключ)}
               className={
                 вкладка === вариант.ключ
-                  ? 'rounded-[10px] bg-card px-3.5 py-1.5 text-[13px] font-medium text-ink shadow-1'
-                  : 'rounded-[10px] px-3.5 py-1.5 text-[13px] font-medium text-ink-3 transition-colors hover:text-ink-2'
+                  ? 'rounded-1 bg-card px-3.5 py-1.5 text-meta font-medium text-ink shadow-1'
+                  : 'rounded-1 px-3.5 py-1.5 text-meta font-medium text-ink-3 transition-colors hover:text-ink-2'
               }
             >
               {вариант.подпись}

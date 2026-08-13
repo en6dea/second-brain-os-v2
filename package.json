@@ -13,7 +13,9 @@
     "test:watch": "vitest",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"docs/**/*.md\" \"*.md\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
-    "check:tracked": "node scripts/check-tracked.mjs"
+    "check:tracked": "node scripts/check-tracked.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:scale": "node scripts/check-scale.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
