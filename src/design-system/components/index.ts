@@ -21,3 +21,5 @@ export {
 export { Scale } from './Scale'
 export { Dialog } from './Dialog'
 export { Poster } from './Poster'
+export { Icon, type СмыслЗначка } from './Icon'
+export { смыслРаздела } from './iconMeaning'

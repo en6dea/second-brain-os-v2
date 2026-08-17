@@ -12,7 +12,7 @@ import { useИнтерфейс } from '@/app/providers/ui'
 import { подготовитьПервыйЗапуск, читатьПрофиль } from '@/core/db/repo'
 import { запроситьПостоянноеХранение } from '@/core/db/Persistence'
 import { cn } from '@/design-system/classNames'
-import { IconButton } from '@/design-system/components'
+import { Icon, IconButton } from '@/design-system/components'
 
 /**
  * Нижнее меню телефона.
@@ -111,7 +111,7 @@ export function AppShell() {
               )
             }
           >
-            <пункт.иконка size={22} strokeWidth={1.75} />
+            <Icon значок={пункт.иконка} смысл={пункт.смысл} />
             <span>{пункт.название}</span>
           </NavLink>
         ))}

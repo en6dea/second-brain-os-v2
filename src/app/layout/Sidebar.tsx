@@ -5,6 +5,7 @@ import { модификатор } from '@/app/keyboard'
 import { cn } from '@/design-system/classNames'
 import { ЗНАЧОК } from '@/design-system/iconSize'
 import { useИнтерфейс } from '@/app/providers/ui'
+import { Icon } from '@/design-system/components'
 
 export function Sidebar({ наПереход }: { наПереход?: () => void }) {
   const { pathname } = useLocation()
@@ -44,11 +45,7 @@ export function Sidebar({ наПереход }: { наПереход?: () => voi
                       : 'text-ink-2 hover:bg-hover hover:text-ink',
                   )}
                 >
-                  <домен.иконка
-                    size={ЗНАЧОК.крупный}
-                    strokeWidth={1.75}
-                    className="shrink-0"
-                  />
+                  <Icon значок={домен.иконка} смысл={домен.смысл} />
                   <span className="min-w-0 flex-1 truncate">{домен.название}</span>
                 </NavLink>
               </li>

@@ -2,6 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { доменПоАдресу } from '@/app/navigation'
 import { cn } from '@/design-system/classNames'
 import { ЗНАЧОК } from '@/design-system/iconSize'
+import { Icon, смыслРаздела } from '@/design-system/components'
 
 /**
  * Второй уровень навигации.
@@ -39,7 +40,7 @@ export function DomainNav() {
             )
           }
         >
-          <раздел.иконка size={ЗНАЧОК.основной} strokeWidth={1.75} />
+          <Icon значок={раздел.иконка} смысл={смыслРаздела(раздел.путь)} размер={ЗНАЧОК.основной} />
           {раздел.название}
         </NavLink>
       ))}
