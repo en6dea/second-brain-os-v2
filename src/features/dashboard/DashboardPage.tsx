@@ -11,6 +11,8 @@ import {
   Wallet,
 } from 'lucide-react'
 import { база } from '@/core/db/db'
+import { следующееДействие as вычислитьДействие } from '@/core/day/NextAction'
+import { NextActionCard } from './NextActionCard'
 import { собратьСигналы, длинаСерии } from '@/core/signals/engine'
 import {
   итогПериода,
@@ -77,6 +79,8 @@ export function DashboardPage() {
       опыт,
       вызовы,
       планы,
+      замыслы,
+      входящиеЗаписи,
     ] = await Promise.all([
       база.tasks.toArray(),
       база.habits.toArray(),
@@ -91,6 +95,8 @@ export function DashboardPage() {
       база.experiences.toArray(),
       база.challenges.toArray(),
       база.plans.toArray(),
+      база.intentions.toArray(),
+      база.inbox.toArray(),
     ])
     return {
       задачи,
@@ -106,6 +112,8 @@ export function DashboardPage() {
       опыт,
       вызовы,
       планы,
+      замыслы,
+      входящиеЗаписи,
     }
   }, [день])
 
@@ -158,10 +166,27 @@ export function DashboardPage() {
     требуютВнимания,
   )
 
+  // Что делать сейчас — считается доменом дня, а не страницей: правило выбора
+  // должно проверяться тестом, а не жить в разметке.
+  const действиеДня = вычислитьДействие(
+    {
+      задачи: данные.задачи,
+      цели: данные.цели,
+      привычки: данные.привычки,
+      обязательства: данные.обязательства,
+      замыслы: данные.замыслы,
+      входящие: данные.входящиеЗаписи,
+    },
+    день,
+    new Date().getHours(),
+  )
+
   // Сигнал, вынесенный наверх, не повторяется в списке: один и тот же текст
   // дважды на одном экране читается как сбой, а не как акцент.
   const остальныеСигналы = [...требуютВнимания, ...хорошее].filter(
-    (сигнал) => сигнал.id !== следующееДействие.сигналId,
+    (сигнал) =>
+      сигнал.id !== следующееДействие.сигналId &&
+      !(действиеДня && сигнал.id.includes(действиеДня.источникId)),
   )
 
   const активныеЦели = данные.цели.filter((ц) => ц.состояние === 'активна')
@@ -228,6 +253,8 @@ export function DashboardPage() {
 
   return (
     <div className="anim-rise space-y-7">
+      {действиеДня ? <NextActionCard действие={действиеДня} /> : null}
+
       {/* --- Сейчас --- */}
       <section>
         <Card className="relative overflow-hidden">
@@ -344,7 +371,7 @@ export function DashboardPage() {
       <section>
         <SectionTitle
           действие={
-            <Link to="/finance" className="text-caption text-accent hover:underline">
+            <Link to="/finance" className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline">
               Все финансы
             </Link>
           }
@@ -433,7 +460,7 @@ export function DashboardPage() {
       <section>
         <SectionTitle
           действие={
-            <Link to="/goals" className="text-caption text-accent hover:underline">
+            <Link to="/goals" className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline">
               Все цели
             </Link>
           }
@@ -495,7 +522,7 @@ export function DashboardPage() {
             действие={
               <Link
                 to="/habits"
-                className="text-caption text-accent hover:underline"
+                className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline"
               >
                 Все привычки
               </Link>
