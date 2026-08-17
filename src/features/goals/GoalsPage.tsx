@@ -10,7 +10,7 @@ import { склонение } from '@/core/language/Plural'
 import { число } from '@/core/language/Numerals'
 import { useПлавноеЧисло } from '@/design-system/motion/CountUp'
 import { Flash } from '@/design-system/motion/Ping'
-import { сейчас } from '@/core/db/RecordId'
+import { новыйId, сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { читатьНастройки } from '@/core/db/repo'
 import {
@@ -28,6 +28,7 @@ import {
   EmptyState,
   Textarea,
   CardHeader,
+  CheckMark,
 } from '@/design-system/components'
 import { useСигналыПоРазделам } from '@/features/signals/useSignals'
 import { SignalsStrip } from '@/features/signals/SignalsStrip'
@@ -153,7 +154,7 @@ export function GoalsPage() {
           текущее: черновик.текущее ?? null,
           единица: черновик.единица ?? '',
           порядок: данные?.цели.length ?? 0,
-          вехи: [],
+          вехи: черновик.вехи ?? [],
           последняяАктивность: сейчас(),
           постер: черновик.постер ?? '',
         }) as never,
@@ -474,6 +475,88 @@ export function GoalsPage() {
                 </Field>
               ) : null}
             </div>
+            <Field
+              подпись="Вехи"
+              подсказка="Проверяемые шаги к цели — по ним «Что делать сейчас» находит ближайший"
+            >
+              <div className="space-y-2">
+                {(черновик.вехи ?? []).map((веха) => (
+                  <div key={веха.id} className="flex flex-wrap items-center gap-2">
+                    <CheckMark
+                      отмечено={веха.выполнена}
+                      подпись={
+                        веха.выполнена ? 'Вернуть в работу' : 'Отметить выполненной'
+                      }
+                      наПереключение={() =>
+                        установитьЧерновик({
+                          ...черновик,
+                          вехи: (черновик.вехи ?? []).map((в) =>
+                            в.id === веха.id ? { ...в, выполнена: !в.выполнена } : в,
+                          ),
+                        })
+                      }
+                    />
+                    <Input
+                      value={веха.название}
+                      placeholder="Что должно случиться"
+                      onChange={(событие) =>
+                        установитьЧерновик({
+                          ...черновик,
+                          вехи: (черновик.вехи ?? []).map((в) =>
+                            в.id === веха.id
+                              ? { ...в, название: событие.target.value }
+                              : в,
+                          ),
+                        })
+                      }
+                      className="min-w-0 flex-1"
+                    />
+                    <Input
+                      type="date"
+                      value={веха.срок ?? ''}
+                      onChange={(событие) =>
+                        установитьЧерновик({
+                          ...черновик,
+                          вехи: (черновик.вехи ?? []).map((в) =>
+                            в.id === веха.id
+                              ? { ...в, срок: событие.target.value || null }
+                              : в,
+                          ),
+                        })
+                      }
+                      className="w-40"
+                    />
+                    <IconButton
+                      подпись="Удалить веху"
+                      onClick={() =>
+                        установитьЧерновик({
+                          ...черновик,
+                          вехи: (черновик.вехи ?? []).filter((в) => в.id !== веха.id),
+                        })
+                      }
+                    >
+                      <Trash2 size={15} />
+                    </IconButton>
+                  </div>
+                ))}
+                <Button
+                  вид="обычная"
+                  размер="малый"
+                  иконка={<Plus size={14} />}
+                  onClick={() =>
+                    установитьЧерновик({
+                      ...черновик,
+                      вехи: [
+                        ...(черновик.вехи ?? []),
+                        { id: новыйId(), название: '', срок: null, выполнена: false },
+                      ],
+                    })
+                  }
+                >
+                  Добавить веху
+                </Button>
+              </div>
+            </Field>
           </div>
         ) : null}
       </Dialog>
