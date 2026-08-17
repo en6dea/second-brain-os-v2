@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Check, ChevronRight, Plus, Trash2 } from 'lucide-react'
+import { ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
 import type { Задача } from '@/core/db/types'
@@ -9,8 +9,6 @@ import { склонение } from '@/core/language/Plural'
 import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { cn } from '@/design-system/classNames'
-import { useОтклик } from '@/design-system/motion/CountUp'
-import { Ping } from '@/design-system/motion/Ping'
 import {
   Input,
   Select,
@@ -24,50 +22,10 @@ import {
   EmptyState,
   Segmented,
   Textarea,
+  CheckMark,
 } from '@/design-system/components'
 
 type Отбор = 'сегодня' | 'просрочено' | 'все' | 'сделано'
-
-/**
- * Кружок выполнения.
- *
- * При закрытии задачи от кружка расходится импульс, а галочка прочерчивается.
- * Возврат в работу проходит молча: отменённое действие не празднуют.
- */
-function TaskCheck({
-  сделана,
-  наПереключение,
-}: {
-  сделана: boolean
-  наПереключение: () => void
-}) {
-  const [отклик, запустить] = useОтклик(900)
-
-  return (
-    <Ping активен={отклик} тон="успех" className="shrink-0">
-      <button
-        type="button"
-        aria-label={сделана ? 'Вернуть в работу' : 'Отметить выполненной'}
-        aria-pressed={сделана}
-        onClick={() => {
-          if (!сделана) запустить()
-          наПереключение()
-        }}
-        className={cn(
-          'flex h-5 w-5 items-center justify-center rounded-full border',
-          'transition-[background-color,border-color,transform] duration-150 active:scale-90',
-          сделана
-            ? 'border-transparent bg-good text-white'
-            : 'border-line-strong hover:border-accent hover:bg-accent-soft',
-        )}
-      >
-        {сделана ? (
-          <Check size={13} className={отклик ? 'прочерк' : undefined} />
-        ) : null}
-      </button>
-    </Ping>
-  )
-}
 
 export function TasksPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
@@ -226,8 +184,9 @@ export function TasksPage() {
                 задача.дата !== null && задача.дата < день && !сделана
               return (
                 <div key={задача.id} className="flex items-center gap-3 px-5 py-3">
-                  <TaskCheck
-                    сделана={сделана}
+                  <CheckMark
+                    отмечено={сделана}
+                    подпись={сделана ? 'Вернуть в работу' : 'Отметить выполненной'}
                     наПереключение={() => переключить(задача)}
                   />
 

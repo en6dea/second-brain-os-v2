@@ -272,24 +272,42 @@ h3 {
   animation: pop var(--t-slow) var(--ease) both;
 }
 
-/* Появление разделов главной по очереди — один оркестрованный вход */
-.anim-rise > section {
+/* ---------------------------------------------------------------------
+   Появление экрана по очереди — один оркестрованный вход, а не мелькание
+   мелких эффектов по всему интерфейсу (см. заметку ниже).
+
+   Раньше это правило требовало от каждого блока быть тегом <section>.
+   Из двадцати девяти экранов, использующих anim-rise, тегом section
+   размечал свои блоки только один — «Главная»: остальные двадцать восемь
+   получали единственное общее движение всего экрана и ни одной ступеньки,
+   хотя предполагалось иначе. Правило переведено на «любой прямой потомок»,
+   чтобы работать сразу для всех экранов по факту их разметки, а не по
+   соглашению об имени тега, которое легко забыть — и было забыто двадцать
+   восемь раз подряд.
+   --------------------------------------------------------------------- */
+.anim-rise > * {
   animation: rise var(--t-slow) var(--ease) both;
 }
-.anim-rise > section:nth-child(1) {
+.anim-rise > *:nth-child(1) {
   animation-delay: 0ms;
 }
-.anim-rise > section:nth-child(2) {
-  animation-delay: 60ms;
+.anim-rise > *:nth-child(2) {
+  animation-delay: 50ms;
 }
-.anim-rise > section:nth-child(3) {
-  animation-delay: 120ms;
+.anim-rise > *:nth-child(3) {
+  animation-delay: 100ms;
 }
-.anim-rise > section:nth-child(4) {
-  animation-delay: 180ms;
+.anim-rise > *:nth-child(4) {
+  animation-delay: 150ms;
 }
-.anim-rise > section:nth-child(5) {
-  animation-delay: 240ms;
+.anim-rise > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+.anim-rise > *:nth-child(6) {
+  animation-delay: 250ms;
+}
+.anim-rise > *:nth-child(n + 7) {
+  animation-delay: 300ms;
 }
 
 /* Шкала известного прочерчивается слева направо */
