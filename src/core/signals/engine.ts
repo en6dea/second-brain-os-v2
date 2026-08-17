@@ -10,6 +10,7 @@ import type {
   Сигнал,
   Счёт,
   Цель,
+  Человек,
 } from '@/core/db/types'
 import { сегодня } from '@/core/calendar/CalendarRu'
 import { сигналыЗадачИПроектов } from './rules/tasksAndProjects'
@@ -43,6 +44,7 @@ export interface ДанныеДляСигналов {
   опыт?: Опыт[]
   вызовы?: Вызов[]
   планы?: План[]
+  люди?: Человек[]
 }
 
 export function собратьСигналы(данные: ДанныеДляСигналов): Сигнал[] {

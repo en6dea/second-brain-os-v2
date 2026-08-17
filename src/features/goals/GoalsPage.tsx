@@ -29,6 +29,8 @@ import {
   Textarea,
   CardHeader,
 } from '@/design-system/components'
+import { useСигналыПоРазделам } from '@/features/signals/useSignals'
+import { SignalsStrip } from '@/features/signals/SignalsStrip'
 
 /**
  * Показатель цели.
@@ -103,6 +105,7 @@ const ПУСТАЯ_ЦЕЛЬ: Цель = {
 export function GoalsPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
   const [черновик, установитьЧерновик] = useState<Partial<Цель> | null>(null)
+  const сигналы = useСигналыПоРазделам(['Цели'])
 
   const данные = useLiveQuery(async () => {
     const [цели, задачи, привычки, настройки] = await Promise.all([
@@ -177,6 +180,8 @@ export function GoalsPage() {
           Цель
         </Button>
       </div>
+
+      {сигналы && сигналы.length > 0 ? <SignalsStrip сигналы={сигналы} /> : null}
 
       <WhereToStart цели={активные} наПравку={установитьЧерновик} />
 

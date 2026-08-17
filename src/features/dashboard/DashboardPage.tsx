@@ -81,6 +81,7 @@ export function DashboardPage() {
       планы,
       замыслы,
       входящиеЗаписи,
+      люди,
     ] = await Promise.all([
       база.tasks.toArray(),
       база.habits.toArray(),
@@ -97,6 +98,7 @@ export function DashboardPage() {
       база.plans.toArray(),
       база.intentions.toArray(),
       база.inbox.toArray(),
+      база.people.toArray(),
     ])
     return {
       задачи,
@@ -114,6 +116,7 @@ export function DashboardPage() {
       планы,
       замыслы,
       входящиеЗаписи,
+      люди,
     }
   }, [день])
 
@@ -156,6 +159,7 @@ export function DashboardPage() {
     опыт: данные.опыт,
     вызовы: данные.вызовы,
     планы: данные.планы,
+    люди: данные.люди,
   })
 
   const требуютВнимания = сигналы.filter((с) => с.уровень !== 'хорошо')

@@ -22,6 +22,8 @@ import {
   Skeleton,
   Textarea,
 } from '@/design-system/components'
+import { useСигналыПоРазделам } from '@/features/signals/useSignals'
+import { SignalsStrip } from '@/features/signals/SignalsStrip'
 
 /** Сколько дней осталось до ближайшего дня рождения. */
 function днейДоДняРождения(деньРождения: string | null): number | null {
@@ -41,6 +43,7 @@ export function PeoplePage() {
   const [запрос, установитьЗапрос] = useState('')
   const [черновик, установитьЧерновик] = useState<Partial<Человек> | null>(null)
   const [открытый, установитьОткрытого] = useState<Человек | null>(null)
+  const сигналы = useСигналыПоРазделам(['Люди'])
 
   const люди = useLiveQuery(() => база.people.toArray(), [])
   const настройки = useLiveQuery(() => читатьНастройки(), [])
@@ -117,6 +120,7 @@ export function PeoplePage() {
 
   return (
     <div className="anim-rise space-y-5">
+      {сигналы && сигналы.length > 0 ? <SignalsStrip сигналы={сигналы} /> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-h2 font-semibold text-ink">Люди</h1>

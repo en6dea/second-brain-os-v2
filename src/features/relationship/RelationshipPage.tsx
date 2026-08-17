@@ -3,6 +3,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { ShieldCheck } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { Card, Skeleton } from '@/design-system/components'
+import { useСигналыПоРазделам } from '@/features/signals/useSignals'
+import { SignalsStrip } from '@/features/signals/SignalsStrip'
 import { DayPanel } from './panels/DayPanel'
 import { TogetherPanel } from './panels/TogetherPanel'
 import { PlansPanel } from './panels/PlansPanel'
@@ -24,6 +26,7 @@ const ВКЛАДКИ: { ключ: Вкладка; подпись: string }[] = [
  */
 export function RelationshipPage() {
   const [вкладка, установитьВкладку] = useState<Вкладка>('дни')
+  const сигналы = useСигналыПоРазделам(['Люди'])
 
   const данные = useLiveQuery(async () => {
     const [дни, дела, планы, люди, опыт, замыслы] = await Promise.all([
@@ -53,6 +56,7 @@ export function RelationshipPage() {
 
   return (
     <div className="anim-rise space-y-5">
+      {сигналы && сигналы.length > 0 ? <SignalsStrip сигналы={сигналы} /> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-h2 font-semibold text-ink">Отношения</h1>

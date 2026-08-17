@@ -28,6 +28,8 @@ import {
   EmptyState,
   CardHeader,
 } from '@/design-system/components'
+import { useСигналыПоРазделам } from '@/features/signals/useSignals'
+import { SignalsStrip } from '@/features/signals/SignalsStrip'
 
 const ДНИ = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 
@@ -102,6 +104,7 @@ export function HabitsPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
   const день = сегодня()
   const [черновик, установитьЧерновик] = useState<Partial<Привычка> | null>(null)
+  const сигналы = useСигналыПоРазделам(['Привычки'])
 
   const привычки = useLiveQuery(() => база.habits.toArray(), [])
   const цели = useLiveQuery(() => база.goals.toArray(), [])
@@ -174,6 +177,7 @@ export function HabitsPage() {
 
   return (
     <div className="anim-rise space-y-5">
+      {сигналы && сигналы.length > 0 ? <SignalsStrip сигналы={сигналы} /> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-h2 font-semibold text-ink">Привычки</h1>

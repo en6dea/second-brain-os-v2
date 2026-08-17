@@ -37,6 +37,8 @@ import {
   CardBody,
   Badge,
 } from '@/design-system/components'
+import { useСигналыПоРазделам } from '@/features/signals/useSignals'
+import { SignalsStrip } from '@/features/signals/SignalsStrip'
 
 function предыдущийМесяц(месяц: string, назад: number): string {
   const [год, номер] = месяц.split('-').map(Number)
@@ -46,6 +48,7 @@ function предыдущийМесяц(месяц: string, назад: number):
 
 export function FinanceOverview() {
   const [месяц] = useState(текущийМесяц())
+  const сигналы = useСигналыПоРазделам(['Финансы', 'Обязательства'])
 
   const данные = useLiveQuery(async () => {
     const [счета, операции, обязательства, категории, настройки] =
@@ -116,6 +119,7 @@ export function FinanceOverview() {
 
   return (
     <div className="anim-rise space-y-5">
+      {сигналы && сигналы.length > 0 ? <SignalsStrip сигналы={сигналы} /> : null}
       <Card>
         <div className="grid grid-cols-2 gap-5 p-5 lg:grid-cols-4">
           <Metric
