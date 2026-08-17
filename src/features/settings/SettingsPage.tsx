@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { AlertTriangle, Download, Upload } from 'lucide-react'
+import { AlertTriangle, Bell, BellOff, Download, Upload } from 'lucide-react'
 import { база, НАЗВАНИЯ_ТАБЛИЦ, ТАБЛИЦЫ } from '@/core/db/db'
 import {
   изменитьНастройки,
@@ -30,6 +30,11 @@ import {
   состояниеХранилища,
 } from '@/core/db/Persistence'
 import { useИнтерфейс } from '@/app/providers/ui'
+import {
+  поддерживаются as уведомленияПоддерживаются,
+  разрешение as разрешениеУведомлений,
+  запроситьРазрешение,
+} from '@/core/reminders/Notifications'
 import { деньги, рублиВКопейки, копейкиВРубли } from '@/core/money/Money'
 import {
   Input,
@@ -47,6 +52,8 @@ import {
 
 export function SettingsPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
+
+  const [разрешениеБраузера, установитьРазрешение] = useState(разрешениеУведомлений())
 
   const [имя, установитьИмя] = useState<string | null>(null)
   const [резерв, установитьРезерв] = useState<string | null>(null)
@@ -391,6 +398,63 @@ export function SettingsPage() {
         </CardBody>
       </Card>
 
+      {/* --- Уведомления --- */}
+      <Card>
+        <CardHeader
+          заголовок="Уведомления"
+          подпись="Платёж, задача с временем, привычка к вечеру — из ваших же записей"
+        />
+        <CardBody className="space-y-4">
+          {!уведомленияПоддерживаются() ? (
+            <p className="text-meta leading-relaxed text-ink-2">
+              Этот браузер не умеет показывать уведомления.
+            </p>
+          ) : разрешениеБраузера === 'denied' ? (
+            <p className="text-meta leading-relaxed text-ink-2">
+              Уведомления запрещены в настройках браузера. Разрешить их можно
+              только там — приложение само это изменить не может.
+            </p>
+          ) : (
+            <Switch
+              включён={
+                разрешениеБраузера === 'granted' &&
+                данные.настройки.уведомленияВключены
+              }
+              наИзменение={async (значение) => {
+                if (!значение) {
+                  await изменитьНастройки({ уведомленияВключены: false })
+                  сообщить('Уведомления выключены')
+                  return
+                }
+                const результат = await запроситьРазрешение()
+                установитьРазрешение(результат)
+                if (результат !== 'granted') {
+                  сообщить('Браузер не дал разрешения на уведомления')
+                  return
+                }
+                await изменитьНастройки({ уведомленияВключены: true })
+                сообщить('Уведомления включены')
+              }}
+              подпись="Показывать уведомления"
+              описание="Работает, только пока приложение открыто хотя бы в фоновой вкладке: настоящего push с сервера здесь нет, и заводить его не для чего"
+            />
+          )}
+
+          <div className="flex items-start gap-2.5 rounded-3 border border-line bg-sunken px-4 py-3">
+            {данные.настройки.уведомленияВключены ? (
+              <Bell size={16} className="mt-0.5 shrink-0 text-accent" />
+            ) : (
+              <BellOff size={16} className="mt-0.5 shrink-0 text-ink-3" />
+            )}
+            <p className="text-caption leading-relaxed text-ink-3">
+              На iPhone уведомления работают только у приложения, добавленного
+              на домашний экран через «Поделиться → На экран Домой» — обычная
+              вкладка Safari их не показывает. Это ограничение самой системы.
+            </p>
+          </div>
+        </CardBody>
+      </Card>
+
       {/* --- Обложки --- */}
       <Card>
         <CardHeader
@@ -413,7 +477,7 @@ export function SettingsPage() {
       <Card>
         <CardHeader
           заголовок="Хранилище"
-          подпись="IndexedDB, база «ВторойМозг2». localStorage хранит только тему."
+          подпись="IndexedDB, база «ВторойМозг2». В localStorage ничего не хранится."
         />
         <CardBody>
           <div className="mb-4 rounded-3 border border-line bg-sunken px-4 py-3">

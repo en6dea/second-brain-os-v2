@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useMatches } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { DomainNav } from './DomainNav'
+import { useНапоминания } from './useНапоминания'
 import { ДОМЕНЫ } from '@/app/navigation'
 import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
@@ -23,12 +24,27 @@ import { Icon, IconButton } from '@/design-system/components'
 const МЕНЮ_ТЕЛЕФОНА = ДОМЕНЫ.filter((домен) => домен.путь !== '/settings')
 
 export function AppShell() {
+  useНапоминания()
   const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
   const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
   const уведомление = useИнтерфейс((с) => с.уведомление)
   const открытьКомандноеОкно = useИнтерфейс((с) => с.открытьКомандноеОкно)
 
   const расположение = useLocation()
+
+  /**
+   * Ключ для перезапуска входной анимации раздела.
+   *
+   * Раньше им был `pathname` целиком. Из-за этого переход внутри одного и
+   * того же маршрута с разными параметрами — «/quick/расход;350;кофе» →
+   * «/quick» после записи — читался React Router как переход на другую
+   * страницу: весь раздел размонтировался, и состояние (например, карточка
+   * подтверждения в быстром вводе) исчезало раньше, чем человек успевал её
+   * увидеть. `id` совпавшего маршрута привязан к определению маршрута, а не
+   * к конкретному адресу, и не меняется при смене одних лишь параметров.
+   */
+  const совпадения = useMatches()
+  const ключРаздела = совпадения.at(-1)?.id ?? расположение.pathname
 
   // Подготовка первого запуска пишет в базу, поэтому выполняется отдельно:
   // внутри живого запроса запись запрещена.
@@ -90,7 +106,7 @@ export function AppShell() {
         <main className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-5 lg:pb-8">
           <div className="mx-auto w-full max-w-[1180px]">
             <DomainNav />
-            <div key={расположение.pathname} className="вход-раздела">
+            <div key={ключРаздела} className="вход-раздела">
               <Outlet />
             </div>
           </div>
