@@ -9,7 +9,7 @@ import {
   type User,
 } from 'firebase/auth'
 import {
-  getFirestore,
+  initializeFirestore,
   collection,
   doc,
   getDocs,
@@ -59,7 +59,10 @@ function убедитьсяИнициализирован(конфигураци
   if (приложение && активнаяКонфигурация === ключ) return
   приложение = initializeApp(конфигурация, 'второй-мозг')
   аутентификация = getAuth(приложение)
-  хранилище = getFirestore(приложение)
+  // Записи предметной области могут содержать поля со значением undefined
+  // (например `legacy` у задач без миграционного остатка) — Firestore по
+  // умолчанию отвергает такие поля целиком, эта настройка просто пропускает их.
+  хранилище = initializeFirestore(приложение, { ignoreUndefinedProperties: true })
   активнаяКонфигурация = ключ
 }
 
