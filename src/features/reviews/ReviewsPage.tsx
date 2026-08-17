@@ -17,6 +17,7 @@ import { деньги, процент } from '@/core/money/Money'
 import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { собратьПоказатели, вСлепок } from './model/ReviewMetrics'
+import { выявитьПаттерны } from './model/Patterns'
 import {
   Badge,
   Button,
@@ -77,14 +78,15 @@ export function ReviewsPage() {
   const период = периодОбзора(вид)
 
   const данные = useLiveQuery(async () => {
-    const [задачи, привычки, цели, операции, обзоры] = await Promise.all([
+    const [задачи, привычки, цели, операции, обзоры, категории] = await Promise.all([
       база.tasks.toArray(),
       база.habits.toArray(),
       база.goals.toArray(),
       база.operations.toArray(),
       база.reviews.toArray(),
+      база.moneyCategories.toArray(),
     ])
-    return { задачи, привычки, цели, операции, обзоры }
+    return { задачи, привычки, цели, операции, обзоры, категории }
   }, [])
 
   const показатели = useMemo(
@@ -102,6 +104,22 @@ export function ReviewsPage() {
           )
         : null,
     [данные, период.от, период.до],
+  )
+
+  const паттерны = useMemo(
+    () =>
+      данные
+        ? выявитьПаттерны(
+            {
+              задачи: данные.задачи,
+              операции: данные.операции,
+              цели: данные.цели,
+              категории: данные.категории,
+            },
+            сегодня(),
+          )
+        : null,
+    [данные],
   )
 
   if (!данные || !показатели) {
@@ -316,6 +334,39 @@ export function ReviewsPage() {
             {текущий ? 'Обновить обзор' : 'Закрыть обзор'}
           </Button>
         </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader
+          заголовок="Что повторяется"
+          подпись="Сравнение месяцев между собой, не разбор одного периода"
+        />
+        {паттерны && паттерны.собранныхПериодов < паттерны.нужноПериодов ? (
+          <CardBody>
+            <p className="text-caption text-ink-3">
+              Собрано {паттерны.собранныхПериодов} из {паттерны.нужноПериодов}{' '}
+              месяцев с данными. Меньше — и вывод был бы по паре точек, а не
+              по-настоящему повторяющимся.
+            </p>
+          </CardBody>
+        ) : паттерны && паттерны.паттерны.length === 0 ? (
+          <CardBody>
+            <p className="text-caption text-ink-3">
+              Данных достаточно, но ничего повторяющегося не найдено.
+            </p>
+          </CardBody>
+        ) : (
+          <div className="divide-y divide-line border-t border-line">
+            {паттерны?.паттерны.map((паттерн) => (
+              <div key={паттерн.id} className="px-5 py-3.5">
+                <p className="text-meta font-medium text-ink">{паттерн.текст}</p>
+                <p className="mt-1 text-caption leading-relaxed text-ink-3">
+                  {паттерн.объяснение}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
 
       <Card>
