@@ -1,5 +1,6 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import {
+  createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -69,6 +70,25 @@ export async function войти(
 ): Promise<void> {
   убедитьсяИнициализирован(конфигурация)
   await signInWithEmailAndPassword(аутентификация as Auth, почта, пароль)
+}
+
+/**
+ * Учётная запись заводится один раз, на первом устройстве.
+ *
+ * Отдельная функция, а не автоматический переход от неудачного входа: у
+ * современного Firebase включена защита от перебора почт, и ошибка «нет
+ * такого пользователя» и «неверный пароль» на новых проектах приходят
+ * одним и тем же кодом — по нему нельзя надёжно отличить «аккаунта ещё нет»
+ * от «пароль неверный». Явные два действия снимают эту неоднозначность:
+ * человек сам знает, заводит он аккаунт впервые или входит в уже созданный.
+ */
+export async function создатьАккаунт(
+  конфигурация: КонфигFirebase,
+  почта: string,
+  пароль: string,
+): Promise<void> {
+  убедитьсяИнициализирован(конфигурация)
+  await createUserWithEmailAndPassword(аутентификация as Auth, почта, пароль)
 }
 
 export async function выйти(): Promise<void> {
