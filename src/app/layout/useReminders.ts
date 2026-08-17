@@ -35,13 +35,14 @@ export function useНапоминания() {
       }
 
       const день = сегодня()
-      const [задачи, привычки, обязательства, замыслы, дниПартнёра] =
+      const [задачи, привычки, обязательства, замыслы, дниПартнёра, обзоры] =
         await Promise.all([
           база.tasks.toArray(),
           база.habits.toArray(),
           база.obligations.toArray(),
           база.intentions.toArray(),
           база.partnerDays.toArray(),
+          база.reviews.toArray(),
         ])
 
       const дневникЗаСегодня = await база.journal
@@ -56,6 +57,7 @@ export function useНапоминания() {
         обязательства,
         замыслы,
         люди: await база.people.toArray(),
+        обзоры,
         ожидаемоеНачалоЦикла: сводкаЦикла(дниПартнёра, день).ожидаемоеНачало,
         дневникЗаполнен: дневникЗаСегодня > 0,
       }
