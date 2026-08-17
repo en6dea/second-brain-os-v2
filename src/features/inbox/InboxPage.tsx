@@ -92,8 +92,8 @@ export function InboxPage() {
   return (
     <div className="anim-rise space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold text-ink">Разбор</h1>
-        <p className="mt-0.5 text-[13px] text-ink-3">
+        <h1 className="text-h2 font-semibold text-ink">Разбор</h1>
+        <p className="mt-0.5 text-meta text-ink-3">
           Сюда попадает всё, что записано на бегу. Разобрать — значит превратить
           мысль в задачу, заметку или удалить.
         </p>
@@ -134,7 +134,7 @@ export function InboxPage() {
                 key={запись.id}
                 className="flex flex-wrap items-center gap-3 px-5 py-3"
               >
-                <p className="min-w-0 flex-1 text-[13.5px] text-ink">
+                <p className="min-w-0 flex-1 text-meta text-ink">
                   {запись.текст}
                 </p>
                 <div className="flex shrink-0 gap-1.5">

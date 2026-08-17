@@ -64,7 +64,7 @@ function GoalMetric({
   return (
     <div className="relative overflow-hidden rounded-2">
       <Flash активен={проблеск} />
-      <div className="mb-1.5 flex items-baseline justify-between text-[12px]">
+      <div className="mb-1.5 flex items-baseline justify-between text-caption">
         <span className="text-ink-3">
           {достигнута ? 'Цель достигнута' : 'Показатель'}
         </span>
@@ -164,8 +164,8 @@ export function GoalsPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Цели</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Цели</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Цель связывает задачи и привычки в направление
           </p>
         </div>
@@ -227,7 +227,7 @@ export function GoalsPage() {
                         подпись="Изменить цель"
                         onClick={() => установитьЧерновик(цель)}
                       >
-                        <span className="text-[13px]">✎</span>
+                        <span className="text-meta">✎</span>
                       </IconButton>
                       <IconButton
                         подпись="Удалить цель"
@@ -249,7 +249,7 @@ export function GoalsPage() {
                       единица={цель.единица}
                     />
                   ) : (
-                    <p className="text-[12.5px] text-ink-3">
+                    <p className="text-caption text-ink-3">
                       Числового показателя нет — прогресс не рассчитывается.
                     </p>
                   )}
@@ -279,7 +279,7 @@ export function GoalsPage() {
                   </div>
 
                   {задачиЦели.length === 0 && привычкиЦели.length === 0 ? (
-                    <p className="rounded-2 bg-warn-soft px-3 py-2 text-[12px] text-warn">
+                    <p className="rounded-2 bg-warn-soft px-3 py-2 text-caption text-warn">
                       У цели нет ни одной задачи и ни одной привычки. Пока это
                       только намерение.
                     </p>
@@ -302,7 +302,7 @@ export function GoalsPage() {
                 onClick={() => установитьЧерновик(цель)}
                 className="flex w-full items-center justify-between px-5 py-3 text-left hover:bg-hover"
               >
-                <span className="truncate text-[13.5px] text-ink-2">
+                <span className="truncate text-meta text-ink-2">
                   {цель.название}
                 </span>
                 <Badge

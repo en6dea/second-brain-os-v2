@@ -194,7 +194,7 @@ export function ReconciliationPage() {
                 <AlertTriangle size={20} className="mt-0.5 shrink-0 text-warn" />
               )}
               <div className="min-w-0">
-                <p className="text-[15px] font-semibold text-ink">
+                <p className="text-body font-semibold text-ink">
                   {итог.совпало
                     ? 'Всё сходится'
                     : `Расхождение ${деньги(итог.расхождение, { знак: true })}`}
@@ -202,13 +202,13 @@ export function ReconciliationPage() {
                 {итог.причины.length > 0 ? (
                   <ul className="mt-2 space-y-1.5">
                     {итог.причины.map((причина) => (
-                      <li key={причина} className="text-[13px] text-ink-2">
+                      <li key={причина} className="text-meta text-ink-2">
                         · {причина}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-1 text-[13px] text-ink-2">
+                  <p className="mt-1 text-meta text-ink-2">
                     Расчётный остаток совпал с фактическим. Ничего исправлять не
                     нужно.
                   </p>
@@ -246,16 +246,16 @@ export function ReconciliationPage() {
                   className="flex items-center justify-between gap-3 px-5 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-[13.5px] text-ink">{имя}</p>
-                    <p className="text-[11.5px] text-ink-3">
+                    <p className="truncate text-meta text-ink">{имя}</p>
+                    <p className="text-caption text-ink-3">
                       {деньСловами(сверка.дата)}
                     </p>
                   </div>
                   <span
                     className={
                       сверка.расхождение === 0
-                        ? 'tnum text-[13px] text-good'
-                        : 'tnum text-[13px] text-warn'
+                        ? 'tnum text-meta text-good'
+                        : 'tnum text-meta text-warn'
                     }
                   >
                     {сверка.расхождение === 0

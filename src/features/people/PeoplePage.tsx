@@ -119,8 +119,8 @@ export function PeoplePage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Люди</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Люди</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             {люди.length} {склонение(люди.length, 'человек', 'человека', 'человек')}{' '}
             · отношения требуют памяти
           </p>
@@ -138,7 +138,7 @@ export function PeoplePage() {
         <Card>
           <div className="flex flex-wrap items-center gap-2 px-5 py-3.5">
             <Cake size={15} className="shrink-0 text-warn" />
-            <span className="text-[12.5px] text-ink-2">Скоро дни рождения:</span>
+            <span className="text-caption text-ink-2">Скоро дни рождения:</span>
             {ближайшие.map(({ человек, дней }) => (
               <Badge key={человек.id} тон={дней <= 7 ? 'внимание' : 'нейтральный'}>
                 {человек.имя} ·{' '}
@@ -190,11 +190,11 @@ export function PeoplePage() {
                     className="bg-accent-soft text-accent"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-medium text-ink">
+                    <p className="truncate text-meta font-medium text-ink">
                       {человек.имя}
                     </p>
                     {человек.отношения ? (
-                      <p className="truncate text-[12px] text-ink-3">
+                      <p className="truncate text-caption text-ink-3">
                         {человек.отношения}
                       </p>
                     ) : null}
@@ -253,7 +253,7 @@ export function PeoplePage() {
                 показывать={показыватьПостеры}
                 className="bg-accent-soft text-accent"
               />
-              <p className="text-[12.5px] text-ink-3">
+              <p className="text-caption text-ink-3">
                 {открытый.отношения || 'Кем приходится — не записано'}
               </p>
             </div>
@@ -261,7 +261,7 @@ export function PeoplePage() {
               {открытый.телефон ? (
                 <a
                   href={`tel:${открытый.телефон}`}
-                  className="inline-flex items-center gap-1.5 rounded-2 border border-line px-3 py-1.5 text-[13px] text-ink-2 hover:bg-hover"
+                  className="inline-flex items-center gap-1.5 rounded-2 border border-line px-3 py-1.5 text-meta text-ink-2 hover:bg-hover"
                 >
                   <Phone size={13} />
                   {открытый.телефон}
@@ -270,14 +270,14 @@ export function PeoplePage() {
               {открытый.почта ? (
                 <a
                   href={`mailto:${открытый.почта}`}
-                  className="inline-flex items-center gap-1.5 rounded-2 border border-line px-3 py-1.5 text-[13px] text-ink-2 hover:bg-hover"
+                  className="inline-flex items-center gap-1.5 rounded-2 border border-line px-3 py-1.5 text-meta text-ink-2 hover:bg-hover"
                 >
                   <Mail size={13} />
                   {открытый.почта}
                 </a>
               ) : null}
               {открытый.деньРождения ? (
-                <span className="inline-flex items-center gap-1.5 rounded-2 border border-line px-3 py-1.5 text-[13px] text-ink-2">
+                <span className="inline-flex items-center gap-1.5 rounded-2 border border-line px-3 py-1.5 text-meta text-ink-2">
                   <Cake size={13} />
                   {деньСловами(открытый.деньРождения)}
                 </span>
@@ -292,17 +292,17 @@ export function PeoplePage() {
               .filter((блок) => блок.текст)
               .map((блок) => (
                 <div key={блок.подпись}>
-                  <p className="mb-1 text-[11px] font-semibold tracking-[0.14em] text-ink-3 uppercase">
+                  <p className="mb-1 text-micro font-semibold tracking-[0.14em] text-ink-3 uppercase">
                     {блок.подпись}
                   </p>
-                  <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap text-ink-2">
+                  <p className="text-meta leading-relaxed whitespace-pre-wrap text-ink-2">
                     {блок.текст}
                   </p>
                 </div>
               ))}
 
             {открытый.последнийКонтакт ? (
-              <p className="text-[12.5px] text-ink-3">
+              <p className="text-caption text-ink-3">
                 Последний контакт: {деньСловами(открытый.последнийКонтакт)}
               </p>
             ) : null}

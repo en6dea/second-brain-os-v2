@@ -198,7 +198,7 @@ export function FinanceOverview() {
 
           {естьОперации ? (
             <div className="px-5 pt-1 pb-4">
-              <p className="mb-1 text-[11px] font-semibold tracking-[0.14em] text-ink-3 uppercase">
+              <p className="mb-1 text-micro font-semibold tracking-[0.14em] text-ink-3 uppercase">
                 По месяцам · последние 6
               </p>
             </div>
@@ -342,7 +342,7 @@ export function FinanceOverview() {
           <CardBody className="pt-5">
             <div className="flex flex-wrap items-center gap-3">
               <Badge тон="внимание">Незаполненное — не ноль</Badge>
-              <p className="text-[13px] text-ink-2">
+              <p className="text-meta text-ink-2">
                 {посчитано.итог.счетовБезОстатка}{' '}
                 {склонение(
                   посчитано.итог.счетовБезОстатка,

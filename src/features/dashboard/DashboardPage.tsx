@@ -234,20 +234,20 @@ export function DashboardPage() {
           <AmbientField />
           <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="min-w-0">
-              <p className="text-[12px] text-ink-3 first-letter:uppercase">
+              <p className="text-caption text-ink-3 first-letter:uppercase">
                 {деньНедели(день)}, {деньСловами(день)}
               </p>
-              <h1 className="mt-1.5 text-[22px] leading-tight font-semibold text-ink sm:text-[26px]">
+              <h1 className="mt-1.5 text-h2 leading-tight font-semibold text-ink sm:text-h2">
                 {следующееДействие.заголовок}
               </h1>
-              <p className="mt-1.5 max-w-xl text-[13.5px] text-ink-2">
+              <p className="mt-1.5 max-w-xl text-meta text-ink-2">
                 {следующееДействие.пояснение}
               </p>
             </div>
             {следующееДействие.ссылка ? (
               <Link
                 to={следующееДействие.ссылка}
-                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-3 bg-accent px-5 text-[15px] font-medium text-on-accent shadow-1 transition-colors hover:bg-accent-hover"
+                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-3 bg-accent px-5 text-body font-medium text-on-accent shadow-1 transition-colors hover:bg-accent-hover"
               >
                 {следующееДействие.подписьКнопки}
                 <ArrowRight size={16} />
@@ -305,7 +305,7 @@ export function DashboardPage() {
       <section>
         <SectionTitle
           действие={
-            <span className="text-[12px] text-ink-3">
+            <span className="text-caption text-ink-3">
               {требуютВнимания.length === 0
                 ? 'ничего не требует вмешательства'
                 : `${требуютВнимания.length} ${склонение(требуютВнимания.length, 'сигнал', 'сигнала', 'сигналов')}`}
@@ -344,7 +344,7 @@ export function DashboardPage() {
       <section>
         <SectionTitle
           действие={
-            <Link to="/finance" className="text-[12px] text-accent hover:underline">
+            <Link to="/finance" className="text-caption text-accent hover:underline">
               Все финансы
             </Link>
           }
@@ -433,7 +433,7 @@ export function DashboardPage() {
       <section>
         <SectionTitle
           действие={
-            <Link to="/goals" className="text-[12px] text-accent hover:underline">
+            <Link to="/goals" className="text-caption text-accent hover:underline">
               Все цели
             </Link>
           }
@@ -463,10 +463,10 @@ export function DashboardPage() {
                 return (
                   <div key={цель.id} className="px-5 py-4">
                     <div className="flex items-baseline justify-between gap-3">
-                      <p className="min-w-0 truncate text-[14px] font-medium text-ink">
+                      <p className="min-w-0 truncate text-meta font-medium text-ink">
                         {цель.название}
                       </p>
-                      <span className="tnum shrink-0 text-[13px] text-ink-2">
+                      <span className="tnum shrink-0 text-meta text-ink-2">
                         {естьЧисло
                           ? `${число(цель.текущее ?? 0)} / ${число(цель.цель)} ${цель.единица}`
                           : 'без числового показателя'}
@@ -495,7 +495,7 @@ export function DashboardPage() {
             действие={
               <Link
                 to="/habits"
-                className="text-[12px] text-accent hover:underline"
+                className="text-caption text-accent hover:underline"
               >
                 Все привычки
               </Link>
@@ -512,7 +512,7 @@ export function DashboardPage() {
                   <span
                     key={привычка.id}
                     className={cn(
-                      'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px]',
+                      'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-meta',
                       отмечена
                         ? 'border-transparent bg-good-soft text-good'
                         : 'border-line text-ink-2',
@@ -521,7 +521,7 @@ export function DashboardPage() {
                     {отмечена ? <CheckCircle2 size={14} /> : <Circle size={14} />}
                     {привычка.название}
                     {серия > 1 ? (
-                      <span className="tnum text-[11px] opacity-70">
+                      <span className="tnum text-micro opacity-70">
                         {серия} дн
                       </span>
                     ) : null}
@@ -551,8 +551,8 @@ function SignalRow({ сигнал }: { сигнал: Сигнал }) {
           <Иконка size={17} />
         </span>
         <div className="min-w-0">
-          <p className="text-[13.5px] font-medium text-ink">{сигнал.текст}</p>
-          <p className="mt-1 text-[12px] leading-relaxed text-ink-3">
+          <p className="text-meta font-medium text-ink">{сигнал.текст}</p>
+          <p className="mt-1 text-caption leading-relaxed text-ink-3">
             {сигнал.объяснение}
           </p>
           <Badge

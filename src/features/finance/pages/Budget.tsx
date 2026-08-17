@@ -163,10 +163,10 @@ export function BudgetPage() {
                 return (
                   <div key={категория.id} className="px-5 py-3.5">
                     <div className="flex items-baseline justify-between gap-3">
-                      <p className="min-w-0 truncate text-[14px] text-ink">
+                      <p className="min-w-0 truncate text-meta text-ink">
                         {категория.название}
                       </p>
-                      <span className="tnum shrink-0 text-[13px] text-ink-2">
+                      <span className="tnum shrink-0 text-meta text-ink-2">
                         {деньги(потрачено)} из {деньги(лимит)}
                         {превышено ? (
                           <span className="ml-2 text-bad">
@@ -205,7 +205,7 @@ export function BudgetPage() {
                 .map((категория) => (
                   <span
                     key={категория.id}
-                    className="tnum rounded-full border border-line px-3 py-1.5 text-[12.5px] text-ink-2"
+                    className="tnum rounded-full border border-line px-3 py-1.5 text-caption text-ink-2"
                   >
                     {категория.название} · {деньги(факт.get(категория.id) ?? 0)}
                   </span>

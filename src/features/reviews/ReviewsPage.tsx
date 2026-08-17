@@ -154,8 +154,8 @@ export function ReviewsPage() {
   return (
     <div className="anim-rise space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold text-ink">Обзоры</h1>
-        <p className="mt-0.5 text-[13px] text-ink-3">
+        <h1 className="text-h2 font-semibold text-ink">Обзоры</h1>
+        <p className="mt-0.5 text-meta text-ink-3">
           Место, где данные превращаются в решение. Показатели подставлены из
           записей — вводить их заново не нужно.
         </p>
@@ -252,7 +252,7 @@ export function ReviewsPage() {
 
         {показатели.задачПросрочено > 0 ? (
           <div className="border-t border-line px-5 py-3">
-            <p className="text-[12.5px] text-warn">
+            <p className="text-caption text-warn">
               Кроме этого, {показатели.задачПросрочено}{' '}
               {склонение(
                 показатели.задачПросрочено,
@@ -330,17 +330,17 @@ export function ReviewsPage() {
             {прошлые.map((обзор) => (
               <div key={обзор.id} className="px-5 py-3.5">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <span className="text-[13.5px] font-medium text-ink">
+                  <span className="text-meta font-medium text-ink">
                     {обзор.период}
                   </span>
-                  <span className="tnum text-[12px] text-ink-3">
+                  <span className="tnum text-caption text-ink-3">
                     задачи {обзор.показатели.задачСделано ?? 0}/
                     {обзор.показатели.задачВсего ?? 0} · поток{' '}
                     {деньги(обзор.показатели.поток ?? 0, { знак: true })}
                   </span>
                 </div>
                 {обзор.следующийШаг ? (
-                  <p className="mt-1 text-[12.5px] text-ink-2">
+                  <p className="mt-1 text-caption text-ink-2">
                     Следующий шаг: {обзор.следующийШаг}
                   </p>
                 ) : null}

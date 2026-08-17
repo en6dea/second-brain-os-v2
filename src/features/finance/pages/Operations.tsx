@@ -209,7 +209,7 @@ export function OperationsPage() {
             type="button"
             onClick={() => установитьТолькоНеразобранные((з) => !з)}
             className={cn(
-              'rounded-2 border px-3 py-1.5 text-[13px] transition-colors',
+              'rounded-2 border px-3 py-1.5 text-meta transition-colors',
               толькоНеразобранные
                 ? 'border-transparent bg-warn-soft text-warn'
                 : 'border-line text-ink-3 hover:text-ink-2',
@@ -252,14 +252,14 @@ export function OperationsPage() {
                   key={операция.id}
                   className="flex items-center gap-3 px-5 py-3 hover:bg-hover"
                 >
-                  <div className="w-[54px] shrink-0 text-[12px] text-ink-3">
+                  <div className="w-[54px] shrink-0 text-caption text-ink-3">
                     {деньКратко(операция.дата)}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13.5px] text-ink">
+                    <p className="truncate text-meta text-ink">
                       {операция.заметка || 'Без комментария'}
                     </p>
-                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11.5px] text-ink-3">
+                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-caption text-ink-3">
                       <span>{операция.тип}</span>
                       {операция.категорияId ? (
                         <span>· {имяКатегории.get(операция.категорияId)}</span>
@@ -281,7 +281,7 @@ export function OperationsPage() {
                   </div>
                   <div
                     className={cn(
-                      'tnum shrink-0 text-[14px] font-semibold',
+                      'tnum shrink-0 text-meta font-semibold',
                       операция.тип === 'доход' || операция.тип === 'возврат'
                         ? 'text-good'
                         : операция.тип === 'перевод'
@@ -326,7 +326,7 @@ export function OperationsPage() {
 
         {страниц > 1 ? (
           <div className="flex items-center justify-between border-t border-line px-5 py-3">
-            <span className="text-[12px] text-ink-3">
+            <span className="text-caption text-ink-3">
               {отобранные.length}{' '}
               {склонение(отобранные.length, 'операция', 'операции', 'операций')} ·
               страница {текущаяСтраница} из {страниц}
@@ -525,7 +525,7 @@ export function OperationsPage() {
           </>
         }
       >
-        <p className="text-[13.5px] text-ink-2">
+        <p className="text-meta text-ink-2">
           Операция на сумму {деньги(кУдалению?.сумма ?? null)} будет удалена.
           Расчётные остатки счетов пересчитаются. Отменить нельзя.
         </p>

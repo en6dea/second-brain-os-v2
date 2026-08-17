@@ -132,8 +132,8 @@ export function TradingPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Торговля</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Торговля</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Журнал нужен не для прибыли, а для проверки дисциплины
           </p>
         </div>
@@ -229,7 +229,7 @@ export function TradingPage() {
 
           {безОтметки > 0 ? (
             <div className="border-t border-line px-5 py-3">
-              <p className="text-[12.5px] text-ink-3">
+              <p className="text-caption text-ink-3">
                 У {безОтметки} {склонение(безОтметки, 'сделки', 'сделок', 'сделок')}{' '}
                 не отмечено, соблюдён ли план. Они не входят в процент дисциплины:
                 считать неотмеченное соблюдением было бы обманом себя.
@@ -253,7 +253,7 @@ export function TradingPage() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[14px] font-medium text-ink">
+                      <span className="text-meta font-medium text-ink">
                         {сделка.инструмент}
                       </span>
                       <Badge
@@ -280,7 +280,7 @@ export function TradingPage() {
                         <Badge тон="опасность">план нарушен</Badge>
                       )}
                     </div>
-                    <p className="tnum mt-1 text-[11.5px] text-ink-3">
+                    <p className="tnum mt-1 text-caption text-ink-3">
                       {деньКратко(сделка.открыта.slice(0, 10))}
                       {сделка.входЦена !== null ? ` · вход ${сделка.входЦена}` : ''}
                       {сделка.стопЦена !== null ? ` · стоп ${сделка.стопЦена}` : ''}
@@ -291,7 +291,7 @@ export function TradingPage() {
                   <div className="flex items-center gap-2">
                     <span
                       className={cn(
-                        'tnum text-[14px] font-semibold',
+                        'tnum text-meta font-semibold',
                         (сделка.результат ?? 0) > 0
                           ? 'text-good'
                           : (сделка.результат ?? 0) < 0
@@ -330,7 +330,7 @@ export function TradingPage() {
                         })
                       }
                     >
-                      <span className="text-[13px]">✎</span>
+                      <span className="text-meta">✎</span>
                     </IconButton>
                     <IconButton
                       подпись="Удалить сделку"
@@ -347,12 +347,12 @@ export function TradingPage() {
                 {сделка.причинаВхода || сделка.вывод ? (
                   <div className="mt-2 space-y-1">
                     {сделка.причинаВхода ? (
-                      <p className="text-[12.5px] whitespace-pre-wrap text-ink-2">
+                      <p className="text-caption whitespace-pre-wrap text-ink-2">
                         {сделка.причинаВхода}
                       </p>
                     ) : null}
                     {сделка.вывод ? (
-                      <p className="text-[12.5px] whitespace-pre-wrap text-ink-3">
+                      <p className="text-caption whitespace-pre-wrap text-ink-3">
                         Вывод: {сделка.вывод}
                       </p>
                     ) : null}

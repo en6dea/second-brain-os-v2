@@ -16,8 +16,8 @@ export function SmartReview({ цель }: { цель: Цель }) {
   return (
     <div className="rounded-3 border border-line bg-sunken p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[13px] font-medium text-ink">Разбор по SMART</p>
-        <span className="tnum text-[12.5px] text-ink-3">
+        <p className="text-meta font-medium text-ink">Разбор по SMART</p>
+        <span className="tnum text-caption text-ink-3">
           {разбор.выполнено} из {разбор.всего}
         </span>
       </div>
@@ -46,13 +46,13 @@ export function SmartReview({ цель }: { цель: Цель }) {
             <span className="min-w-0">
               <span
                 className={cn(
-                  'text-[12.5px] font-medium',
+                  'text-caption font-medium',
                   критерий.выполнен ? 'text-ink-2' : 'text-ink',
                 )}
               >
                 {критерий.название}
               </span>
-              <span className="block text-[12px] leading-relaxed text-ink-3">
+              <span className="block text-caption leading-relaxed text-ink-3">
                 {критерий.замечание}
               </span>
             </span>
@@ -62,7 +62,7 @@ export function SmartReview({ цель }: { цель: Цель }) {
 
       <div className="mt-3 flex items-start gap-2 border-t border-line pt-3">
         <ArrowRight size={14} className="mt-0.5 shrink-0 text-accent" />
-        <p className="text-[12.5px] leading-relaxed text-ink-2">
+        <p className="text-caption leading-relaxed text-ink-2">
           <span className="font-medium text-ink">Следующий шаг: </span>
           {разбор.следующийШаг}
         </p>
@@ -100,15 +100,15 @@ export function WhereToStart({
         }
       />
       <CardBody className="space-y-2.5">
-        <p className="flex items-center gap-2 text-[14px] font-medium text-ink">
+        <p className="flex items-center gap-2 text-meta font-medium text-ink">
           <CircleDot size={15} className="shrink-0 text-accent" />
           {слабая.цель.название}
         </p>
-        <p className="text-[13px] leading-relaxed text-ink-2">
+        <p className="text-meta leading-relaxed text-ink-2">
           Заполнено {слабая.разбор.выполнено} из {слабая.разбор.всего} критериев.{' '}
           {слабая.разбор.следующийШаг}
         </p>
-        <p className="text-[12px] text-ink-3">
+        <p className="text-caption text-ink-3">
           Откладывание чаще означает нерешённость, а не лень: пока цель звучит как
           намерение, браться не за что.
         </p>

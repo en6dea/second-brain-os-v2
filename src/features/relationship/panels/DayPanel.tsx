@@ -203,7 +203,7 @@ export function DayPanel({ дни, люди }: { дни: ДеньПартнёр�
           <CardBody className="border-t border-line">
             <ul className="space-y-2">
               {заметки.map((текст) => (
-                <li key={текст} className="text-[13px] leading-relaxed text-ink-2">
+                <li key={текст} className="text-meta leading-relaxed text-ink-2">
                   {текст}
                 </li>
               ))}
@@ -255,7 +255,7 @@ export function DayPanel({ дни, люди }: { дни: ДеньПартнёр�
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[13.5px] font-medium text-ink">
+                    <span className="text-meta font-medium text-ink">
                       {деньСловами(запись.дата)}
                     </span>
                     {запись.состояние ? (
@@ -302,7 +302,7 @@ export function DayPanel({ дни, люди }: { дни: ДеньПартнёр�
                   </div>
 
                   {запись.какаяПоддержкаНужна || запись.просьба ? (
-                    <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-2">
+                    <p className="mt-1.5 text-caption leading-relaxed text-ink-2">
                       {[запись.какаяПоддержкаНужна, запись.просьба]
                         .filter(Boolean)
                         .join(' · ')}

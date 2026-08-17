@@ -95,8 +95,8 @@ export function LearningPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Обучение</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Обучение</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Часы обучения — измеримая величина, и она должна быть видна
           </p>
         </div>
@@ -179,8 +179,8 @@ export function LearningPage() {
                       показывать={показыватьПостеры}
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[14px] text-ink">{материал.название}</p>
-                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11.5px] text-ink-3">
+                      <p className="text-meta text-ink">{материал.название}</p>
+                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-caption text-ink-3">
                         <Badge
                           тон={
                             материал.состояние === 'завершено'
@@ -220,7 +220,7 @@ export function LearningPage() {
                     </div>
                   ) : null}
                   {материал.заметка ? (
-                    <p className="mt-2 line-clamp-3 text-[12.5px] leading-relaxed whitespace-pre-wrap text-ink-3">
+                    <p className="mt-2 line-clamp-3 text-caption leading-relaxed whitespace-pre-wrap text-ink-3">
                       {материал.заметка}
                     </p>
                   ) : null}

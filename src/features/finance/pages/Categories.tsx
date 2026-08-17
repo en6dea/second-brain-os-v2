@@ -139,19 +139,19 @@ export function CategoriesPage() {
               <div key={категория.id} className="px-5 py-3.5">
                 <div className="flex items-center gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] text-ink">
+                    <p className="truncate text-meta text-ink">
                       {категория.название}
                     </p>
-                    <p className="mt-0.5 text-[11.5px] text-ink-3">
+                    <p className="mt-0.5 text-caption text-ink-3">
                       {категория.классПоУмолчанию ?? 'класс не задан'}
                       {категория.правила.length > 0
                         ? ` · правил импорта: ${категория.правила.length}`
                         : ''}
                     </p>
                   </div>
-                  <div className="tnum shrink-0 text-right text-[13.5px] text-ink">
+                  <div className="tnum shrink-0 text-right text-meta text-ink">
                     {деньги(факт)}
-                    <span className="block text-[11px] text-ink-3">
+                    <span className="block text-micro text-ink-3">
                       {категория.месячныйЛимит === null
                         ? 'лимит не задан'
                         : `из ${деньги(категория.месячныйЛимит)}`}
@@ -187,7 +187,7 @@ export function CategoriesPage() {
               key={категория.id}
               type="button"
               onClick={() => открыть(категория)}
-              className="rounded-full border border-line px-3 py-1.5 text-[13px] text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
+              className="rounded-full border border-line px-3 py-1.5 text-meta text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
             >
               {категория.название}
             </button>
@@ -207,7 +207,7 @@ export function CategoriesPage() {
                 key={категория.id}
                 type="button"
                 onClick={() => открыть(категория)}
-                className="rounded-full border border-line px-3 py-1.5 text-[12px] text-ink-3"
+                className="rounded-full border border-line px-3 py-1.5 text-caption text-ink-3"
               >
                 {категория.название}
               </button>

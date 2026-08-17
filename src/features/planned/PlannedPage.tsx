@@ -21,7 +21,7 @@ export function PlannedPage() {
           подпись={`Адрес ${pathname} ни на что не указывает`}
         />
         <CardBody>
-          <p className="text-[13.5px] leading-relaxed text-ink-2">
+          <p className="text-meta leading-relaxed text-ink-2">
             Возможно, ссылка устарела или в адресе опечатка. Ниже — всё, что есть в
             приложении.
           </p>
@@ -29,7 +29,7 @@ export function PlannedPage() {
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {МЕНЮ.map((группа) => (
               <div key={группа.название}>
-                <p className="mb-1.5 text-[10px] font-semibold tracking-[0.16em] text-ink-3 uppercase">
+                <p className="mb-1.5 text-micro font-semibold tracking-[0.16em] text-ink-3 uppercase">
                   {группа.название}
                 </p>
                 <ul className="space-y-1">
@@ -37,7 +37,7 @@ export function PlannedPage() {
                     <li key={пункт.путь}>
                       <Link
                         to={пункт.путь}
-                        className="inline-flex items-center gap-2 text-[13.5px] text-ink-2 hover:text-accent"
+                        className="inline-flex items-center gap-2 text-meta text-ink-2 hover:text-accent"
                       >
                         <пункт.иконка size={14} />
                         {пункт.название}

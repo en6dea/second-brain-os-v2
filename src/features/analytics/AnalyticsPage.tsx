@@ -159,8 +159,8 @@ export function AnalyticsPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Аналитика</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Аналитика</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Каждое число посчитано из записей. Общего «показателя жизни» здесь нет:
             без прозрачной формулы он ничего не значит.
           </p>
@@ -378,7 +378,7 @@ export function AnalyticsPage() {
           заголовок="Откуда взяты числа"
           подпись="Чтобы не приходилось верить на слово"
         />
-        <div className="space-y-1.5 px-5 pb-5 text-[12.5px] text-ink-3">
+        <div className="space-y-1.5 px-5 pb-5 text-caption text-ink-3">
           <p>· Денежный поток — сумма операций типа «доход» и «расход» за месяц.</p>
           <p>· Переводы между своими счетами и корректировки в поток не входят.</p>
           <p>

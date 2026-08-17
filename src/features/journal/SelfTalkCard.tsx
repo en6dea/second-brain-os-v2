@@ -129,11 +129,11 @@ export function SelfTalkCard({
 
       <CardBody className="space-y-4">
         <blockquote className="rounded-3 border border-accent-line bg-accent-soft px-4 py-3.5">
-          <p className="text-[15px] leading-relaxed font-medium text-ink">
+          <p className="text-body leading-relaxed font-medium text-ink">
             {утверждение.текст}
           </p>
           {утверждение.всего > 0 ? (
-            <p className="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-ink-3">
+            <p className="mt-1.5 flex items-center gap-1.5 text-caption text-ink-3">
               <MessageCircleQuestion size={12} />
               {утверждение.источник === 'своё'
                 ? 'ваша формулировка'
@@ -169,7 +169,7 @@ export function SelfTalkCard({
                   установитьСогласие(согласие === ответ.ключ ? null : ответ.ключ)
                 }
                 className={cn(
-                  'rounded-2 border px-3.5 py-2 text-[13px] font-medium transition-colors duration-150 active:scale-[0.97]',
+                  'rounded-2 border px-3.5 py-2 text-meta font-medium transition-colors duration-150 active:scale-[0.97]',
                   согласие === ответ.ключ
                     ? 'border-transparent bg-accent text-on-accent'
                     : 'border-line text-ink-2 hover:border-accent-line hover:bg-accent-soft',
@@ -182,7 +182,7 @@ export function SelfTalkCard({
         </Field>
 
         <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
-          <p className="text-[12.5px] text-ink-3">
+          <p className="text-caption text-ink-3">
             {сегодняшняя ? (
               <Badge тон="знание">записано сегодня</Badge>
             ) : (

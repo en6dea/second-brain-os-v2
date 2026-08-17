@@ -192,10 +192,10 @@ export function AccountsPage() {
                   className="flex flex-wrap items-center gap-3 px-5 py-3.5"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-medium text-ink">
+                    <p className="truncate text-meta font-medium text-ink">
                       {счёт.название}
                     </p>
-                    <p className="mt-0.5 flex flex-wrap items-center gap-2 text-[12px] text-ink-3">
+                    <p className="mt-0.5 flex flex-wrap items-center gap-2 text-caption text-ink-3">
                       <span>
                         {ТИПЫ.find((т) => т.ключ === счёт.тип)?.подпись ?? счёт.тип}
                       </span>
@@ -209,12 +209,12 @@ export function AccountsPage() {
                   </div>
 
                   <div className="text-right">
-                    <p className="tnum text-[15px] font-semibold text-ink">
+                    <p className="tnum text-body font-semibold text-ink">
                       {счёт.фактическийОстаток === null
                         ? 'не заполнен'
                         : деньги(счёт.фактическийОстаток)}
                     </p>
-                    <p className="tnum mt-0.5 text-[11px] text-ink-3">
+                    <p className="tnum mt-0.5 text-micro text-ink-3">
                       {расчёт === null
                         ? 'расчёт невозможен'
                         : расходится
@@ -368,7 +368,7 @@ export function AccountsPage() {
           </>
         }
       >
-        <p className="text-[13.5px] text-ink-2">
+        <p className="text-meta text-ink-2">
           Счёт «{кУдалению?.название}» будет удалён. Операции по нему{' '}
           <b className="text-ink">не удаляются</b> — они останутся в списке, но
           потеряют привязку к счёту. Отменить это действие нельзя.

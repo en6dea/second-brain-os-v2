@@ -176,8 +176,8 @@ export function HabitsPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Привычки</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Привычки</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             {активные.length}{' '}
             {склонение(активные.length, 'активная', 'активные', 'активных')}
           </p>
@@ -242,21 +242,21 @@ export function HabitsPage() {
             <table className="w-full min-w-[520px]">
               <thead>
                 <tr className="border-b border-line">
-                  <th className="px-5 py-2 text-left text-[11px] font-medium text-ink-3">
+                  <th className="px-5 py-2 text-left text-micro font-medium text-ink-3">
                     Привычка
                   </th>
                   {дниНедели.map((дата, индекс) => (
                     <th
                       key={дата}
                       className={cn(
-                        'w-10 py-2 text-center text-[11px] font-medium',
+                        'w-10 py-2 text-center text-micro font-medium',
                         дата === день ? 'text-accent' : 'text-ink-3',
                       )}
                     >
                       {ДНИ[индекс]}
                     </th>
                   ))}
-                  <th className="w-16 px-3 py-2 text-right text-[11px] font-medium text-ink-3">
+                  <th className="w-16 px-3 py-2 text-right text-micro font-medium text-ink-3">
                     Серия
                   </th>
                   <th className="w-10" />
@@ -282,12 +282,12 @@ export function HabitsPage() {
                         <button
                           type="button"
                           onClick={() => установитьЧерновик(привычка)}
-                          className="max-w-[200px] truncate text-left text-[13.5px] text-ink hover:text-accent"
+                          className="max-w-[200px] truncate text-left text-meta text-ink hover:text-accent"
                         >
                           {привычка.название}
                         </button>
                       </span>
-                      <span className="block text-[11px] text-ink-3">
+                      <span className="block text-micro text-ink-3">
                         {привычка.норма} {привычка.единица} · {привычка.частота}
                       </span>
                     </td>
@@ -301,7 +301,7 @@ export function HabitsPage() {
                         />
                       </td>
                     ))}
-                    <td className="tnum px-3 py-2.5 text-right text-[13px] text-ink-2">
+                    <td className="tnum px-3 py-2.5 text-right text-meta text-ink-2">
                       <StreakCount длина={длинаСерии(привычка, день)} />
                     </td>
                     <td className="px-2">
@@ -348,10 +348,10 @@ export function HabitsPage() {
               return (
                 <div key={привычка.id} className="px-5 py-3.5">
                   <div className="mb-2 flex items-baseline justify-between gap-3">
-                    <span className="truncate text-[13.5px] text-ink">
+                    <span className="truncate text-meta text-ink">
                       {привычка.название}
                     </span>
-                    <span className="tnum text-[12px] text-ink-3">
+                    <span className="tnum text-caption text-ink-3">
                       за 8 недель: {недели.reduce((и, н) => и + н.отмечено, 0)} из{' '}
                       {недели.reduce((и, н) => и + н.прошло, 0)}
                     </span>
@@ -383,7 +383,7 @@ export function HabitsPage() {
                           </span>
                           <span
                             className={cn(
-                              'text-[9.5px]',
+                              'text-micro',
                               текущая ? 'text-accent' : 'text-ink-3',
                             )}
                           >

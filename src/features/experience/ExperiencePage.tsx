@@ -196,8 +196,8 @@ export function ExperiencePage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Опыт и вызовы</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Опыт и вызовы</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Каждый месяц — один осознанно новый опыт и один вызов
           </p>
         </div>
@@ -208,7 +208,7 @@ export function ExperiencePage() {
           >
             <ChevronLeft size={17} />
           </IconButton>
-          <span className="min-w-[140px] text-center text-[14px] font-medium text-ink first-letter:uppercase">
+          <span className="min-w-[140px] text-center text-meta font-medium text-ink first-letter:uppercase">
             {месяцСловами(месяц)}
           </span>
           <IconButton
@@ -284,11 +284,11 @@ export function ExperiencePage() {
               <div key={опыт.id} className="px-5 py-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-medium text-ink">
+                    <p className="text-meta font-medium text-ink">
                       {опыт.название}
                     </p>
                     {опыт.описание ? (
-                      <p className="mt-1 text-[12.5px] whitespace-pre-wrap text-ink-2">
+                      <p className="mt-1 text-caption whitespace-pre-wrap text-ink-2">
                         {опыт.описание}
                       </p>
                     ) : null}
@@ -308,11 +308,11 @@ export function ExperiencePage() {
                       </Badge>
                     </div>
                     {опыт.итог ? (
-                      <p className="mt-2 rounded-2 bg-sunken px-3 py-2 text-[12.5px] whitespace-pre-wrap text-ink-2">
+                      <p className="mt-2 rounded-2 bg-sunken px-3 py-2 text-caption whitespace-pre-wrap text-ink-2">
                         {опыт.итог}
                       </p>
                     ) : опыт.состояние === 'получен' ? (
-                      <p className="mt-2 text-[12px] text-warn">
+                      <p className="mt-2 text-caption text-warn">
                         Опыт получен, но разбор не записан. Без него опыт остаётся
                         событием, а не выводом.
                       </p>
@@ -323,7 +323,7 @@ export function ExperiencePage() {
                       подпись="Изменить опыт"
                       onClick={() => установитьЧерновикОпыта(опыт)}
                     >
-                      <span className="text-[13px]">✎</span>
+                      <span className="text-meta">✎</span>
                     </IconButton>
                     <IconButton
                       подпись="Удалить опыт"
@@ -378,10 +378,10 @@ export function ExperiencePage() {
                 <div key={вызов.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[14px] font-medium text-ink">
+                      <p className="text-meta font-medium text-ink">
                         {вызов.название}
                       </p>
-                      <p className="mt-0.5 text-[12px] text-ink-3">
+                      <p className="mt-0.5 text-caption text-ink-3">
                         {отмечено} из {дниМесяца.length}{' '}
                         {склонение(дниМесяца.length, 'дня', 'дней', 'дней')} ·
                         прошло {прошло}
@@ -393,7 +393,7 @@ export function ExperiencePage() {
                         подпись="Изменить вызов"
                         onClick={() => установитьЧерновикВызова(вызов)}
                       >
-                        <span className="text-[13px]">✎</span>
+                        <span className="text-meta">✎</span>
                       </IconButton>
                       <IconButton
                         подпись="Удалить вызов"

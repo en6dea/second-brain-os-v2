@@ -260,8 +260,8 @@ export function CalendarPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Календарь</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Календарь</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Задачи, события и платежи на одной сетке
           </p>
         </div>
@@ -272,7 +272,7 @@ export function CalendarPage() {
           >
             <ChevronLeft size={17} />
           </IconButton>
-          <span className="min-w-[150px] text-center text-[14px] font-medium text-ink first-letter:uppercase">
+          <span className="min-w-[150px] text-center text-meta font-medium text-ink first-letter:uppercase">
             {месяцСловами(месяц)}
           </span>
           <IconButton
@@ -289,7 +289,7 @@ export function CalendarPage() {
           заголовок={`${отметокЗаМесяц} ${склонение(отметокЗаМесяц, 'запись', 'записи', 'записей')} в этом месяце`}
           подпись="Нажмите на день, чтобы увидеть подробности"
           действие={
-            <div className="flex flex-wrap gap-2 text-[11px] text-ink-3">
+            <div className="flex flex-wrap gap-2 text-micro text-ink-3">
               {(
                 [
                   ['задача', 'задачи'],
@@ -311,7 +311,7 @@ export function CalendarPage() {
           {ДНИ_НЕДЕЛИ.map((имя) => (
             <div
               key={имя}
-              className="bg-card px-2 py-1.5 text-center text-[10.5px] font-medium text-ink-3"
+              className="bg-card px-2 py-1.5 text-center text-micro font-medium text-ink-3"
             >
               {имя}
             </div>
@@ -334,7 +334,7 @@ export function CalendarPage() {
               >
                 <span
                   className={cn(
-                    'tnum flex h-5 w-5 items-center justify-center rounded-full text-[11.5px]',
+                    'tnum flex h-5 w-5 items-center justify-center rounded-full text-caption',
                     сегодняшний
                       ? 'bg-accent font-semibold text-on-accent'
                       : 'text-ink-2',
@@ -346,7 +346,7 @@ export function CalendarPage() {
                   {отметки.slice(0, 3).map((отметка) => (
                     <span
                       key={отметка.id}
-                      className="flex items-center gap-1 truncate text-[10.5px] text-ink-2"
+                      className="flex items-center gap-1 truncate text-micro text-ink-2"
                     >
                       <span
                         className={cn(
@@ -366,7 +366,7 @@ export function CalendarPage() {
                     </span>
                   ))}
                   {отметки.length > 3 ? (
-                    <span className="text-[10px] text-ink-3">
+                    <span className="text-micro text-ink-3">
                       ещё {отметки.length - 3}
                     </span>
                   ) : null}
@@ -406,13 +406,13 @@ export function CalendarPage() {
                   >
                     <p
                       className={cn(
-                        'truncate text-[13.5px] hover:text-accent',
+                        'truncate text-meta hover:text-accent',
                         отметка.сделано ? 'text-ink-3 line-through' : 'text-ink',
                       )}
                     >
                       {отметка.название}
                     </p>
-                    <p className="text-[11.5px] text-ink-3">{отметка.подпись}</p>
+                    <p className="text-caption text-ink-3">{отметка.подпись}</p>
                   </Link>
                   <Badge тон={ТОН[отметка.вид]}>{отметка.вид}</Badge>
                 </div>
@@ -471,7 +471,7 @@ export function CalendarPage() {
         )}
       </Dialog>
 
-      <p className="text-[12px] text-ink-3">
+      <p className="text-caption text-ink-3">
         Ближайший день с записями:{' '}
         {(() => {
           for (let шаг = 0; шаг < 90; шаг += 1) {

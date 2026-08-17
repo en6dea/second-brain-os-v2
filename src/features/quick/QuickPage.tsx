@@ -72,8 +72,8 @@ export function QuickPage() {
   return (
     <div className="anim-rise mx-auto max-w-xl space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold text-ink">Быстрый ввод</h1>
-        <p className="mt-0.5 text-[13px] text-ink-3">
+        <h1 className="text-h2 font-semibold text-ink">Быстрый ввод</h1>
+        <p className="mt-0.5 text-meta text-ink-3">
           Одна строка вместо формы. Работает с телефона через «Команды»
         </p>
       </div>
@@ -81,7 +81,7 @@ export function QuickPage() {
       {состояние.вид === 'готово' ? (
         <Card>
           <CardBody className="space-y-3">
-            <p className="flex items-center gap-2 text-[15px] font-medium text-ink">
+            <p className="flex items-center gap-2 text-body font-medium text-ink">
               <span
                 className={
                   состояние.итог.записано
@@ -99,7 +99,7 @@ export function QuickPage() {
             </p>
 
             {состояние.итог.дополнено ? (
-              <p className="text-[13px] leading-relaxed text-ink-2">
+              <p className="text-meta leading-relaxed text-ink-2">
                 {состояние.итог.дополнено}
               </p>
             ) : null}
@@ -128,11 +128,11 @@ export function QuickPage() {
       {состояние.вид === 'ошибка' ? (
         <Card>
           <CardBody className="space-y-2">
-            <p className="flex items-center gap-2 text-[14px] font-medium text-bad">
+            <p className="flex items-center gap-2 text-meta font-medium text-bad">
               <TriangleAlert size={15} />
               {состояние.текст}
             </p>
-            <p className="text-[13px] text-ink-2">
+            <p className="text-meta text-ink-2">
               Правильно так: <code className="text-ink">{состояние.пример}</code>
             </p>
           </CardBody>
@@ -170,7 +170,7 @@ export function QuickPage() {
                 key={слово}
                 type="button"
                 onClick={() => установитьСтроку(пример)}
-                className="rounded-2 border border-line px-2.5 py-1.5 text-[12px] text-ink-2 transition-colors hover:border-accent-line hover:bg-accent-soft hover:text-ink"
+                className="rounded-2 border border-line px-2.5 py-1.5 text-caption text-ink-2 transition-colors hover:border-accent-line hover:bg-accent-soft hover:text-ink"
               >
                 {пример}
               </button>
@@ -189,7 +189,7 @@ export function QuickPage() {
           </Badge>}
         />
         <CardBody>
-          <ol className="space-y-2 text-[13px] leading-relaxed text-ink-2">
+          <ol className="space-y-2 text-meta leading-relaxed text-ink-2">
             <li>
               <span className="font-medium text-ink">1.</span> Откройте приложение
               «Команды» → плюс → «Добавить действие» → «Открыть URL».
@@ -197,7 +197,7 @@ export function QuickPage() {
             <li>
               <span className="font-medium text-ink">2.</span> Впишите адрес этой
               страницы и после решётки — команду. Например:
-              <code className="mt-1 block break-all rounded-2 bg-sunken px-2.5 py-1.5 text-[12px] text-ink">
+              <code className="mt-1 block break-all rounded-2 bg-sunken px-2.5 py-1.5 text-caption text-ink">
                 {`${window.location.origin}${window.location.pathname}#расход;350;кофе`}
               </code>
             </li>
@@ -212,7 +212,7 @@ export function QuickPage() {
               блокировки или повесить на двойное касание по крышке телефона.
             </li>
           </ol>
-          <p className="mt-3 text-[12px] leading-relaxed text-ink-3">
+          <p className="mt-3 text-caption leading-relaxed text-ink-3">
             Команда идёт после решётки намеренно: всё, что стоит после «?», уходит
             на сервер в запросе и попадает в его журналы. После «#» браузер не
             отправляет ничего — суммы и заметки остаются на устройстве.

@@ -12,58 +12,57 @@
    ========================================================================== */
 
 :root {
-  /* --- Поверхности: минеральная бумага, не сине-белая и не кремовая --- */
-  --surface-bg: #eff1f0;
-  --surface-card: #ffffff;
-  --surface-over: #ffffff;
-  --surface-sunken: #e6e9e8;
-  --surface-hover: #e9ecea;
+  /* --- Поверхности: костяная бумага, карточка чуть теплее фона --- */
+  --surface-bg: #f4f2ee;
+  --surface-card: #fffefc;
+  --surface-over: #fffefc;
+  --surface-sunken: #edeae4;
+  --surface-hover: #eeebe5;
 
-  /* --- Границы --- */
-  --line-soft: #dde1df;
-  --line-strong: #c6ccc9;
+  /* --- Границы: тонкие, почти незаметные --- */
+  --line-soft: #e4e0d8;
+  --line-strong: #cfcabf;
 
-  /* --- Текст: три ступени, каждая проходит WCAG AA на всех поверхностях.
-     Порог проверяется расчётом: `npm run check:contrast`. --- */
-  --ink: #161a18;
-  --ink-2: #4a534f;
-  --ink-3: #5f6863;
+  /* --- Текст: графит --- */
+  --ink: #1e1f23;
+  --ink-2: #5b5d63;
+  --ink-3: #8a8c92;
   --ink-on-accent: #ffffff;
 
-  /* --- Акцент: петроль, патина приборного стекла --- */
-  --accent: #0f6e6b;
-  --accent-hover: #0b5654;
-  --accent-soft: #e0eeed;
-  --accent-line: #a9cfcd;
+  /* --- Акцент: лесной нефрит --- */
+  --accent: #22a06b;
+  --accent-hover: #1b8358;
+  --accent-soft: #e6f4ed;
+  --accent-line: #b3ddc8;
 
   /* --- Смысловые состояния --- */
-  --good: #2f7d4f;
-  --good-soft: #e2f0e7;
-  --bad: #b33a3a;
-  --bad-soft: #f7e6e6;
-  --warn: #a56312;
-  --warn-soft: #fbeddb;
-  --info: #2a5f9e;
-  --info-soft: #e6eef8;
-  --know: #6b4bb0;
-  --know-soft: #ece6f8;
+  --good: #22a06b;
+  --good-soft: #e6f4ed;
+  --bad: #ff6b6b;
+  --bad-soft: #ffeceb;
+  --warn: #f5a623;
+  --warn-soft: #fef2e0;
+  --info: #2563eb;
+  --info-soft: #e7edfd;
+  --know: #a78bfa;
+  --know-soft: #f0ebfe;
 
-  /* --- Тени: короткие и низкие, как у приборной панели --- */
-  --shade-1: 0 1px 2px rgba(22, 26, 24, 0.06);
-  --shade-2: 0 3px 12px -4px rgba(22, 26, 24, 0.12);
-  --shade-3: 0 16px 44px -14px rgba(22, 26, 24, 0.22);
+  /* --- Тени: мягкие и редкие --- */
+  --shade-1: 0 1px 2px rgba(30, 31, 35, 0.05);
+  --shade-2: 0 4px 16px -6px rgba(30, 31, 35, 0.1);
+  --shade-3: 0 20px 48px -16px rgba(30, 31, 35, 0.18);
 
-  /* --- Радиусы: сдержаннее прежних, приборные --- */
-  --r1: 6px;
-  --r2: 9px;
-  --r3: 12px;
-  --r4: 14px;
-  --r5: 20px;
+  /* --- Радиусы: карточки крупные, контролы сдержанные --- */
+  --r1: 8px;
+  --r2: 12px;
+  --r3: 14px;
+  --r4: 20px;
+  --r5: 24px;
 
-  /* --- Движение --- */
-  --t-fast: 110ms;
-  --t-base: 190ms;
-  --t-slow: 320ms;
+  /* --- Движение: живое, но тихое --- */
+  --t-fast: 120ms;
+  --t-base: 180ms;
+  --t-slow: 220ms;
   --ease: cubic-bezier(0.22, 0.8, 0.24, 1);
 
   /* --- Штриховка «неизвестно» --- */
@@ -74,44 +73,6 @@
   );
 
   color-scheme: light;
-}
-
-[data-theme='dark'] {
-  --surface-bg: #111210;
-  --surface-card: #191b19;
-  --surface-over: #20231f;
-  --surface-sunken: #151714;
-  --surface-hover: #22251f;
-
-  --line-soft: #2a2d28;
-  --line-strong: #3b403a;
-
-  --ink: #e8ebe7;
-  --ink-2: #9aa39d;
-  --ink-3: #868f8b;
-  --ink-on-accent: #06201f;
-
-  --accent: #3fb5ae;
-  --accent-hover: #5ac9c2;
-  --accent-soft: #122b2a;
-  --accent-line: #235450;
-
-  --good: #59bd82;
-  --good-soft: #12251a;
-  --bad: #e0706c;
-  --bad-soft: #2b1817;
-  --warn: #d69a4e;
-  --warn-soft: #2a2114;
-  --info: #6e9fdd;
-  --info-soft: #14202e;
-  --know: #a288e6;
-  --know-soft: #1d182c;
-
-  --shade-1: 0 1px 2px rgba(0, 0, 0, 0.45);
-  --shade-2: 0 3px 14px -5px rgba(0, 0, 0, 0.65);
-  --shade-3: 0 20px 52px -18px rgba(0, 0, 0, 0.8);
-
-  color-scheme: dark;
 }
 
 @theme inline {
@@ -156,23 +117,30 @@
   --shadow-3: var(--shade-3);
 
   /* Три роли шрифта: заголовок, текст, показания прибора */
-  --font-display: 'Golos Text', 'Onest', system-ui, sans-serif;
-  --font-sans: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --font-display: 'Manrope', system-ui, sans-serif;
+  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Manrope', system-ui, sans-serif;
 
   /* --- Шкала размеров текста ---
      Восемь ступеней вместо девятнадцати подобранных на глаз значений.
      Имя называет роль, а не число: размер подписи меняется в одном месте.
      Новый текст берёт только эти классы; `npm run check:scale` не даёт
      завести двадцатый произвольный размер. --- */
-  --text-micro: 10px; /* единица над числом, kbd */
-  --text-caption: 11px; /* метаданные, надзаголовки разделов */
-  --text-meta: 12.5px; /* вторичный текст рядом с основным */
-  --text-body: 13.5px; /* основной текст интерфейса */
-  --text-lead: 15px; /* поля ввода, заметный текст */
-  --text-read: 17px; /* показание малое */
-  --text-gauge: 20px; /* показание крупное */
-  --text-display: 26px; /* число, ради которого открыли экран */
+  /* Шкала по референсу: шесть ступеней и единица над числом. */
+  --text-micro: 11px; /* единица над показанием, kbd */
+  --text-micro--line-height: 14px;
+  --text-caption: 12px; /* подписи, метаданные, надзаголовки */
+  --text-caption--line-height: 16px;
+  --text-meta: 14px; /* вторичный текст */
+  --text-meta--line-height: 20px;
+  --text-body: 16px; /* основной текст интерфейса */
+  --text-body--line-height: 24px;
+  --text-h3: 20px; /* заголовок карточки */
+  --text-h3--line-height: 28px;
+  --text-h2: 24px; /* заголовок раздела */
+  --text-h2--line-height: 32px;
+  --text-h1: 32px; /* заголовок экрана */
+  --text-h1--line-height: 40px;
 }
 
 /* --- База --- */
@@ -187,13 +155,13 @@ body {
   background: var(--surface-bg);
   color: var(--ink);
   font-family:
-    'Onest',
+    'Manrope',
     system-ui,
     -apple-system,
     'Segoe UI',
     sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 24px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   transition:
@@ -204,13 +172,14 @@ body {
 h1,
 h2,
 h3 {
-  font-family: 'Golos Text', 'Onest', system-ui, sans-serif;
+  font-family: var(--font-display);
   letter-spacing: -0.011em;
 }
 
 /* Показания прибора: все числа моноширинные и одинаковой ширины */
 .tnum {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
   letter-spacing: -0.02em;
@@ -218,8 +187,9 @@ h3 {
 
 /* Надзаголовок-единица: что именно меряет число */
 .unit {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -354,10 +324,6 @@ h3 {
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   will-change: transform;
-}
-
-[data-theme='dark'] .дрейф {
-  opacity: 0.085;
 }
 
 /* --- Импульс: кольцо расходится от выполненной отметки --- */

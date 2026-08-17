@@ -29,7 +29,6 @@ import {
   объём,
   состояниеХранилища,
 } from '@/core/db/Persistence'
-import { useТема, type РежимТемы } from '@/app/providers/theme'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { деньги, рублиВКопейки, копейкиВРубли } from '@/core/money/Money'
 import {
@@ -42,20 +41,12 @@ import {
   Dialog,
   Switch,
   Field,
-  Segmented,
   CardHeader,
   CardBody,
 } from '@/design-system/components'
 
-const ТЕМЫ: { ключ: РежимТемы; подпись: string }[] = [
-  { ключ: 'light', подпись: 'Светлая' },
-  { ключ: 'dark', подпись: 'Тёмная' },
-  { ключ: 'system', подпись: 'Как в системе' },
-]
-
 export function SettingsPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
-  const { режим, установить } = useТема()
 
   const [имя, установитьИмя] = useState<string | null>(null)
   const [резерв, установитьРезерв] = useState<string | null>(null)
@@ -164,8 +155,8 @@ export function SettingsPage() {
   return (
     <div className="anim-rise space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold text-ink">Настройки</h1>
-        <p className="mt-0.5 text-[13px] text-ink-3">
+        <h1 className="text-h2 font-semibold text-ink">Настройки</h1>
+        <p className="mt-0.5 text-meta text-ink-3">
           Данные хранятся в браузере на этом устройстве. Никуда не отправляются.
         </p>
       </div>
@@ -173,21 +164,10 @@ export function SettingsPage() {
       {ошибка ? (
         <Card className="border-bad/40">
           <CardBody className="pt-5">
-            <p className="text-[13px] text-bad">{ошибка}</p>
+            <p className="text-meta text-bad">{ошибка}</p>
           </CardBody>
         </Card>
       ) : null}
-
-      {/* --- Внешний вид --- */}
-      <Card>
-        <CardHeader
-          заголовок="Внешний вид"
-          подпись="Тема запоминается на этом устройстве"
-        />
-        <CardBody>
-          <Segmented значения={ТЕМЫ} выбрано={режим} наВыбор={установить} />
-        </CardBody>
-      </Card>
 
       {/* --- Профиль --- */}
       <Card>
@@ -250,7 +230,7 @@ export function SettingsPage() {
               Сохранить
             </Button>
           </div>
-          <p className="mt-3 text-[12.5px] text-ink-3">
+          <p className="mt-3 text-caption text-ink-3">
             Сейчас: {деньги(данные.настройки.минимальныйРезерв)}
           </p>
         </CardBody>
@@ -303,7 +283,7 @@ export function SettingsPage() {
             </label>
           </div>
 
-          <p className="mt-3 text-[12.5px] text-ink-3">
+          <p className="mt-3 text-caption text-ink-3">
             «Дополнить» не создаёт дублей: запись с тем же идентификатором
             обновляется. «Заменить» очищает таблицы из файла, но перед этим
             автоматически сохраняет текущее состояние отдельным файлом.
@@ -311,10 +291,10 @@ export function SettingsPage() {
 
           {отчётВосстановления ? (
             <div className="mt-4 rounded-3 border border-line bg-sunken p-4">
-              <p className="mb-2 text-[13px] font-medium text-ink">
+              <p className="mb-2 text-meta font-medium text-ink">
                 Отчёт о восстановлении
               </p>
-              <ul className="space-y-1 text-[12.5px] text-ink-2">
+              <ul className="space-y-1 text-caption text-ink-2">
                 {отчётВосстановления.map((строка) => (
                   <li key={строка.таблица}>
                     {строка.таблица}: добавлено {строка.добавлено}, обновлено{' '}
@@ -352,10 +332,10 @@ export function SettingsPage() {
 
           {отчётПереноса ? (
             <div className="mt-4 rounded-3 border border-good/30 bg-good-soft p-4">
-              <p className="mb-2 text-[13px] font-medium text-ink">
+              <p className="mb-2 text-meta font-medium text-ink">
                 Перенос завершён
               </p>
-              <ul className="space-y-1 text-[12.5px] text-ink-2">
+              <ul className="space-y-1 text-caption text-ink-2">
                 {отчётПереноса.строки.map((строка) => (
                   <li key={строка.название}>
                     {строка.название}: {строка.перенесено} / {строка.из}
@@ -366,7 +346,7 @@ export function SettingsPage() {
                 ))}
               </ul>
               {отчётПереноса.предупреждения.length > 0 ? (
-                <ul className="mt-2 space-y-1 text-[12.5px] text-warn">
+                <ul className="mt-2 space-y-1 text-caption text-warn">
                   {отчётПереноса.предупреждения.map((текст) => (
                     <li key={текст}>· {текст}</li>
                   ))}
@@ -438,7 +418,7 @@ export function SettingsPage() {
         <CardBody>
           <div className="mb-4 rounded-3 border border-line bg-sunken px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[13px] text-ink">
+              <span className="text-meta text-ink">
                 {данные.хранилище.постоянное
                   ? 'Хранение постоянное'
                   : 'Хранение расходное'}
@@ -447,12 +427,12 @@ export function SettingsPage() {
                 {данные.хранилище.постоянное ? 'защищено' : 'может быть стёрто'}
               </Badge>
             </div>
-            <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-3">
+            <p className="mt-1.5 text-caption leading-relaxed text-ink-3">
               {данные.хранилище.постоянное
                 ? 'Браузер обещал не удалять эти данные при нехватке места.'
                 : 'Браузер вправе стереть хранилище при нехватке места — данные откатятся без предупреждения. Разрешение запрашивается при запуске; браузер может отказать, пока сайт не установлен как приложение или не добавлен в закладки.'}
             </p>
-            <p className="tnum mt-1.5 text-[12px] text-ink-3">
+            <p className="tnum mt-1.5 text-caption text-ink-3">
               Занято: {объём(данные.хранилище.занято)}
               {данные.хранилище.доступно !== null
                 ? ` из ${объём(данные.хранилище.доступно)}`
@@ -475,7 +455,7 @@ export function SettingsPage() {
               </Button>
             ) : null}
           </div>
-          <div className="grid gap-x-6 gap-y-1 text-[12.5px] sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-x-6 gap-y-1 text-caption sm:grid-cols-2 lg:grid-cols-3">
             {ТАБЛИЦЫ
               .filter((имяТаблицы) => (данные.количества[имяТаблицы] ?? 0) > 0)
               .map((имяТаблицы) => (
@@ -491,7 +471,7 @@ export function SettingsPage() {
               ))}
           </div>
           {всегоЗаписей === 0 ? (
-            <p className="text-[13px] text-ink-3">База пуста.</p>
+            <p className="text-meta text-ink-3">База пуста.</p>
           ) : null}
         </CardBody>
       </Card>
@@ -542,7 +522,7 @@ export function SettingsPage() {
             </div>
 
             {разборСтарого.предупреждения.length > 0 ? (
-              <ul className="space-y-1 rounded-3 bg-warn-soft px-4 py-3 text-[12.5px] text-warn">
+              <ul className="space-y-1 rounded-3 bg-warn-soft px-4 py-3 text-caption text-warn">
                 {разборСтарого.предупреждения.map((текст) => (
                   <li key={текст}>· {текст}</li>
                 ))}
@@ -550,7 +530,7 @@ export function SettingsPage() {
             ) : null}
 
             <div className="overflow-hidden rounded-3 border border-line">
-              <table className="w-full text-[12.5px]">
+              <table className="w-full text-caption">
                 <thead className="bg-sunken">
                   <tr>
                     <th className="px-3 py-2 text-left font-medium text-ink-3">
@@ -578,7 +558,7 @@ export function SettingsPage() {
               </table>
             </div>
 
-            <p className="text-[12.5px] text-ink-3">
+            <p className="text-caption text-ink-3">
               Перед записью приложение автоматически сохранит текущие данные
               отдельным файлом. Исходный файл прежней версии не изменяется.
             </p>
@@ -617,7 +597,7 @@ export function SettingsPage() {
           </>
         }
       >
-        <p className="text-[13.5px] text-ink-2">
+        <p className="text-meta text-ink-2">
           Будут удалены все {всегоЗаписей} записей: задачи, цели, привычки, счета,
           операции, обязательства, знания и дневник. Перед удалением автоматически
           сохранится файл с копией — не закрывайте окно, пока он не скачается.

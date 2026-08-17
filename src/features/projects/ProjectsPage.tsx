@@ -117,8 +117,8 @@ export function ProjectsPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Проекты</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Проекты</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Между целью и задачей: набор дел с результатом и сроком
           </p>
         </div>
@@ -214,7 +214,7 @@ export function ProjectsPage() {
                           })
                         }
                       >
-                        <span className="text-[13px]">✎</span>
+                        <span className="text-meta">✎</span>
                       </IconButton>
                       <IconButton
                         подпись="Удалить проект"
@@ -231,7 +231,7 @@ export function ProjectsPage() {
                 <div className="space-y-3 px-5 pb-5">
                   {задачи.length > 0 ? (
                     <div>
-                      <div className="mb-1.5 flex items-baseline justify-between text-[12px]">
+                      <div className="mb-1.5 flex items-baseline justify-between text-caption">
                         <span className="text-ink-3">Задачи</span>
                         <span className="tnum text-ink-2">
                           {сделано} из {задачи.length} · {доля ?? 0}%
@@ -244,7 +244,7 @@ export function ProjectsPage() {
                       />
                     </div>
                   ) : (
-                    <p className="rounded-2 bg-warn-soft px-3 py-2 text-[12px] text-warn">
+                    <p className="rounded-2 bg-warn-soft px-3 py-2 text-caption text-warn">
                       У проекта нет ни одной задачи. Пока это только намерение.
                     </p>
                   )}
@@ -376,7 +376,7 @@ export function ProjectsPage() {
               <div className="flex flex-wrap gap-1.5">
                 {данные.цели.filter((ц) => ц.состояние === 'активна').length ===
                 0 ? (
-                  <p className="text-[12.5px] text-ink-3">
+                  <p className="text-caption text-ink-3">
                     Активных целей нет — сначала создайте цель.
                   </p>
                 ) : (
@@ -398,8 +398,8 @@ export function ProjectsPage() {
                           }
                           className={
                             выбрана
-                              ? 'rounded-full border border-transparent bg-accent-soft px-3 py-1.5 text-[12.5px] text-accent'
-                              : 'rounded-full border border-line px-3 py-1.5 text-[12.5px] text-ink-2 hover:border-line-strong'
+                              ? 'rounded-full border border-transparent bg-accent-soft px-3 py-1.5 text-caption text-accent'
+                              : 'rounded-full border border-line px-3 py-1.5 text-caption text-ink-2 hover:border-line-strong'
                           }
                         >
                           {цель.название}

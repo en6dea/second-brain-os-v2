@@ -157,16 +157,16 @@ export function CommandMenu() {
               }
             }}
             placeholder="Найти запись или перейти в раздел"
-            className="w-full bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-3"
+            className="w-full bg-transparent text-body text-ink outline-none placeholder:text-ink-3"
           />
-          <kbd className="hidden rounded border border-line bg-sunken px-1.5 py-0.5 text-[10px] text-ink-3 sm:block">
+          <kbd className="hidden rounded border border-line bg-sunken px-1.5 py-0.5 text-micro text-ink-3 sm:block">
             Esc
           </kbd>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto py-2">
           {строки.length === 0 ? (
-            <p className="px-4 py-8 text-center text-[13px] text-ink-3">
+            <p className="px-4 py-8 text-center text-meta text-ink-3">
               {запрос.trim().length < 2
                 ? 'Введите хотя бы два символа'
                 : 'Ничего не найдено'}
@@ -174,7 +174,7 @@ export function CommandMenu() {
           ) : (
             Object.entries(группы).map(([название, элементы]) => (
               <div key={название} className="mb-1">
-                <p className="px-4 py-1 text-[10px] font-semibold tracking-[0.14em] text-ink-3 uppercase">
+                <p className="px-4 py-1 text-micro font-semibold tracking-[0.14em] text-ink-3 uppercase">
                   {название}
                 </p>
                 {элементы.map((строка) => {
@@ -192,10 +192,10 @@ export function CommandMenu() {
                       )}
                     >
                       <span className="min-w-0">
-                        <span className="block truncate text-[13.5px] text-ink">
+                        <span className="block truncate text-meta text-ink">
                           {строка.заголовок}
                         </span>
-                        <span className="block truncate text-[11.5px] text-ink-3">
+                        <span className="block truncate text-caption text-ink-3">
                           {строка.подпись}
                         </span>
                       </span>

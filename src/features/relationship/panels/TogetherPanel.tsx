@@ -170,12 +170,12 @@ export function TogetherPanel({
 
   const карточкаОпыта = (запись: Опыт | null, чей: string, подпись: string) => (
     <div className="rounded-3 border border-line p-4">
-      <p className="text-[11px] font-semibold tracking-[0.14em] text-ink-3 uppercase">
+      <p className="text-micro font-semibold tracking-[0.14em] text-ink-3 uppercase">
         {подпись}
       </p>
       {запись ? (
         <>
-          <p className="mt-1.5 text-[14px] font-medium text-ink">{запись.название}</p>
+          <p className="mt-1.5 text-meta font-medium text-ink">{запись.название}</p>
           <div className="mt-1.5 flex items-center gap-2">
             <Badge тон={запись.состояние === 'получен' ? 'успех' : 'нейтральный'}>
               {запись.состояние}
@@ -190,14 +190,14 @@ export function TogetherPanel({
             </Button>
           </div>
           {запись.итог ? (
-            <p className="mt-2 text-[12.5px] leading-relaxed text-ink-2">
+            <p className="mt-2 text-caption leading-relaxed text-ink-2">
               {запись.итог}
             </p>
           ) : null}
         </>
       ) : (
         <>
-          <p className="mt-1.5 text-[13px] text-ink-3">
+          <p className="mt-1.5 text-meta text-ink-3">
             На этот месяц ничего не выбрано
           </p>
           <Button
@@ -286,7 +286,7 @@ export function TogetherPanel({
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[13.5px] font-medium text-ink">
+                    <span className="text-meta font-medium text-ink">
                       {дело.название}
                     </span>
                     <Badge тон={ТОН_СОСТОЯНИЯ[дело.состояние]}>{дело.состояние}</Badge>
@@ -297,7 +297,7 @@ export function TogetherPanel({
                     ) : null}
                   </div>
 
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[12px] text-ink-3">
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-caption text-ink-3">
                     {дело.дата ? <span>{деньКратко(дело.дата)}</span> : null}
                     {дело.время ? <span>{дело.время}</span> : null}
                     {дело.вид ? <span>{дело.вид}</span> : null}
@@ -310,7 +310,7 @@ export function TogetherPanel({
                   </div>
 
                   {дело.впечатление ? (
-                    <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-2">
+                    <p className="mt-1.5 text-caption leading-relaxed text-ink-2">
                       {дело.впечатление}
                     </p>
                   ) : null}

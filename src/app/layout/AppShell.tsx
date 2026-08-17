@@ -7,7 +7,6 @@ import { Topbar } from './Topbar'
 import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
 import { useИнтерфейс } from '@/app/providers/ui'
-import { слушатьСистемнуюТему } from '@/app/providers/theme'
 import { подготовитьПервыйЗапуск, читатьПрофиль } from '@/core/db/repo'
 import { запроситьПостоянноеХранение } from '@/core/db/Persistence'
 import { cn } from '@/design-system/classNames'
@@ -40,7 +39,6 @@ export function AppShell() {
 
   const профиль = useLiveQuery(() => читатьПрофиль(), [])
 
-  useEffect(() => слушатьСистемнуюТему(), [])
 
   useEffect(() => {
     const наКлавишу = (событие: KeyboardEvent) => {
@@ -106,7 +104,7 @@ export function AppShell() {
             end={пункт.путь === '/'}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center gap-0.5 py-2 text-[10px] transition-colors',
+                'flex flex-col items-center gap-0.5 py-2 text-micro transition-colors',
                 isActive ? 'text-accent' : 'text-ink-3',
               )
             }
@@ -123,7 +121,7 @@ export function AppShell() {
       {уведомление ? (
         <div
           role="status"
-          className="anim-pop fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-3 border border-line bg-over px-4 py-2.5 text-[13px] text-ink shadow-3 lg:bottom-6"
+          className="anim-pop fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-3 border border-line bg-over px-4 py-2.5 text-meta text-ink shadow-3 lg:bottom-6"
         >
           {уведомление}
         </div>

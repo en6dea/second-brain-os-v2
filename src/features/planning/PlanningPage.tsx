@@ -184,8 +184,8 @@ export function PlanningPage() {
   return (
     <div className="anim-rise space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold text-ink">Планирование</h1>
-        <p className="mt-0.5 text-[13px] text-ink-3">
+        <h1 className="text-h2 font-semibold text-ink">Планирование</h1>
+        <p className="mt-0.5 text-meta text-ink-3">
           Пять горизонтов. План — это решение, куда уходит период, а не список дел.
         </p>
       </div>
@@ -283,7 +283,7 @@ export function PlanningPage() {
 
         {целиПериода.length > 0 ? (
           <div className="border-t border-line px-5 py-3">
-            <p className="mb-1.5 text-[11px] font-semibold tracking-[0.14em] text-ink-3 uppercase">
+            <p className="mb-1.5 text-micro font-semibold tracking-[0.14em] text-ink-3 uppercase">
               Цели с сроком в этом периоде
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -377,7 +377,7 @@ export function PlanningPage() {
           />
           <CardBody>
             {опытМесяца.length === 0 && вызовМесяца.length === 0 ? (
-              <p className="text-[13px] text-ink-3">
+              <p className="text-meta text-ink-3">
                 На этот месяц ничего не выбрано.
               </p>
             ) : (
@@ -402,7 +402,7 @@ export function PlanningPage() {
         <CardHeader заголовок="Закрытые периоды" подпись={`горизонт: ${тип}`} />
         <CardBody>
           {данные.планы.filter((п) => п.тип === тип && п.закрыт).length === 0 ? (
-            <p className="text-[13px] text-ink-3">
+            <p className="text-meta text-ink-3">
               Закрытых периодов нет. Период считается закрытым, когда у него есть
               итог.
             </p>
@@ -417,8 +417,8 @@ export function PlanningPage() {
                     key={п.id}
                     className="border-b border-line pb-2 last:border-0"
                   >
-                    <p className="text-[13px] font-medium text-ink">{п.период}</p>
-                    <p className="text-[12.5px] whitespace-pre-wrap text-ink-3">
+                    <p className="text-meta font-medium text-ink">{п.период}</p>
+                    <p className="text-caption whitespace-pre-wrap text-ink-3">
                       {п.итог}
                     </p>
                   </div>

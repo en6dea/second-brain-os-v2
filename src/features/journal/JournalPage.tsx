@@ -96,8 +96,8 @@ export function JournalPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Дневник</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Дневник</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Обычные записи и дневник подсознания — в одной системе, разделены видом
           </p>
         </div>
@@ -132,7 +132,7 @@ export function JournalPage() {
       <Card className="border-know/25">
         <div className="flex items-center gap-2.5 px-5 py-3">
           <Lock size={15} className="shrink-0 text-know" />
-          <p className="text-[12.5px] text-ink-2">
+          <p className="text-caption text-ink-2">
             Записи дневника помечены как личные и не входят в облачную копию по
             умолчанию. Они хранятся только на этом устройстве.
           </p>
@@ -153,7 +153,7 @@ export function JournalPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[12px] text-ink-3">
+                    <span className="text-caption text-ink-3">
                       {деньСловами(запись.дата)}
                     </span>
                     <Badge
@@ -166,11 +166,11 @@ export function JournalPage() {
                     ) : null}
                   </div>
                   {запись.заголовок ? (
-                    <h2 className="mt-1.5 text-[15px] font-semibold text-ink">
+                    <h2 className="mt-1.5 text-body font-semibold text-ink">
                       {запись.заголовок}
                     </h2>
                   ) : null}
-                  <p className="mt-1.5 text-[13.5px] leading-relaxed whitespace-pre-wrap text-ink-2">
+                  <p className="mt-1.5 text-meta leading-relaxed whitespace-pre-wrap text-ink-2">
                     {запись.текст}
                   </p>
                 </div>
@@ -179,7 +179,7 @@ export function JournalPage() {
                     подпись="Изменить запись"
                     onClick={() => установитьЧерновик(запись)}
                   >
-                    <span className="text-[13px]">✎</span>
+                    <span className="text-meta">✎</span>
                   </IconButton>
                   <IconButton
                     подпись="Удалить запись"

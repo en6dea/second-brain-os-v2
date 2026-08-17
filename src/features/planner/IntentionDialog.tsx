@@ -314,7 +314,7 @@ export function IntentionDialog({
           </div>
 
           {вНеделю !== null && вНеделю > 0 ? (
-            <p className="rounded-3 border border-accent-line bg-accent-soft px-4 py-3 text-[13px] leading-relaxed text-ink-2">
+            <p className="rounded-3 border border-accent-line bg-accent-soft px-4 py-3 text-meta leading-relaxed text-ink-2">
               Чтобы успеть к сроку, откладывать по{' '}
               <span className="tnum font-semibold text-ink">
                 {деньгиКратко(вНеделю)}
@@ -325,8 +325,8 @@ export function IntentionDialog({
 
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
-              <p className="text-[13px] font-medium text-ink">Пункты</p>
-              <span className="text-[12px] text-ink-3">
+              <p className="text-meta font-medium text-ink">Пункты</p>
+              <span className="text-caption text-ink-3">
                 {сводка.всегоПунктов === 0
                   ? 'ни одного'
                   : `${сводка.выполнено} из ${сводка.всегоПунктов}`}
@@ -354,7 +354,7 @@ export function IntentionDialog({
                     }
                     aria-label="Название пункта"
                     className={cn(
-                      'min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none',
+                      'min-w-0 flex-1 bg-transparent text-meta text-ink outline-none',
                       пункт.выполнен && 'text-ink-3 line-through',
                     )}
                   />
@@ -368,7 +368,7 @@ export function IntentionDialog({
                       })
                     }
                     aria-label="Срок пункта"
-                    className="h-7 shrink-0 rounded-2 border border-line bg-card px-2 text-[12px] text-ink-2"
+                    className="h-7 shrink-0 rounded-2 border border-line bg-card px-2 text-caption text-ink-2"
                   />
 
                   <input
@@ -388,7 +388,7 @@ export function IntentionDialog({
                       })
                     }
                     aria-label="Стоимость пункта"
-                    className="tnum h-7 w-[86px] shrink-0 rounded-2 border border-line bg-card px-2 text-right text-[12px] text-ink"
+                    className="tnum h-7 w-[86px] shrink-0 rounded-2 border border-line bg-card px-2 text-right text-caption text-ink"
                   />
 
                   <IconButton
@@ -429,7 +429,7 @@ export function IntentionDialog({
 
           {подсказки.length > 0 ? (
             <div className="rounded-3 border border-line bg-sunken p-4">
-              <p className="mb-2 flex items-center gap-1.5 text-[12.5px] font-medium text-ink">
+              <p className="mb-2 flex items-center gap-1.5 text-caption font-medium text-ink">
                 <Lightbulb size={14} className="text-accent" />
                 Часто забывают в замысле вида «{текущий.вид}»
               </p>
@@ -439,7 +439,7 @@ export function IntentionDialog({
                     key={подсказка}
                     type="button"
                     onClick={() => добавитьПункт(подсказка)}
-                    className="rounded-2 border border-line bg-card px-2.5 py-1.5 text-[12px] text-ink-2 transition-colors hover:border-accent-line hover:bg-accent-soft hover:text-ink"
+                    className="rounded-2 border border-line bg-card px-2.5 py-1.5 text-caption text-ink-2 transition-colors hover:border-accent-line hover:bg-accent-soft hover:text-ink"
                   >
                     + {подсказка}
                   </button>
@@ -451,7 +451,7 @@ export function IntentionDialog({
           {сводка.замечания.length > 0 ? (
             <ul className="space-y-1">
               {сводка.замечания.map((текст) => (
-                <li key={текст} className="text-[12.5px] text-ink-3">
+                <li key={текст} className="text-caption text-ink-3">
                   {текст}
                 </li>
               ))}

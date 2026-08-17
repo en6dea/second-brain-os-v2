@@ -229,7 +229,7 @@ export function ImportPage() {
           подпись="Файл читается только в браузере и никуда не отправляется"
         />
         <CardBody>
-          <ol className="mb-4 flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-ink-3">
+          <ol className="mb-4 flex flex-wrap gap-x-4 gap-y-1 text-caption text-ink-3">
             {[
               'Загрузка',
               'Предпросмотр',
@@ -239,7 +239,7 @@ export function ImportPage() {
               'Запись',
             ].map((шаг, индекс) => (
               <li key={шаг} className="flex items-center gap-1.5">
-                <span className="tnum flex h-4 w-4 items-center justify-center rounded-full bg-sunken text-[10px]">
+                <span className="tnum flex h-4 w-4 items-center justify-center rounded-full bg-sunken text-micro">
                   {индекс + 1}
                 </span>
                 {шаг}
@@ -249,10 +249,10 @@ export function ImportPage() {
 
           <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-4 border border-dashed border-line-strong px-6 py-10 text-center transition-colors hover:border-accent hover:bg-accent-soft/40">
             <FileUp size={22} className="text-ink-3" />
-            <span className="text-[13.5px] font-medium text-ink">
+            <span className="text-meta font-medium text-ink">
               Выберите файл выписки
             </span>
-            <span className="text-[12px] text-ink-3">
+            <span className="text-caption text-ink-3">
               CSV с разделителем «;» или «,». Понимает даты вида 11.08.2026 и суммы
               вида 1 234,56
             </span>
@@ -269,7 +269,7 @@ export function ImportPage() {
           </label>
 
           {ошибка ? (
-            <p className="mt-3 rounded-3 border border-bad/30 bg-bad-soft px-4 py-2.5 text-[13px] text-bad">
+            <p className="mt-3 rounded-3 border border-bad/30 bg-bad-soft px-4 py-2.5 text-meta text-bad">
               {ошибка}
             </p>
           ) : null}
@@ -281,7 +281,7 @@ export function ImportPage() {
           <CardBody className="pt-5">
             <div className="flex items-center gap-3">
               <CheckCircle2 size={20} className="text-good" />
-              <p className="text-[13.5px] text-ink">
+              <p className="text-meta text-ink">
                 Импорт завершён. Добавлено операций: {итогИмпорта.добавлено}.{' '}
                 {итогИмпорта.пропущено > 0
                   ? `Пропущено: ${итогИмпорта.пропущено}.`
@@ -327,7 +327,7 @@ export function ImportPage() {
 
             <div className="border-t border-line px-5 py-4">
               <div className="mb-4 rounded-3 border border-line bg-sunken p-4">
-                <p className="text-[13px] font-medium text-ink">
+                <p className="text-meta font-medium text-ink">
                   Направление операций
                 </p>
                 <p className="mt-1 text-meta leading-relaxed text-ink-2">
@@ -343,7 +343,7 @@ export function ImportPage() {
                 {разбор.предупреждения.map((текст) => (
                   <p
                     key={текст}
-                    className="mt-2 text-[12.5px] leading-relaxed text-bad"
+                    className="mt-2 text-caption leading-relaxed text-bad"
                   >
                     {текст}
                   </p>
@@ -359,7 +359,7 @@ export function ImportPage() {
                 </Button>
               </div>
 
-              <p className="mb-3 text-[12.5px] leading-relaxed text-ink-3">
+              <p className="mb-3 text-caption leading-relaxed text-ink-3">
                 Категории предложены по вашим прошлым операциям: подсказано{' '}
                 {статистика.подсказано} из {строки.length}, уверенно —{' '}
                 {статистика.уверенно}. Основание видно у каждой строки. Где опыта
@@ -427,11 +427,11 @@ export function ImportPage() {
                     }
                     className="h-4 w-4 shrink-0 accent-[var(--accent)]"
                   />
-                  <span className="w-[54px] shrink-0 text-[12px] text-ink-3">
+                  <span className="w-[54px] shrink-0 text-caption text-ink-3">
                     {деньКратко(строка.дата)}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] text-ink">
+                    <span className="block truncate text-meta text-ink">
                       {строка.описание || 'Без описания'}
                       {строка.перевод ? (
                         <Badge тон="сведения" className="ml-2">
@@ -447,7 +447,7 @@ export function ImportPage() {
                     {строка.основание ? (
                       <span
                         className={cn(
-                          'block truncate text-[10.5px]',
+                          'block truncate text-micro',
                           строка.уверенность >= 0.6 ? 'text-good' : 'text-ink-3',
                         )}
                       >
@@ -474,7 +474,7 @@ export function ImportPage() {
                       if (выбран) применитьКоВсемПохожим(индекс, выбран)
                     }}
                     aria-label="Категория операции"
-                    className="h-8 shrink-0 rounded-2 border border-line bg-card px-2 text-[12px] text-ink"
+                    className="h-8 shrink-0 rounded-2 border border-line bg-card px-2 text-caption text-ink"
                   >
                     <option value="">Без категории</option>
                     {(справочники?.категории ?? [])
@@ -492,13 +492,13 @@ export function ImportPage() {
                   <span className="w-[130px] shrink-0 text-right">
                     <span
                       className={cn(
-                        'tnum block text-[13px] font-semibold',
+                        'tnum block text-meta font-semibold',
                         строка.сумма >= 0 ? 'text-good' : 'text-ink',
                       )}
                     >
                       {деньги(строка.сумма, { знак: true })}
                     </span>
-                    <span className="block truncate text-[10.5px] text-ink-3">
+                    <span className="block truncate text-micro text-ink-3">
                       {строка.основаниеЗнака}
                     </span>
                   </span>

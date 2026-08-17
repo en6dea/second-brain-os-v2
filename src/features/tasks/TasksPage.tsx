@@ -176,8 +176,8 @@ export function TasksPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Задачи</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Задачи</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             {отобранные.length}{' '}
             {склонение(отобранные.length, 'задача', 'задачи', 'задач')} в отборе
             {просрочено > 0 ? ` · просрочено: ${просрочено}` : ''}
@@ -234,13 +234,13 @@ export function TasksPage() {
                   <div className="min-w-0 flex-1">
                     <p
                       className={cn(
-                        'truncate text-[14px]',
+                        'truncate text-meta',
                         сделана ? 'text-ink-3 line-through' : 'text-ink',
                       )}
                     >
                       {задача.название}
                     </p>
-                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11.5px] text-ink-3">
+                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-caption text-ink-3">
                       <span className={просроченa ? 'text-bad' : undefined}>
                         {задача.дата ? деньКратко(задача.дата) : 'без даты'}
                       </span>
@@ -266,7 +266,7 @@ export function TasksPage() {
                     подпись="Изменить задачу"
                     onClick={() => установитьЧерновик(задача)}
                   >
-                    <span className="text-[13px]">✎</span>
+                    <span className="text-meta">✎</span>
                   </IconButton>
                   <IconButton
                     подпись="Удалить задачу"

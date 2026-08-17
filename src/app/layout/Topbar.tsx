@@ -1,30 +1,14 @@
-import { Menu, Moon, Plus, Search, Sun, SunMoon } from 'lucide-react'
+import { Menu, Plus, Search } from 'lucide-react'
 import { Button, IconButton } from '@/design-system/components'
 import { ЗНАЧОК } from '@/design-system/iconSize'
 import { модификатор } from '@/app/keyboard'
 import { useИнтерфейс } from '@/app/providers/ui'
-import { useТема, type РежимТемы } from '@/app/providers/theme'
 import { приветствие } from '@/core/calendar/CalendarRu'
 
-const следующаяТема: Record<РежимТемы, РежимТемы> = {
-  light: 'dark',
-  dark: 'system',
-  system: 'light',
-}
-
-const подписьТемы: Record<РежимТемы, string> = {
-  light: 'Тема: светлая. Нажмите, чтобы включить тёмную',
-  dark: 'Тема: тёмная. Нажмите, чтобы следовать системе',
-  system: 'Тема: как в системе. Нажмите, чтобы включить светлую',
-}
-
 export function Topbar({ имя }: { имя: string }) {
-  const { режим, установить } = useТема()
   const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
   const открытьКомандноеОкно = useИнтерфейс((с) => с.открытьКомандноеОкно)
   const открытьБыстроеДобавление = useИнтерфейс((с) => с.открытьБыстроеДобавление)
-
-  const Иконка = режим === 'light' ? Sun : режим === 'dark' ? Moon : SunMoon
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-line bg-bg/85 px-3 backdrop-blur-md sm:px-5">
@@ -61,13 +45,6 @@ export function Topbar({ имя }: { имя: string }) {
         onClick={() => открытьКомандноеОкно(true)}
       >
         <Search size={ЗНАЧОК.крупный} />
-      </IconButton>
-
-      <IconButton
-        подпись={подписьТемы[режим]}
-        onClick={() => установить(следующаяТема[режим])}
-      >
-        <Иконка size={ЗНАЧОК.крупный} />
       </IconButton>
 
       <Button

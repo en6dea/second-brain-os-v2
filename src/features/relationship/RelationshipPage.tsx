@@ -55,8 +55,8 @@ export function RelationshipPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Отношения</h1>
-          <p className="mt-0.5 flex items-center gap-1.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Отношения</h1>
+          <p className="mt-0.5 flex items-center gap-1.5 text-meta text-ink-3">
             <ShieldCheck size={14} />
             Записи хранятся только на этом устройстве
           </p>

@@ -192,7 +192,7 @@ export function PlansPanel({
           >
             <ChevronLeft size={17} />
           </IconButton>
-          <span className="min-w-[210px] text-center text-[14px] font-medium text-ink first-letter:uppercase">
+          <span className="min-w-[210px] text-center text-meta font-medium text-ink first-letter:uppercase">
             {названиеПериода(горизонт, якорь)}
           </span>
           <IconButton
@@ -217,7 +217,7 @@ export function PlansPanel({
           {поле('Чем закончилось', 'итог', 3, 'заполняется в конце периода')}
 
           <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
-            <p className="text-[12.5px] text-ink-3">
+            <p className="text-caption text-ink-3">
               {текущий
                 ? `Изменено: ${деньКратко(текущий.updatedAt.slice(0, 10))}`
                 : 'План на этот период ещё не начат — начните печатать'}
@@ -272,7 +272,7 @@ export function PlansPanel({
         />
         {совместные.length === 0 ? (
           <CardBody>
-            <p className="text-[12.5px] leading-relaxed text-ink-3">
+            <p className="text-caption leading-relaxed text-ink-3">
               Поездка, покупка или событие, которое делаете вдвоём, заводится
               здесь и живёт в планере — заполнять дважды не нужно.
             </p>
@@ -287,7 +287,7 @@ export function PlansPanel({
                     <button
                       type="button"
                       onClick={() => установитьЧерновикЗамысла({ ...замысел })}
-                      className="text-[13.5px] font-medium text-ink hover:text-accent"
+                      className="text-meta font-medium text-ink hover:text-accent"
                     >
                       {замысел.название}
                     </button>
@@ -300,7 +300,7 @@ export function PlansPanel({
                       </Badge>
                     </div>
                   </div>
-                  <p className="mt-1 text-[12px] text-ink-3">
+                  <p className="mt-1 text-caption text-ink-3">
                     {деньКратко(замысел.датаЦели)}
                     {сводка.готовность === null
                       ? ' · пунктов нет'
@@ -365,7 +365,7 @@ export function PlansPanel({
                         план.горизонт === 'месяц' ? `${план.период}-01` : план.период,
                       )
                     }
-                    className="text-[13.5px] font-medium text-ink hover:text-accent"
+                    className="text-meta font-medium text-ink hover:text-accent"
                   >
                     {названиеПериода(
                       план.горизонт,
@@ -375,7 +375,7 @@ export function PlansPanel({
                   {план.закрыт ? <Badge тон="успех">закрыт</Badge> : null}
                 </div>
                 {план.главное ? (
-                  <p className="mt-1 text-[12.5px] leading-relaxed text-ink-2">
+                  <p className="mt-1 text-caption leading-relaxed text-ink-2">
                     {план.главное}
                   </p>
                 ) : null}

@@ -160,8 +160,8 @@ export function ObligationsPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Обязательства</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Обязательства</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Платёж делится на тело, проценты и штрафы. Долг уменьшает только тело.
           </p>
         </div>
@@ -231,10 +231,10 @@ export function ObligationsPage() {
                 <div key={обязательство.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-[14px] font-medium text-ink">
+                      <p className="truncate text-meta font-medium text-ink">
                         {обязательство.название}
                       </p>
-                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11.5px] text-ink-3">
+                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-caption text-ink-3">
                         <Badge
                           тон={
                             обязательство.направление === 'я должен'
@@ -267,10 +267,10 @@ export function ObligationsPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="tnum text-[15px] font-semibold text-ink">
+                      <p className="tnum text-body font-semibold text-ink">
                         {деньги(всего)}
                       </p>
-                      <p className="tnum text-[11px] text-ink-3">
+                      <p className="tnum text-micro text-ink-3">
                         тело {деньги(обязательство.телоОстаток)} · проценты{' '}
                         {деньги(обязательство.начисленныеПроценты)} · штрафы{' '}
                         {деньги(обязательство.штрафы)}
@@ -367,7 +367,7 @@ export function ObligationsPage() {
             {закрытые.map((обязательство) => (
               <span
                 key={обязательство.id}
-                className="rounded-full border border-line px-3 py-1.5 text-[12.5px] text-ink-3"
+                className="rounded-full border border-line px-3 py-1.5 text-caption text-ink-3"
               >
                 {обязательство.название}
               </span>
@@ -573,8 +573,8 @@ export function ObligationsPage() {
             <div
               className={
                 частиСходятся
-                  ? 'rounded-3 bg-good-soft px-4 py-2.5 text-[13px] text-good'
-                  : 'rounded-3 bg-warn-soft px-4 py-2.5 text-[13px] text-warn'
+                  ? 'rounded-3 bg-good-soft px-4 py-2.5 text-meta text-good'
+                  : 'rounded-3 bg-warn-soft px-4 py-2.5 text-meta text-warn'
               }
             >
               {частиСходятся

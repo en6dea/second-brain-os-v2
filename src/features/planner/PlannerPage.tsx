@@ -81,8 +81,8 @@ export function PlannerPage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Планер</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Планер</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             Покупка, поездка, проект, событие или просто план — в одном месте
           </p>
         </div>
@@ -111,8 +111,8 @@ export function PlannerPage() {
             onClick={() => установитьОтбор(вариант.ключ)}
             className={
               отбор === вариант.ключ
-                ? 'rounded-2 border border-transparent bg-accent px-3.5 py-1.5 text-[13px] font-medium text-on-accent'
-                : 'rounded-2 border border-line px-3.5 py-1.5 text-[13px] font-medium text-ink-3 transition-colors hover:border-accent-line hover:text-ink-2'
+                ? 'rounded-2 border border-transparent bg-accent px-3.5 py-1.5 text-meta font-medium text-on-accent'
+                : 'rounded-2 border border-line px-3.5 py-1.5 text-meta font-medium text-ink-3 transition-colors hover:border-accent-line hover:text-ink-2'
             }
           >
             {вариант.подпись}
@@ -196,7 +196,7 @@ export function PlannerPage() {
                   </div>
 
                   {сводка.готовность === null ? (
-                    <p className="text-[12.5px] text-ink-3">
+                    <p className="text-caption text-ink-3">
                       Пунктов нет — готовность не считается.
                     </p>
                   ) : (
@@ -243,7 +243,7 @@ export function PlannerPage() {
                   </div>
 
                   {шаг && !закрыт ? (
-                    <p className="text-[12.5px] leading-relaxed text-ink-2">
+                    <p className="text-caption leading-relaxed text-ink-2">
                       <span className="font-medium text-ink">Дальше: </span>
                       {шаг}
                     </p>
@@ -252,7 +252,7 @@ export function PlannerPage() {
                   {сводка.замечания.length > 0 && !закрыт ? (
                     <ul className="space-y-1">
                       {сводка.замечания.map((текст) => (
-                        <li key={текст} className="text-[12px] text-ink-3">
+                        <li key={текст} className="text-caption text-ink-3">
                           {текст}
                         </li>
                       ))}
@@ -295,7 +295,7 @@ export function PlannerPage() {
       />
 
       {открытых > 0 ? (
-        <p className="text-center text-[12px] text-ink-3">
+        <p className="text-center text-caption text-ink-3">
           Открытых замыслов: {открытых}. Всё, что закрыто, остаётся в списке ниже.
         </p>
       ) : null}

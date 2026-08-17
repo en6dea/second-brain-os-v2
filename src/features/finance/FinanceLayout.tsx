@@ -6,8 +6,8 @@ export function FinanceLayout() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-[20px] font-semibold text-ink">Финансы</h1>
-        <p className="mt-0.5 text-[13px] text-ink-3">
+        <h1 className="text-h2 font-semibold text-ink">Финансы</h1>
+        <p className="mt-0.5 text-meta text-ink-3">
           Собственные деньги, обязательства и движение средств. Все суммы считаются
           из операций и остатков счетов.
         </p>
@@ -21,7 +21,7 @@ export function FinanceLayout() {
             end={пункт.путь === '/finance'}
             className={({ isActive }) =>
               cn(
-                'shrink-0 rounded-2 px-3 py-1.5 text-[13px] font-medium transition-colors',
+                'shrink-0 rounded-2 px-3 py-1.5 text-meta font-medium transition-colors',
                 isActive
                   ? 'bg-accent-soft text-accent'
                   : 'text-ink-3 hover:bg-hover hover:text-ink',

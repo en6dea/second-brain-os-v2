@@ -125,8 +125,8 @@ export function KnowledgePage() {
     <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[20px] font-semibold text-ink">Знания</h1>
-          <p className="mt-0.5 text-[13px] text-ink-3">
+          <h1 className="text-h2 font-semibold text-ink">Знания</h1>
+          <p className="mt-0.5 text-meta text-ink-3">
             {записи.length}{' '}
             {склонение(записи.length, 'запись', 'записи', 'записей')}
             {отобранные.length !== записи.length
@@ -198,18 +198,18 @@ export function KnowledgePage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge тон={ТОН_ВИДА[запись.вид]}>{запись.вид}</Badge>
-                    <span className="text-[11.5px] text-ink-3">
+                    <span className="text-caption text-ink-3">
                       {деньКратко(запись.updatedAt.slice(0, 10))}
                     </span>
                     {запись.избранное ? (
                       <Star size={12} className="text-warn" fill="currentColor" />
                     ) : null}
                   </div>
-                  <h2 className="mt-1.5 truncate text-[14.5px] font-medium text-ink">
+                  <h2 className="mt-1.5 truncate text-meta font-medium text-ink">
                     {запись.заголовок}
                   </h2>
                   {запись.текст ? (
-                    <p className="mt-1 line-clamp-2 text-[12.5px] leading-relaxed text-ink-3">
+                    <p className="mt-1 line-clamp-2 text-caption leading-relaxed text-ink-3">
                       {запись.текст}
                     </p>
                   ) : null}
@@ -278,23 +278,23 @@ export function KnowledgePage() {
                 href={открытая.ссылка}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="inline-flex items-center gap-1.5 text-[13px] text-accent hover:underline"
+                className="inline-flex items-center gap-1.5 text-meta text-accent hover:underline"
               >
                 <ExternalLink size={13} />
                 {открытая.ссылка}
               </a>
             ) : null}
 
-            <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap text-ink-2">
+            <p className="text-meta leading-relaxed whitespace-pre-wrap text-ink-2">
               {открытая.текст || 'Текста нет.'}
             </p>
 
             {открытая.legacy ? (
               <details className="rounded-3 border border-line bg-sunken px-4 py-3">
-                <summary className="cursor-pointer text-[12px] text-ink-3">
+                <summary className="cursor-pointer text-caption text-ink-3">
                   Данные из прежней версии
                 </summary>
-                <pre className="mt-2 overflow-x-auto text-[11.5px] whitespace-pre-wrap text-ink-3">
+                <pre className="mt-2 overflow-x-auto text-caption whitespace-pre-wrap text-ink-3">
                   {JSON.stringify(открытая.legacy, null, 2)}
                 </pre>
               </details>
