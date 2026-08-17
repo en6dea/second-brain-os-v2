@@ -9,8 +9,10 @@ import type {
   ДеньПартнёра,
   ЗаписьДневника,
   ЗаписьЗнания,
+  ЗаписьПароля,
   Задача,
   КатегорияДенег,
+  КонфигурацияПаролей,
   МатериалОбучения,
   Метка,
   Напоминание,
@@ -91,6 +93,9 @@ export class БазаВторойМозг extends Dexie {
   settings!: EntityTable<Настройки, 'id'>
 
   syncTombstones!: EntityTable<Надгробие, 'id'>
+
+  passwords!: EntityTable<ЗаписьПароля, 'id'>
+  passwordsVault!: EntityTable<КонфигурацияПаролей, 'id'>
 
   constructor(имяБазы = 'ВторойМозг2') {
     super(имяБазы)
@@ -298,6 +303,17 @@ export class БазаВторойМозг extends Dexie {
           })
       })
 
+    // Версия 11: раздел «Пароли». Шифруется локально мастер-паролем — само
+    // приложение и синхронизация видят только шифротекст. Соль и проверка
+    // лежат в отдельной синхронизируемой записи, а не в settings: settings
+    // не синхронизируется по устройству, а соль должна быть одной и той же
+    // на всех устройствах — иначе один мастер-пароль даст на каждом
+    // устройстве свой ключ.
+    this.version(11).stores({
+      passwords: 'id, название, updatedAt',
+      passwordsVault: 'id',
+    })
+
     this.on('ready', () => регистрироватьНадгробия(this), true)
   }
 }
@@ -385,6 +401,8 @@ export const ТАБЛИЦЫ = [
   'reviews',
   'metrics',
   'settings',
+  'passwords',
+  'passwordsVault',
 ] as const
 
 export type ИмяТаблицы = (typeof ТАБЛИЦЫ)[number]
@@ -425,4 +443,6 @@ export const НАЗВАНИЯ_ТАБЛИЦ: Record<ИмяТаблицы, string>
   reviews: 'Обзоры',
   metrics: 'Показатели',
   settings: 'Настройки',
+  passwords: 'Пароли',
+  passwordsVault: 'Хранилище паролей',
 }

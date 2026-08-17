@@ -210,6 +210,13 @@ const маршруты = [
             .ExperiencePage,
         }),
       },
+      {
+        path: 'passwords',
+        lazy: async () => ({
+          Component: (await import('@/features/passwords/PasswordsPage'))
+            .PasswordsPage,
+        }),
+      },
       // Неизвестный адрес: страница объясняет, что такого раздела нет.
       {
         path: '*',

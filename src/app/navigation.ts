@@ -9,6 +9,7 @@ import {
   GraduationCap,
   HeartHandshake,
   Inbox,
+  KeyRound,
   LayoutDashboard,
   LineChart,
   ListChecks,
@@ -119,6 +120,7 @@ export const ДОМЕНЫ: Домен[] = [
     иконка: Settings,
     разделы: [
       { путь: '/settings', название: 'Настройки', иконка: Settings },
+      { путь: '/passwords', название: 'Пароли', иконка: KeyRound },
       { путь: '/analytics', название: 'Аналитика', иконка: BarChart3 },
     ],
   },

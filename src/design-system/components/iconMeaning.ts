@@ -19,5 +19,6 @@ export function смыслРаздела(путь: string): СмыслЗначк
   if (путь.startsWith('/knowledge') || путь.startsWith('/learning')) return 'знание'
   if (путь.startsWith('/journal') || путь.startsWith('/inbox')) return 'запись'
   if (путь.startsWith('/quick')) return 'внимание'
+  if (путь.startsWith('/passwords')) return 'система'
   return 'система'
 }
