@@ -6,6 +6,7 @@ import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { DomainNav } from './DomainNav'
 import { useНапоминания } from './useНапоминания'
+import { useСинхронизацию } from './useСинхронизацию'
 import { ДОМЕНЫ } from '@/app/navigation'
 import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
@@ -25,6 +26,7 @@ const МЕНЮ_ТЕЛЕФОНА = ДОМЕНЫ.filter((домен) => домен
 
 export function AppShell() {
   useНапоминания()
+  useСинхронизацию()
   const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
   const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
   const уведомление = useИнтерфейс((с) => с.уведомление)

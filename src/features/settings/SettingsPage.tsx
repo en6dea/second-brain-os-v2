@@ -30,6 +30,7 @@ import {
   состояниеХранилища,
 } from '@/core/db/Persistence'
 import { useИнтерфейс } from '@/app/providers/ui'
+import { SyncCard } from './SyncCard'
 import {
   поддерживаются as уведомленияПоддерживаются,
   разрешение as разрешениеУведомлений,
@@ -164,7 +165,8 @@ export function SettingsPage() {
       <div>
         <h1 className="text-h2 font-semibold text-ink">Настройки</h1>
         <p className="mt-0.5 text-meta text-ink-3">
-          Данные хранятся в браузере на этом устройстве. Никуда не отправляются.
+          Данные хранятся в браузере на этом устройстве. Никуда не отправляются, пока
+          вы сами не включите синхронизацию ниже — и то только то, что вы разрешили.
         </p>
       </div>
 
@@ -454,6 +456,9 @@ export function SettingsPage() {
           </div>
         </CardBody>
       </Card>
+
+      {/* --- Синхронизация --- */}
+      <SyncCard настройки={данные.настройки} />
 
       {/* --- Обложки --- */}
       <Card>
