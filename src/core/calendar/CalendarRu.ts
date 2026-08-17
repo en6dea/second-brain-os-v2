@@ -1,5 +1,6 @@
 import {
   addDays,
+  addMonths,
   differenceInCalendarDays,
   endOfMonth,
   format,
@@ -55,9 +56,23 @@ export function сдвинутьДень(значение: ДатаДень, д�
   return format(addDays(кДате(значение), дней), 'yyyy-MM-dd')
 }
 
+/**
+ * Сдвиг на месяцы с клэмпингом конца месяца: 31 января + 1 месяц = 28 или
+ * 29 февраля, а не несуществующее 31 февраля. Поведение `date-fns`, не
+ * переопределяется — здесь только перевод в формат `ДатаДень`.
+ */
+export function сдвинутьМесяц(значение: ДатаДень, месяцев: number): ДатаДень {
+  return format(addMonths(кДате(значение), месяцев), 'yyyy-MM-dd')
+}
+
 export function днейДо(значение: ДатаДень | null): number | null {
   if (!значение) return null
   return differenceInCalendarDays(кДате(значение), кДате(сегодня()))
+}
+
+/** Разница в днях между двумя днями: `до` минус `от`. */
+export function разностьДней(от: ДатаДень, до: ДатаДень): number {
+  return differenceInCalendarDays(кДате(до), кДате(от))
 }
 
 export function границыМесяца(месяц: string): { от: ДатаДень; до: ДатаДень } {
