@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/design-system/classNames'
 import { ЗНАЧОК } from '@/design-system/iconSize'
+import { useПрисутствие } from '@/design-system/motion/Presence'
 import { IconButton } from './Button'
 
 /**
@@ -27,6 +28,7 @@ export function Dialog({
   ширина?: 'узкая' | 'средняя' | 'широкая'
 }) {
   const ссылка = useRef<HTMLDivElement>(null)
+  const { смонтировано, закрывается, наОкончание } = useПрисутствие(открыто)
 
   /**
    * Обработчик закрытия приходит новой функцией на каждую перерисовку —
@@ -54,7 +56,7 @@ export function Dialog({
     }
   }, [открыто])
 
-  if (!открыто) return null
+  if (!смонтировано) return null
 
   const ширины = {
     узкая: 'sm:max-w-md',
@@ -73,13 +75,18 @@ export function Dialog({
         type="button"
         aria-label="Закрыть окно"
         onClick={наЗакрытие}
-        className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
+        className={cn(
+          'absolute inset-0 bg-black/45 backdrop-blur-[2px]',
+          закрывается ? 'anim-затемнение-наружу' : 'anim-затемнение-внутрь',
+        )}
       />
       <div
         ref={ссылка}
         tabIndex={-1}
+        onAnimationEnd={наОкончание}
         className={cn(
-          'anim-pop relative flex max-h-[92dvh] w-full flex-col overflow-hidden',
+          'relative flex max-h-[92dvh] w-full flex-col overflow-hidden',
+          закрывается ? 'anim-pop-уход' : 'anim-pop',
           'border border-line bg-over shadow-3 outline-none',
           'rounded-t-5 sm:rounded-5',
           ширины[ширина],

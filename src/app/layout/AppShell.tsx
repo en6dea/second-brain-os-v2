@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { NavLink, Outlet, useLocation, useMatches } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -15,6 +15,7 @@ import { подготовитьПервыйЗапуск, читатьПрофи�
 import { запроситьПостоянноеХранение } from '@/core/db/Persistence'
 import { cn } from '@/design-system/classNames'
 import { Icon, IconButton } from '@/design-system/components'
+import { useПрисутствие } from '@/design-system/motion/Presence'
 
 /**
  * Нижнее меню телефона.
@@ -30,6 +31,12 @@ export function AppShell() {
   const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
   const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
   const уведомление = useИнтерфейс((с) => с.уведомление)
+  const { смонтировано: уведомлениеПоказано, закрывается: уведомлениеУходит, наОкончание: наОкончаниеУведомления } =
+    useПрисутствие(уведомление !== null)
+  const [текстУведомления, установитьТекстУведомления] = useState<string | null>(null)
+  useEffect(() => {
+    if (уведомление !== null) установитьТекстУведомления(уведомление)
+  }, [уведомление])
   const открытьКомандноеОкно = useИнтерфейс((с) => с.открытьКомандноеОкно)
 
   const расположение = useLocation()
@@ -138,12 +145,16 @@ export function AppShell() {
       <CommandMenu />
       <QuickAdd />
 
-      {уведомление ? (
+      {уведомлениеПоказано ? (
         <div
           role="status"
-          className="anim-pop fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-3 border border-line bg-over px-4 py-2.5 text-meta text-ink shadow-3 lg:bottom-6"
+          onAnimationEnd={наОкончаниеУведомления}
+          className={cn(
+            'fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-3 border border-line bg-over px-4 py-2.5 text-meta text-ink shadow-3 lg:bottom-6',
+            уведомлениеУходит ? 'anim-pop-уход' : 'anim-pop',
+          )}
         >
-          {уведомление}
+          {текстУведомления}
         </div>
       ) : null}
     </div>
