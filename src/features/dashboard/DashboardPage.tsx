@@ -14,6 +14,8 @@ import { база } from '@/core/db/db'
 import { следующееДействие as вычислитьДействие } from '@/core/day/NextAction'
 import { NextActionCard } from './NextActionCard'
 import { собратьСигналы, длинаСерии } from '@/core/signals/engine'
+import { посчитатьGameLife } from '@/features/gamelife/model/Levels'
+import { GameLifeCard } from '@/features/gamelife/GameLifeCard'
 import {
   итогПериода,
   итогПоСчетам,
@@ -82,6 +84,7 @@ export function DashboardPage() {
       замыслы,
       входящиеЗаписи,
       люди,
+      обзоры,
     ] = await Promise.all([
       база.tasks.toArray(),
       база.habits.toArray(),
@@ -99,6 +102,7 @@ export function DashboardPage() {
       база.intentions.toArray(),
       база.inbox.toArray(),
       база.people.toArray(),
+      база.reviews.toArray(),
     ])
     return {
       задачи,
@@ -117,6 +121,7 @@ export function DashboardPage() {
       замыслы,
       входящиеЗаписи,
       люди,
+      обзоры,
     }
   }, [день])
 
@@ -193,6 +198,16 @@ export function DashboardPage() {
       !(действиеДня && сигнал.id.includes(действиеДня.источникId)),
   )
 
+  const показателиGameLife = посчитатьGameLife({
+    задачСделано: данные.задачи.filter((з) => з.состояние === 'сделана').length,
+    привычекОтмечено: данные.привычки.reduce(
+      (итог, п) => итог + Object.values(п.отметки).filter((значение) => значение > 0).length,
+      0,
+    ),
+    целейДостигнуто: данные.цели.filter((ц) => ц.состояние === 'достигнута').length,
+    обзоровЗакрыто: данные.обзоры.filter((о) => о.закрыт).length,
+  })
+
   const активныеЦели = данные.цели.filter((ц) => ц.состояние === 'активна')
   const естьХотьЧтоТо =
     данные.задачи.length + данные.привычки.length + данные.операции.length > 0
@@ -258,6 +273,7 @@ export function DashboardPage() {
   return (
     <div className="anim-rise space-y-7">
       {действиеДня ? <NextActionCard действие={действиеДня} /> : null}
+      <GameLifeCard показатели={показателиGameLife} />
 
       {/* --- Сейчас --- */}
       <section>
