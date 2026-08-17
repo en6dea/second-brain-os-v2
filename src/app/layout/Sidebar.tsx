@@ -1,12 +1,15 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { Brain } from 'lucide-react'
-import { МЕНЮ } from '@/app/navigation'
+import { ДОМЕНЫ, доменПоАдресу } from '@/app/navigation'
 import { модификатор } from '@/app/keyboard'
 import { cn } from '@/design-system/classNames'
 import { ЗНАЧОК } from '@/design-system/iconSize'
 import { useИнтерфейс } from '@/app/providers/ui'
 
 export function Sidebar({ наПереход }: { наПереход?: () => void }) {
+  const { pathname } = useLocation()
+  const текущий = доменПоАдресу(pathname)
+
   return (
     <div className="flex h-full flex-col bg-card">
       <div className="flex items-center gap-2.5 px-5 pt-5 pb-4">
@@ -22,38 +25,36 @@ export function Sidebar({ наПереход }: { наПереход?: () => voi
       </div>
 
       <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
-        {МЕНЮ.map((группа) => (
-          <div key={группа.название} className="mb-4">
-            <h2 className="px-2 pb-1.5 text-micro font-semibold tracking-[0.16em] text-ink-3 uppercase">
-              {группа.название}
-            </h2>
-            <ul className="space-y-0.5">
-              {группа.пункты.map((пункт) => (
-                <li key={пункт.путь}>
-                  <NavLink
-                    to={пункт.путь}
-                    end={пункт.путь === '/'}
-                    onClick={наПереход}
-                    className={({ isActive }) =>
-                      cn(
-                        'group flex items-center gap-2.5 rounded-2 px-2.5 py-2 text-body',
-                        'transition-colors duration-150',
-                        isActive
-                          ? 'bg-accent-soft font-medium text-accent'
-                          : 'text-ink-2 hover:bg-hover hover:text-ink',
-                      )
-                    }
-                  >
-                    <пункт.иконка size={ЗНАЧОК.основной} className="shrink-0" />
-                    <span className="min-w-0 flex-1 truncate">
-                      {пункт.название}
-                    </span>
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <ul className="space-y-1">
+          {ДОМЕНЫ.map((домен) => {
+            // Домен подсвечен, когда открыт любой из его разделов, а не только
+            // его собственная страница: иначе «Деньги» гаснут на «Обязательствах».
+            const открыт = текущий?.путь === домен.путь
+            return (
+              <li key={домен.путь}>
+                <NavLink
+                  to={домен.путь}
+                  end={домен.путь === '/'}
+                  onClick={наПереход}
+                  className={cn(
+                    'group flex min-h-11 items-center gap-3 rounded-3 px-3 py-2.5 text-body',
+                    'transition-colors duration-150',
+                    открыт
+                      ? 'bg-accent-soft font-semibold text-accent'
+                      : 'text-ink-2 hover:bg-hover hover:text-ink',
+                  )}
+                >
+                  <домен.иконка
+                    size={ЗНАЧОК.крупный}
+                    strokeWidth={1.75}
+                    className="shrink-0"
+                  />
+                  <span className="min-w-0 flex-1 truncate">{домен.название}</span>
+                </NavLink>
+              </li>
+            )
+          })}
+        </ul>
       </nav>
 
       <div className="border-t border-line px-4 py-3">

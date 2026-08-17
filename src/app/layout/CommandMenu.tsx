@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { CornerDownLeft, Search } from 'lucide-react'
 import { useИнтерфейс } from '@/app/providers/ui'
-import { ВСЕ_ПУНКТЫ } from '@/app/navigation'
+import { ВСЕ_РАЗДЕЛЫ } from '@/app/navigation'
 import { искать, type НайденноеСовпадение } from '@/core/search/search'
 import { cn } from '@/design-system/classNames'
 
@@ -52,7 +52,7 @@ export function CommandMenu() {
   const строки = useMemo<Строка[]>(() => {
     const запросНиз = запрос.trim().toLowerCase()
 
-    const разделы: Строка[] = ВСЕ_ПУНКТЫ
+    const разделы: Строка[] = ВСЕ_РАЗДЕЛЫ
       .filter((пункт) =>
         запросНиз ? пункт.название.toLowerCase().includes(запросНиз) : true,
       )

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Card, CardBody, CardHeader } from '@/design-system/components'
-import { МЕНЮ } from '@/app/navigation'
+import { ДОМЕНЫ } from '@/app/navigation'
 
 /**
  * Несуществующий адрес.
@@ -27,13 +27,13 @@ export function PlannedPage() {
           </p>
 
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {МЕНЮ.map((группа) => (
+            {ДОМЕНЫ.map((группа) => (
               <div key={группа.название}>
                 <p className="mb-1.5 text-micro font-semibold tracking-[0.16em] text-ink-3 uppercase">
                   {группа.название}
                 </p>
                 <ul className="space-y-1">
-                  {группа.пункты.map((пункт) => (
+                  {группа.разделы.map((пункт) => (
                     <li key={пункт.путь}>
                       <Link
                         to={пункт.путь}

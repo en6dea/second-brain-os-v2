@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
+import { X } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Inbox, LayoutDashboard, ListChecks, Repeat, Wallet, X } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
+import { DomainNav } from './DomainNav'
+import { ДОМЕНЫ } from '@/app/navigation'
 import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
 import { useИнтерфейс } from '@/app/providers/ui'
@@ -12,13 +14,13 @@ import { запроситьПостоянноеХранение } from '@/core/d
 import { cn } from '@/design-system/classNames'
 import { IconButton } from '@/design-system/components'
 
-const МЕНЮ_ТЕЛЕФОНА = [
-  { путь: '/', название: 'Главная', иконка: LayoutDashboard },
-  { путь: '/tasks', название: 'Задачи', иконка: ListChecks },
-  { путь: '/habits', название: 'Привычки', иконка: Repeat },
-  { путь: '/finance', название: 'Деньги', иконка: Wallet },
-  { путь: '/inbox', название: 'Разбор', иконка: Inbox },
-]
+/**
+ * Нижнее меню телефона.
+ *
+ * Те же домены, что в боковом, но без «Системы»: настройки с телефона
+ * открывают редко, а шестая колонка сделала бы подписи нечитаемыми.
+ */
+const МЕНЮ_ТЕЛЕФОНА = ДОМЕНЫ.filter((домен) => домен.путь !== '/settings')
 
 export function AppShell() {
   const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
@@ -86,11 +88,11 @@ export function AppShell() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar имя={профиль?.имя ?? ''} />
         <main className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-5 lg:pb-8">
-          <div
-            key={расположение.pathname}
-            className="вход-раздела mx-auto w-full max-w-[1180px]"
-          >
-            <Outlet />
+          <div className="mx-auto w-full max-w-[1180px]">
+            <DomainNav />
+            <div key={расположение.pathname} className="вход-раздела">
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>
@@ -104,12 +106,12 @@ export function AppShell() {
             end={пункт.путь === '/'}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center gap-0.5 py-2 text-micro transition-colors',
+                'flex min-h-14 flex-col items-center justify-center gap-0.5 py-2 text-micro transition-colors',
                 isActive ? 'text-accent' : 'text-ink-3',
               )
             }
           >
-            <пункт.иконка size={19} />
+            <пункт.иконка size={22} strokeWidth={1.75} />
             <span>{пункт.название}</span>
           </NavLink>
         ))}
