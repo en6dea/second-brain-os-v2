@@ -406,6 +406,41 @@ export function PeoplePage() {
                 />
               </Field>
             </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field
+                подпись="Последний контакт"
+                подсказка="Отсюда считается напоминание связаться"
+              >
+                <Input
+                  type="date"
+                  value={черновик.последнийКонтакт ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      последнийКонтакт: событие.target.value || null,
+                    })
+                  }
+                />
+              </Field>
+              <Field
+                подпись="Напомнить через сколько дней"
+                подсказка="Пусто — не напоминать"
+              >
+                <Input
+                  type="number"
+                  min={1}
+                  value={черновик.напоминатьЧерезДней ?? ''}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      напоминатьЧерезДней: событие.target.value
+                        ? Math.max(1, Number(событие.target.value))
+                        : null,
+                    })
+                  }
+                />
+              </Field>
+            </div>
             <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
               <Field
                 подпись="Фотография по адресу"
