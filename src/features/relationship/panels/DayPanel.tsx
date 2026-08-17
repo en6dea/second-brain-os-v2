@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Droplet,
   HeartHandshake,
   Pencil,
@@ -10,8 +12,19 @@ import {
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
 import { сейчас } from '@/core/db/RecordId'
-import type { ДеньПартнёра, Человек } from '@/core/db/types'
-import { деньКратко, деньСловами, сегодня } from '@/core/calendar/CalendarRu'
+import type { ДатаДень, ДеньПартнёра, Человек } from '@/core/db/types'
+import {
+  границыМесяца,
+  деньКратко,
+  деньСловами,
+  кДате,
+  месяцСловами,
+  разностьДней,
+  сдвинутьДень,
+  сдвинутьМесяц,
+  сегодня,
+  текущийМесяц,
+} from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
 import { наблюдения, сводкаЦикла } from '../model/Cycle'
 import { useИнтерфейс } from '@/app/providers/ui'
@@ -19,6 +32,7 @@ import { ЗНАЧОК } from '@/design-system/iconSize'
 import { оценкаСловами } from '@/design-system/scale'
 import { useОтклик } from '@/design-system/motion/CountUp'
 import { Flash } from '@/design-system/motion/Ping'
+import { cn } from '@/design-system/classNames'
 import {
   Badge,
   Button,
@@ -45,6 +59,19 @@ const ТОН_СОСТОЯНИЯ = {
   обычно: 'нейтральный',
   трудно: 'опасность',
 } as const
+
+const ФОН_СОСТОЯНИЯ = {
+  хорошо: 'bg-good-soft text-good',
+  обычно: 'bg-sunken text-ink',
+  трудно: 'bg-bad-soft text-bad',
+} as const
+
+const ДНИ_НЕДЕЛИ_КОРОТКО = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+
+/** Индекс дня недели с понедельника (0) — для позиции в сетке календаря. */
+function индексДняНедели(дата: ДатаДень): number {
+  return (кДате(дата).getDay() + 6) % 7
+}
 
 function пустойДень(дата: string, человекId: string | null): Partial<ДеньПартнёра> {
   return {
@@ -76,6 +103,7 @@ export function DayPanel({ дни, люди }: { дни: ДеньПартнёр�
   // начинается с короткой формы, а не с той, которую однажды развернули.
   const [подробно, установитьПодробно] = useState(false)
   const [отклик, запуститьОтклик] = useОтклик(900)
+  const [сдвигМесяца, установитьСдвигМесяца] = useState(0)
 
   const день = сегодня()
   const человекПоУмолчанию =
@@ -88,6 +116,25 @@ export function DayPanel({ дни, люди }: { дни: ДеньПартнёр�
     () => [...дни].sort((а, б) => б.дата.localeCompare(а.дата)),
     [дни],
   )
+
+  const поДатеКарта = useMemo(
+    () => new Map(дни.map((запись) => [запись.дата, запись])),
+    [дни],
+  )
+  const месяцПоказа = useMemo(
+    () => сдвинутьМесяц(`${текущийМесяц()}-01`, сдвигМесяца).slice(0, 7),
+    [сдвигМесяца],
+  )
+  const границыПоказа = границыМесяца(месяцПоказа)
+  const ячейкиМесяца = useMemo(() => {
+    const офсет = индексДняНедели(границыПоказа.от)
+    const днейВМесяце = разностьДней(границыПоказа.от, границыПоказа.до) + 1
+    const итог: (ДатаДень | null)[] = Array.from({ length: офсет }, () => null)
+    for (let шаг = 0; шаг < днейВМесяце; шаг += 1) {
+      итог.push(сдвинутьДень(границыПоказа.от, шаг))
+    }
+    return итог
+  }, [границыПоказа.от, границыПоказа.до])
   const сегодняшний = дни.find((запись) => запись.дата === день) ?? null
 
   function открыть(запись: Partial<ДеньПартнёра>) {
@@ -239,6 +286,63 @@ export function DayPanel({ дни, люди }: { дни: ДеньПартнёр�
             </Button>
           }
         />
+
+        <div className="border-t border-line px-5 py-4">
+          <div className="mb-3 flex items-center justify-between">
+            <IconButton
+              подпись="Предыдущий месяц"
+              onClick={() => установитьСдвигМесяца((значение) => значение - 1)}
+            >
+              <ChevronLeft size={ЗНАЧОК.строка} />
+            </IconButton>
+            <p className="text-meta font-medium text-ink capitalize">
+              {месяцСловами(месяцПоказа)}
+            </p>
+            <IconButton
+              подпись="Следующий месяц"
+              onClick={() => установитьСдвигМесяца((значение) => значение + 1)}
+            >
+              <ChevronRight size={ЗНАЧОК.строка} />
+            </IconButton>
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {ДНИ_НЕДЕЛИ_КОРОТКО.map((подпись) => (
+              <div
+                key={подпись}
+                className="text-center text-micro font-medium text-ink-3"
+              >
+                {подпись}
+              </div>
+            ))}
+            {ячейкиМесяца.map((дата, индекс) => {
+              if (!дата) return <div key={`пусто-${индекс}`} aria-hidden="true" />
+              const запись = поДатеКарта.get(дата) ?? null
+              const сегодня = дата === день
+              return (
+                <button
+                  key={дата}
+                  type="button"
+                  aria-label={`${деньСловами(дата)}${запись?.состояние ? `, состояние: ${запись.состояние}` : ''}`}
+                  onClick={() =>
+                    открыть(
+                      запись ? { ...запись } : пустойДень(дата, человекПоУмолчанию),
+                    )
+                  }
+                  className={cn(
+                    'flex aspect-square min-h-11 flex-col items-center justify-center gap-0.5 rounded-2 border text-micro transition-colors',
+                    сегодня ? 'border-accent' : 'border-transparent',
+                    запись?.состояние
+                      ? ФОН_СОСТОЯНИЯ[запись.состояние]
+                      : 'bg-sunken text-ink-3 hover:bg-hover',
+                  )}
+                >
+                  <span className="tnum">{Number(дата.slice(8))}</span>
+                  {запись?.цикл ? <Droplet size={9} /> : null}
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
         {поДате.length === 0 ? (
           <EmptyState
