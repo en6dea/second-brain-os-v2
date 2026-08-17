@@ -10,6 +10,7 @@ import { useСинхронизацию } from './useSync'
 import { ДОМЕНЫ } from '@/app/navigation'
 import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
+import { UpdateBanner } from './UpdateBanner'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { подготовитьПервыйЗапуск, читатьПрофиль } from '@/core/db/repo'
 import { запроситьПостоянноеХранение } from '@/core/db/Persistence'
@@ -144,6 +145,7 @@ export function AppShell() {
 
       <CommandMenu />
       <QuickAdd />
+      <UpdateBanner />
 
       {уведомлениеПоказано ? (
         <div

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
@@ -17,5 +17,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    // Рядом с репозиторием бывают вспомогательные рабочие копии (например
+    // `.claude/worktrees/*` у параллельных фоновых задач) — без исключения
+    // vitest находит в них те же тесты и запускает каждый по два раза.
+    exclude: [...configDefaults.exclude, '.claude/**'],
   },
 })

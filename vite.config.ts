@@ -19,6 +19,9 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
+      // Регистрацию делает БаннерОбновления через virtual:pwa-register/react —
+      // готовый скрипт-инъекция здесь не нужен и продублировал бы её.
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'Второй мозг — панель управления жизнью',
