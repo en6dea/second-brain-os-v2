@@ -10,6 +10,7 @@ import { деньгиКратко } from '@/core/money/Money'
 import { склонение } from '@/core/language/Plural'
 import { свестиЗамысел, следующийПункт } from './model/Planner'
 import { IntentionDialog } from './IntentionDialog'
+import { создатьЗадачуИзПункта } from './createTaskFromPoint'
 import { useИнтерфейс } from '@/app/providers/ui'
 import {
   Badge,
@@ -52,6 +53,7 @@ export function PlannerPage() {
   const [черновик, установитьЧерновик] = useState<Partial<Замысел> | null>(null)
 
   const замыслы = useLiveQuery(() => база.intentions.toArray(), [])
+  const цели = useLiveQuery(() => база.goals.toArray(), [])
 
   const отобранные = useMemo(() => {
     if (!замыслы) return []
@@ -268,6 +270,7 @@ export function PlannerPage() {
       <IntentionDialog
         key={черновик?.id ?? 'новый'}
         черновик={черновик}
+        цели={цели ?? []}
         наЗакрытие={() => установитьЧерновик(null)}
         наСохранение={async (замысел) => {
           if (замысел.id) {
@@ -291,6 +294,11 @@ export function PlannerPage() {
           await база.intentions.delete(id)
           сообщить('Замысел удалён')
           установитьЧерновик(null)
+        }}
+        наСозданиеЗадачи={async (замысел, пункт) => {
+          const id = await создатьЗадачуИзПункта(замысел, пункт)
+          сообщить('Задача создана')
+          return id
         }}
       />
 

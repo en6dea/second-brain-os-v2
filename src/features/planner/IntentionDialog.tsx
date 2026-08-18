@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Check, Lightbulb, Plus, Trash2 } from 'lucide-react'
+import { ArrowRight, Check, Lightbulb, Plus, Trash2 } from 'lucide-react'
 import type {
   Замысел,
   ПунктЗамысла,
   СостояниеЗамысла,
   ВидЗамысла,
+  Цель,
 } from '@/core/db/types'
 import { новыйId } from '@/core/db/RecordId'
 import { деньгиКратко, копейкиВРубли, рублиВКопейки } from '@/core/money/Money'
@@ -120,14 +121,18 @@ function собрать(черновик: Partial<Замысел>): Замысе
  */
 export function IntentionDialog({
   черновик,
+  цели,
   наЗакрытие,
   наСохранение,
   наУдаление,
+  наСозданиеЗадачи,
 }: {
   черновик: Partial<Замысел> | null
+  цели: Цель[]
   наЗакрытие: () => void
   наСохранение: (замысел: Partial<Замысел>) => Promise<void>
   наУдаление: (id: string) => Promise<void>
+  наСозданиеЗадачи: (замысел: Замысел, пункт: ПунктЗамысла) => Promise<string>
 }) {
   // Суммы живут в строках ввода и оттуда же берутся расчётами. Пустая строка
   // означает «не решено» — это не ноль. Начальные значения берутся из записи
@@ -175,6 +180,11 @@ export function IntentionDialog({
     )
   }
 
+  async function создатьЗадачуИзПункта(пункт: ПунктЗамысла) {
+    const id = await наСозданиеЗадачи(текущий, пункт)
+    изменитьПункт(пункт.id, { задачаId: id })
+  }
+
   function добавитьПункт(название: string) {
     const очищено = название.trim()
     if (!очищено) return
@@ -187,6 +197,7 @@ export function IntentionDialog({
         срок: null,
         стоимость: null,
         заметка: '',
+        задачаId: null,
       },
     ])
     установитьНовыйПункт('')
@@ -296,6 +307,27 @@ export function IntentionDialog({
             наИзменение={(значение) => изменить({ вдвоём: значение })}
           />
 
+          <Field
+            подпись="Связать с целью"
+            подсказка="Пункты можно будет превращать в задачи этой цели"
+          >
+            <Select
+              value={текущий.цельId ?? ''}
+              onChange={(событие) =>
+                изменить({ цельId: событие.target.value || null })
+              }
+            >
+              <option value="">Без цели</option>
+              {цели
+                .filter((цель) => цель.состояние === 'активна')
+                .map((цель) => (
+                  <option key={цель.id} value={цель.id}>
+                    {цель.название}
+                  </option>
+                ))}
+            </Select>
+          </Field>
+
           <Field подпись="Зачем это нужно">
             <Textarea
               rows={2}
@@ -390,6 +422,21 @@ export function IntentionDialog({
                     aria-label="Стоимость пункта"
                     className="tnum h-7 w-[86px] shrink-0 rounded-2 border border-line bg-card px-2 text-right text-caption text-ink"
                   />
+
+                  {черновик?.id ? (
+                    пункт.задачаId ? (
+                      <span className="flex shrink-0 items-center gap-1 rounded-2 bg-good-soft px-2 py-1 text-caption text-good">
+                        <Check size={12} />в задачах
+                      </span>
+                    ) : (
+                      <IconButton
+                        подпись="Создать задачу из пункта"
+                        onClick={() => void создатьЗадачуИзПункта(пункт)}
+                      >
+                        <ArrowRight size={14} />
+                      </IconButton>
+                    )
+                  ) : null}
 
                   <IconButton
                     подпись="Убрать пункт"

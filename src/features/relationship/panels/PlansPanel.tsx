@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { CalendarRange, Check, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
@@ -6,6 +7,7 @@ import { сейчас } from '@/core/db/RecordId'
 import type { Замысел, ГоризонтВдвоём, ПланВдвоём } from '@/core/db/types'
 import { замыслыПериода, свестиЗамысел } from '@/features/planner/model/Planner'
 import { IntentionDialog } from '@/features/planner/IntentionDialog'
+import { создатьЗадачуИзПункта } from '@/features/planner/createTaskFromPoint'
 import {
   границыМесяца,
   границыНедели,
@@ -81,6 +83,7 @@ export function PlansPanel({
   const период = ключПериода(горизонт, якорь)
   const [черновикЗамысла, установитьЧерновикЗамысла] =
     useState<Partial<Замысел> | null>(null)
+  const цели = useLiveQuery(() => база.goals.toArray(), [])
 
   // Границы периода нужны, чтобы понять, какие совместные замыслы к нему
   // относятся. Замысел без даты не относится ни к одному.
@@ -316,6 +319,7 @@ export function PlansPanel({
       <IntentionDialog
         key={черновикЗамысла?.id ?? 'новый'}
         черновик={черновикЗамысла}
+        цели={цели ?? []}
         наЗакрытие={() => установитьЧерновикЗамысла(null)}
         наСохранение={async (замысел) => {
           if (замысел.id) {
@@ -339,6 +343,11 @@ export function PlansPanel({
           await база.intentions.delete(id)
           сообщить('Замысел удалён')
           установитьЧерновикЗамысла(null)
+        }}
+        наСозданиеЗадачи={async (замысел, пункт) => {
+          const id = await создатьЗадачуИзПункта(замысел, пункт)
+          сообщить('Задача создана')
+          return id
         }}
       />
 
