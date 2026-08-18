@@ -159,7 +159,7 @@ export function HabitsPage() {
           иконка: '',
           цвет: 'accent',
           частота: черновик.частота ?? 'ежедневно',
-          дниНедели: [],
+          дниНедели: черновик.дниНедели ?? [],
           разВНеделю: черновик.разВНеделю ?? null,
           норма: черновик.норма ?? 1,
           единица: черновик.единица ?? 'раз',
@@ -464,6 +464,74 @@ export function HabitsPage() {
                 />
               </Field>
             </div>
+            <Field подпись="Частота">
+              <Select
+                value={черновик.частота ?? 'ежедневно'}
+                onChange={(событие) =>
+                  установитьЧерновик({
+                    ...черновик,
+                    частота: событие.target.value as Привычка['частота'],
+                  })
+                }
+              >
+                <option value="ежедневно">Ежедневно</option>
+                <option value="по дням недели">По дням недели</option>
+                <option value="сколько-то раз в неделю">
+                  Сколько-то раз в неделю
+                </option>
+              </Select>
+            </Field>
+            {черновик.частота === 'по дням недели' ? (
+              <Field подпись="Дни" подсказка="Хотя бы один день">
+                <div className="flex flex-wrap gap-1.5">
+                  {ДНИ.map((подпись, индекс) => {
+                    const номер = индекс + 1
+                    const выбран = (черновик.дниНедели ?? []).includes(номер)
+                    return (
+                      <button
+                        key={номер}
+                        type="button"
+                        aria-pressed={выбран}
+                        onClick={() =>
+                          установитьЧерновик({
+                            ...черновик,
+                            дниНедели: выбран
+                              ? (черновик.дниНедели ?? []).filter((д) => д !== номер)
+                              : [...(черновик.дниНедели ?? []), номер].sort(
+                                  (а, б) => а - б,
+                                ),
+                          })
+                        }
+                        className={cn(
+                          'h-9 min-w-11 rounded-2 border px-2 text-meta transition-colors',
+                          выбран
+                            ? 'border-transparent bg-accent text-on-accent'
+                            : 'border-line text-ink-2 hover:border-accent hover:bg-accent-soft',
+                        )}
+                      >
+                        {подпись}
+                      </button>
+                    )
+                  })}
+                </div>
+              </Field>
+            ) : null}
+            {черновик.частота === 'сколько-то раз в неделю' ? (
+              <Field подпись="Раз в неделю">
+                <Input
+                  type="number"
+                  min={1}
+                  max={7}
+                  value={черновик.разВНеделю ?? 3}
+                  onChange={(событие) =>
+                    установитьЧерновик({
+                      ...черновик,
+                      разВНеделю: Number(событие.target.value) || 1,
+                    })
+                  }
+                />
+              </Field>
+            ) : null}
             <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
               <Field
                 подпись="Картинка по адресу"
