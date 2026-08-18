@@ -503,7 +503,7 @@ export function HabitsPage() {
                           })
                         }
                         className={cn(
-                          'h-9 min-w-11 rounded-2 border px-2 text-meta transition-colors',
+                          'h-11 min-w-11 rounded-2 border px-2 text-meta transition-colors',
                           выбран
                             ? 'border-transparent bg-accent text-on-accent'
                             : 'border-line text-ink-2 hover:border-accent hover:bg-accent-soft',
