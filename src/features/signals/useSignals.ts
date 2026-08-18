@@ -27,6 +27,7 @@ export function useСигналыПоРазделам(разделы: string[]):
       вызовы,
       планы,
       люди,
+      категории,
     ] = await Promise.all([
       база.tasks.toArray(),
       база.habits.toArray(),
@@ -40,6 +41,7 @@ export function useСигналыПоРазделам(разделы: string[]):
       база.challenges.toArray(),
       база.plans.toArray(),
       база.people.toArray(),
+      база.moneyCategories.toArray(),
     ])
     return собратьСигналы({
       задачи,
@@ -54,6 +56,7 @@ export function useСигналыПоРазделам(разделы: string[]):
       вызовы,
       планы,
       люди,
+      категории,
     })
   }, [])
 
