@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Lock, Plus, Trash2 } from 'lucide-react'
+import { HeartPulse, Lock, Plus, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { SelfTalkCard } from './SelfTalkCard'
+import { наблюденияПоНастроению } from './model/MoodTrend'
 import { новаяЗапись, читатьНастройки } from '@/core/db/repo'
 import type { ВидЗаписиДневника, ЗаписьДневника } from '@/core/db/types'
 import { деньСловами, сегодня } from '@/core/calendar/CalendarRu'
@@ -50,6 +51,11 @@ export function JournalPage() {
     if (!записи) return []
     return отбор === 'все' ? записи : записи.filter((з) => з.вид === отбор)
   }, [записи, отбор])
+
+  const наблюденияНастроения = useMemo(
+    () => (записи ? наблюденияПоНастроению(записи, сегодня()) : []),
+    [записи],
+  )
 
   if (!записи) {
     return (
@@ -128,6 +134,21 @@ export function JournalPage() {
           наВыбор={установитьОтбор}
         />
       </div>
+
+      {наблюденияНастроения.length > 0 ? (
+        <Card>
+          <div className="flex items-start gap-2.5 px-5 py-3">
+            <HeartPulse size={15} className="mt-0.5 shrink-0 text-accent" />
+            <ul className="space-y-1.5">
+              {наблюденияНастроения.map((текст) => (
+                <li key={текст} className="text-caption leading-relaxed text-ink-2">
+                  {текст}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Card>
+      ) : null}
 
       <Card className="border-know/25">
         <div className="flex items-center gap-2.5 px-5 py-3">
