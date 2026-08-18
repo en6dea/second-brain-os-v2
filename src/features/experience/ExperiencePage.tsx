@@ -23,7 +23,7 @@ import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { cn } from '@/design-system/classNames'
 import { useОтклик } from '@/design-system/motion/CountUp'
-import { Ping } from '@/design-system/motion/Ping'
+import { Flash, Ping } from '@/design-system/motion/Ping'
 import {
   Badge,
   Button,
@@ -47,6 +47,9 @@ const СОСТОЯНИЯ: Опыт['состояние'][] = [
   'получен',
   'отменён',
 ]
+
+/** Доля отмеченных дней, при которой вызов можно считать завершённым. */
+const ПОРОГ_ЗАВЕРШЕНИЯ_ВЫЗОВА = 80
 
 function сдвинутьМесяц(месяц: string, шаг: number): string {
   const [год, номер] = месяц.split('-').map(Number)
@@ -93,6 +96,98 @@ function ChallengeDay({
         ) : null}
       </button>
     </Ping>
+  )
+}
+
+/**
+ * Строка вызова месяца.
+ *
+ * Кнопка «Завершить вызов» появляется сама, когда отмечено достаточно дней
+ * — вызов не может остаться незавершённым навсегда только потому, что
+ * никто не поставил галочку руками.
+ */
+function ChallengeCard({
+  вызов,
+  дниМесяца,
+  день,
+  наОтметку,
+  наИзменение,
+  наУдаление,
+  наЗавершение,
+}: {
+  вызов: Вызов
+  дниМесяца: string[]
+  день: string
+  наОтметку: (дата: string) => void
+  наИзменение: () => void
+  наУдаление: () => void
+  наЗавершение: () => void
+}) {
+  const [проблеск, установитьПроблеск] = useState(false)
+  const отмечено = дниМесяца.filter((дата) => (вызов.отметки[дата] ?? 0) > 0).length
+  const прошло = дниМесяца.filter((дата) => дата <= день).length
+  const доля = процент(отмечено, дниМесяца.length)
+  const можноЗавершить =
+    !вызов.завершён && доля !== null && доля >= ПОРОГ_ЗАВЕРШЕНИЯ_ВЫЗОВА
+
+  return (
+    <div className="relative overflow-hidden px-5 py-4">
+      <Flash активен={проблеск} />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-meta font-medium text-ink">{вызов.название}</p>
+          <p className="mt-0.5 text-caption text-ink-3">
+            {отмечено} из {дниМесяца.length}{' '}
+            {склонение(дниМесяца.length, 'дня', 'дней', 'дней')} · прошло {прошло}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {вызов.завершён ? <Badge тон="успех">завершён</Badge> : null}
+          <IconButton подпись="Изменить вызов" onClick={наИзменение}>
+            <span className="text-meta">✎</span>
+          </IconButton>
+          <IconButton подпись="Удалить вызов" onClick={наУдаление}>
+            <Trash2 size={15} />
+          </IconButton>
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <ProgressBar
+          значение={отмечено}
+          из={дниМесяца.length}
+          тон={доля !== null && доля >= 80 ? 'успех' : 'нейтральный'}
+        />
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-1">
+        {дниМесяца.map((дата) => (
+          <ChallengeDay
+            key={дата}
+            отмечен={(вызов.отметки[дата] ?? 0) > 0}
+            будущее={дата > день}
+            подпись={`${вызов.название}, ${дата}`}
+            наОтметку={() => наОтметку(дата)}
+          />
+        ))}
+      </div>
+
+      {можноЗавершить ? (
+        <div className="mt-3">
+          <Button
+            вид="контур"
+            размер="малый"
+            onClick={() => {
+              установитьПроблеск(true)
+              setTimeout(() => установитьПроблеск(false), 1200)
+              наЗавершение()
+            }}
+          >
+            Завершить вызов
+          </Button>
+        </div>
+      ) : null}
+    </div>
   )
 }
 
@@ -190,6 +285,11 @@ export function ExperiencePage() {
     if ((отметки[дата] ?? 0) > 0) delete отметки[дата]
     else отметки[дата] = вызов.норма || 1
     await база.challenges.put({ ...вызов, отметки, updatedAt: сейчас() })
+  }
+
+  async function завершитьВызов(вызов: Вызов) {
+    await база.challenges.put({ ...вызов, завершён: true, updatedAt: сейчас() })
+    сообщить('Вызов завершён')
   }
 
   return (
@@ -367,68 +467,21 @@ export function ExperiencePage() {
           />
         ) : (
           <div className="divide-y divide-line border-t border-line">
-            {вызовыМесяца.map((вызов) => {
-              const отмечено = дниМесяца.filter(
-                (дата) => (вызов.отметки[дата] ?? 0) > 0,
-              ).length
-              const прошло = дниМесяца.filter((дата) => дата <= день).length
-              const доля = процент(отмечено, дниМесяца.length)
-
-              return (
-                <div key={вызов.id} className="px-5 py-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-meta font-medium text-ink">
-                        {вызов.название}
-                      </p>
-                      <p className="mt-0.5 text-caption text-ink-3">
-                        {отмечено} из {дниМесяца.length}{' '}
-                        {склонение(дниМесяца.length, 'дня', 'дней', 'дней')} ·
-                        прошло {прошло}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {вызов.завершён ? <Badge тон="успех">завершён</Badge> : null}
-                      <IconButton
-                        подпись="Изменить вызов"
-                        onClick={() => установитьЧерновикВызова(вызов)}
-                      >
-                        <span className="text-meta">✎</span>
-                      </IconButton>
-                      <IconButton
-                        подпись="Удалить вызов"
-                        onClick={async () => {
-                          await база.challenges.delete(вызов.id)
-                          сообщить('Вызов удалён вместе с отметками')
-                        }}
-                      >
-                        <Trash2 size={15} />
-                      </IconButton>
-                    </div>
-                  </div>
-
-                  <div className="mt-3">
-                    <ProgressBar
-                      значение={отмечено}
-                      из={дниМесяца.length}
-                      тон={доля !== null && доля >= 80 ? 'успех' : 'нейтральный'}
-                    />
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {дниМесяца.map((дата) => (
-                      <ChallengeDay
-                        key={дата}
-                        отмечен={(вызов.отметки[дата] ?? 0) > 0}
-                        будущее={дата > день}
-                        подпись={`${вызов.название}, ${дата}`}
-                        наОтметку={() => отметитьДень(вызов, дата)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )
-            })}
+            {вызовыМесяца.map((вызов) => (
+              <ChallengeCard
+                key={вызов.id}
+                вызов={вызов}
+                дниМесяца={дниМесяца}
+                день={день}
+                наОтметку={(дата) => отметитьДень(вызов, дата)}
+                наИзменение={() => установитьЧерновикВызова(вызов)}
+                наУдаление={async () => {
+                  await база.challenges.delete(вызов.id)
+                  сообщить('Вызов удалён вместе с отметками')
+                }}
+                наЗавершение={() => завершитьВызов(вызов)}
+              />
+            ))}
           </div>
         )}
       </Card>
