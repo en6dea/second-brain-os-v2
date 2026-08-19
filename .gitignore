@@ -35,6 +35,9 @@ firebase-config.js
 serviceAccount*.json
 *.pem
 *.key
+worker/.dev.vars
+worker/.wrangler
+worker/node_modules
 
 # Личные данные пользователя.
 # Косая черта в начале обязательна: правило без неё срабатывает на любой

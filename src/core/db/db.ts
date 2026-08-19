@@ -23,6 +23,7 @@ import type {
   Опыт,
   План,
   ПланВдвоём,
+  ПланДня,
   ПлановыйПлатёж,
   ПлатёжПоОбязательству,
   Папка,
@@ -96,6 +97,8 @@ export class БазаВторойМозг extends Dexie {
 
   passwords!: EntityTable<ЗаписьПароля, 'id'>
   passwordsVault!: EntityTable<КонфигурацияПаролей, 'id'>
+
+  dayPlans!: EntityTable<ПланДня, 'id'>
 
   constructor(имяБазы = 'ВторойМозг2') {
     super(имяБазы)
@@ -314,6 +317,14 @@ export class БазаВторойМозг extends Dexie {
       passwordsVault: 'id',
     })
 
+    // Версия 12: план дня. 3–5 пунктов, собранных из задач, целей, привычек,
+    // обязательств и входящих по тем же правилам, что и «следующее
+    // действие» — без внешних сервисов, полностью офлайн. По одному плану
+    // на день, ключ — сама дата.
+    this.version(12).stores({
+      dayPlans: 'id, день',
+    })
+
     this.on('ready', () => регистрироватьНадгробия(this), true)
   }
 }
@@ -403,6 +414,7 @@ export const ТАБЛИЦЫ = [
   'settings',
   'passwords',
   'passwordsVault',
+  'dayPlans',
 ] as const
 
 export type ИмяТаблицы = (typeof ТАБЛИЦЫ)[number]
@@ -445,4 +457,5 @@ export const НАЗВАНИЯ_ТАБЛИЦ: Record<ИмяТаблицы, string>
   settings: 'Настройки',
   passwords: 'Пароли',
   passwordsVault: 'Хранилище паролей',
+  dayPlans: 'План дня',
 }
