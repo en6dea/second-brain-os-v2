@@ -59,8 +59,10 @@ export function LockScreen() {
               <KeyRound size={ЗНАЧОК.крупный} strokeWidth={1.75} />
             </span>
             <div>
-              <h1 className="text-lead font-semibold text-ink">
-                {хранилищеЕсть ? 'Хранилище заблокировано' : 'Создать хранилище паролей'}
+              <h1 className="text-h3 font-semibold text-ink">
+                {хранилищеЕсть
+                  ? 'Хранилище заблокировано'
+                  : 'Создать хранилище паролей'}
               </h1>
               <p className="mt-0.5 text-caption text-ink-3">
                 {хранилищеЕсть

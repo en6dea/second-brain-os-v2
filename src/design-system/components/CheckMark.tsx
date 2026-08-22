@@ -41,19 +41,28 @@ export function CheckMark({
           if (!отмечено) запустить()
           наПереключение()
         }}
-        style={{ width: размер, height: размер }}
         className={cn(
-          'flex shrink-0 items-center justify-center rounded-full border',
-          'transition-[background-color,border-color,transform] duration-150 active:scale-90',
+          'group flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
+          'transition-transform duration-150 active:scale-90',
           disabled && 'opacity-40',
-          отмечено
-            ? 'border-transparent bg-good text-white'
-            : 'border-line hover:border-accent hover:bg-accent-soft',
         )}
       >
-        {отмечено ? (
-          <Check size={Math.round(размер * 0.65)} className={отклик ? 'прочерк' : undefined} />
-        ) : null}
+        <span
+          style={{ width: размер, height: размер }}
+          className={cn(
+            'flex items-center justify-center rounded-full border transition-[background-color,border-color]',
+            отмечено
+              ? 'border-transparent bg-good text-white'
+              : 'border-line group-hover:border-accent group-hover:bg-accent-soft',
+          )}
+        >
+          {отмечено ? (
+            <Check
+              size={Math.round(размер * 0.65)}
+              className={отклик ? 'прочерк' : undefined}
+            />
+          ) : null}
+        </span>
       </button>
     </Ping>
   )

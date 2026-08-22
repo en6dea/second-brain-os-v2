@@ -20,9 +20,9 @@ const виды: Record<Вид, string> = {
 // 44 px: то же правило, что и у полей ввода, иначе главная кнопка формы
 // оказывается меньше всего, что над ней.
 const размеры: Record<Размер, string> = {
-  малый: 'h-8 px-3 text-meta gap-1.5 rounded-2',
+  малый: 'h-11 px-3 text-meta gap-1.5 rounded-2',
   средний: 'h-11 px-4 text-body gap-2 rounded-2',
-  большой: 'h-12 px-5 text-lead gap-2.5 rounded-3',
+  большой: 'h-12 px-5 text-body gap-2.5 rounded-3',
 }
 
 export interface СвойстваКнопки extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -76,7 +76,7 @@ export function IconButton({
       aria-label={подпись}
       title={подпись}
       className={cn(
-        'inline-flex h-9 w-9 items-center justify-center rounded-2',
+        'inline-flex h-11 w-11 items-center justify-center rounded-2',
         'transition-colors duration-150 active:scale-95',
         виды[вид],
         className,

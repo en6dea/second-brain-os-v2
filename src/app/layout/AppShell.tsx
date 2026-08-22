@@ -32,9 +32,14 @@ export function AppShell() {
   const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
   const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
   const уведомление = useИнтерфейс((с) => с.уведомление)
-  const { смонтировано: уведомлениеПоказано, закрывается: уведомлениеУходит, наОкончание: наОкончаниеУведомления } =
-    useПрисутствие(уведомление !== null)
-  const [текстУведомления, установитьТекстУведомления] = useState<string | null>(null)
+  const {
+    смонтировано: уведомлениеПоказано,
+    закрывается: уведомлениеУходит,
+    наОкончание: наОкончаниеУведомления,
+  } = useПрисутствие(уведомление !== null)
+  const [текстУведомления, установитьТекстУведомления] = useState<string | null>(
+    null,
+  )
   useEffect(() => {
     if (уведомление !== null) установитьТекстУведомления(уведомление)
   }, [уведомление])
@@ -67,7 +72,6 @@ export function AppShell() {
 
   const профиль = useLiveQuery(() => читатьПрофиль(), [])
 
-
   useEffect(() => {
     const наКлавишу = (событие: KeyboardEvent) => {
       if (
@@ -83,9 +87,9 @@ export function AppShell() {
   }, [открытьКомандноеОкно])
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full bg-bg">
       {/* Настольное меню */}
-      <aside className="hidden w-[248px] shrink-0 border-r border-line lg:block">
+      <aside className="hidden w-[272px] shrink-0 border-r border-line bg-card lg:block">
         <Sidebar />
       </aside>
 
@@ -111,10 +115,10 @@ export function AppShell() {
         </div>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col bg-bg">
         <Topbar имя={профиль?.имя ?? ''} />
-        <main className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-5 lg:pb-8">
-          <div className="mx-auto w-full max-w-[1180px]">
+        <main className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-6 lg:px-8 lg:pt-6 lg:pb-10">
+          <div className="mx-auto w-full max-w-[1320px]">
             <DomainNav />
             <div key={ключРаздела} className="вход-раздела">
               <Outlet />
@@ -124,7 +128,7 @@ export function AppShell() {
       </div>
 
       {/* Нижнее меню телефона — самостоятельное, а не уменьшенное настольное */}
-      <nav className="fixed right-0 bottom-0 left-0 z-30 grid grid-cols-5 border-t border-line bg-card/95 backdrop-blur-md lg:hidden">
+      <nav className="fixed right-0 bottom-0 left-0 z-30 grid grid-cols-5 border-t border-line bg-card/95 px-1 pb-[env(safe-area-inset-bottom)] shadow-2 backdrop-blur-md lg:hidden">
         {МЕНЮ_ТЕЛЕФОНА.map((пункт) => (
           <NavLink
             key={пункт.путь}
@@ -132,8 +136,10 @@ export function AppShell() {
             end={пункт.путь === '/'}
             className={({ isActive }) =>
               cn(
-                'flex min-h-14 flex-col items-center justify-center gap-0.5 py-2 text-micro transition-colors',
-                isActive ? 'text-accent' : 'text-ink-3',
+                'mx-0.5 my-1 flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-3 py-2 text-micro transition-colors',
+                isActive
+                  ? 'bg-accent-soft font-semibold text-accent'
+                  : 'text-ink-3',
               )
             }
           >

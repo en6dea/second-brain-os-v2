@@ -146,7 +146,7 @@ export function Metric({
       <div
         className={cn(
           // На узких экранах показание уменьшается, чтобы сумма не обрезалась.
-          'tnum mt-1 text-read leading-tight font-medium sm:text-gauge',
+          'tnum mt-1 text-h3 leading-tight font-semibold sm:text-h2',
           цветЗначения,
         )}
       >
@@ -221,7 +221,7 @@ export function EmptyState({
           {иконка}
         </div>
       ) : null}
-      <p className="text-lead font-medium text-ink">{заголовок}</p>
+      <p className="text-body font-semibold text-ink">{заголовок}</p>
       {подпись ? (
         <p className="mt-1 max-w-sm text-body text-ink-3">{подпись}</p>
       ) : null}

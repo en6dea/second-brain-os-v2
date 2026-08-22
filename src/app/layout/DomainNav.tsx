@@ -23,7 +23,7 @@ export function DomainNav() {
   return (
     <nav
       aria-label={`Разделы: ${домен.название}`}
-      className="-mx-1 mb-4 flex gap-1 overflow-x-auto px-1 pb-1"
+      className="scrollbar-none mb-5 flex gap-1 overflow-x-auto rounded-4 border border-line bg-card p-1.5 shadow-1"
     >
       {домен.разделы.map((раздел) => (
         <NavLink
@@ -32,15 +32,20 @@ export function DomainNav() {
           end={раздел.путь === '/' || раздел.путь === '/finance'}
           className={({ isActive }) =>
             cn(
-              'inline-flex min-h-11 shrink-0 items-center gap-2 rounded-3 px-3.5 text-meta',
+              'group inline-flex min-h-11 shrink-0 items-center gap-2 rounded-3 px-3.5 text-meta',
               'transition-colors duration-150',
               isActive
-                ? 'bg-accent-soft font-semibold text-accent'
+                ? 'bg-accent font-semibold text-on-accent shadow-1'
                 : 'text-ink-3 hover:bg-hover hover:text-ink-2',
             )
           }
         >
-          <Icon значок={раздел.иконка} смысл={смыслРаздела(раздел.путь)} размер={ЗНАЧОК.основной} />
+          <Icon
+            значок={раздел.иконка}
+            смысл={смыслРаздела(раздел.путь)}
+            размер={ЗНАЧОК.строка}
+            className="group-aria-[current=page]:text-on-accent"
+          />
           {раздел.название}
         </NavLink>
       ))}

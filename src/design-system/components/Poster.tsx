@@ -29,9 +29,9 @@ export function Poster({
   const [сломалась, установитьСломалась] = useState(false)
 
   const размеры = {
-    значок: 'h-14 w-14 rounded-full text-read',
-    карточка: 'h-[112px] w-[78px] rounded-3 text-gauge',
-    полоса: 'h-full w-full rounded-3 text-gauge',
+    значок: 'h-14 w-14 rounded-full text-h3',
+    карточка: 'h-[112px] w-[78px] rounded-3 text-h2',
+    полоса: 'h-full w-full rounded-3 text-h2',
   }
 
   // Тонкая обводка и тень отделяют обложку от фона карточки: без них тёмная

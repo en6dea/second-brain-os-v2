@@ -43,7 +43,7 @@ export function CardHeader({
       )}
     >
       <div className="min-w-0">
-        <h2 className="text-lead leading-tight font-semibold text-ink">
+        <h2 className="text-h3 leading-tight font-semibold text-ink">
           {заголовок}
         </h2>
         {подпись ? <p className="mt-0.5 text-body text-ink-3">{подпись}</p> : null}

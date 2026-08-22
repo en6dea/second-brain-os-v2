@@ -9,7 +9,7 @@ import {
 import { cn } from '@/design-system/classNames'
 
 const базаПоля =
-  'w-full bg-card border border-line rounded-2 px-3 text-lead text-ink ' +
+  'w-full bg-card border border-line rounded-2 px-3 text-body text-ink ' +
   'placeholder:text-ink-3 transition-colors duration-150 ' +
   'hover:border-line-strong focus:border-accent focus:outline-none ' +
   'disabled:opacity-50 disabled:pointer-events-none'
@@ -107,7 +107,7 @@ export const MoneyInput = forwardRef<
         className={cn(базаПоля, 'tnum h-11 pr-8 text-right', className)}
         {...остальное}
       />
-      <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-lead text-ink-3">
+      <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-body text-ink-3">
         ₽
       </span>
     </div>

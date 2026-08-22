@@ -203,7 +203,8 @@ export function DashboardPage() {
   const показателиGameLife = посчитатьGameLife({
     задачСделано: данные.задачи.filter((з) => з.состояние === 'сделана').length,
     привычекОтмечено: данные.привычки.reduce(
-      (итог, п) => итог + Object.values(п.отметки).filter((значение) => значение > 0).length,
+      (итог, п) =>
+        итог + Object.values(п.отметки).filter((значение) => значение > 0).length,
       0,
     ),
     целейДостигнуто: данные.цели.filter((ц) => ц.состояние === 'достигнута').length,
@@ -228,7 +229,7 @@ export function DashboardPage() {
               <p className="text-caption text-ink-3 first-letter:uppercase">
                 {деньНедели(день)}, {деньСловами(день)}
               </p>
-              <h1 className="mt-1.5 text-gauge leading-tight font-semibold text-ink sm:text-display">
+              <h1 className="mt-1.5 text-h2 leading-tight font-semibold text-ink sm:text-h1">
                 Здесь пока нечего показывать
               </h1>
               <p className="mt-1.5 max-w-xl text-body text-ink-2">
@@ -239,20 +240,20 @@ export function DashboardPage() {
               <div className="mt-5 flex flex-col gap-2 sm:flex-row">
                 <Link
                   to="/tasks"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-3 bg-accent px-5 text-lead font-medium text-on-accent shadow-1 transition-colors hover:bg-accent-hover"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-3 bg-accent px-5 text-body font-medium text-on-accent shadow-1 transition-colors hover:bg-accent-hover"
                 >
                   Записать первую задачу
                   <ArrowRight size={ЗНАЧОК.основной} />
                 </Link>
                 <Link
                   to="/finance/accounts"
-                  className="inline-flex h-12 items-center justify-center rounded-3 border border-line px-5 text-lead font-medium text-ink transition-colors hover:border-line-strong"
+                  className="inline-flex h-12 items-center justify-center rounded-3 border border-line px-5 text-body font-medium text-ink transition-colors hover:border-line-strong"
                 >
                   Завести счёт
                 </Link>
                 <Link
                   to="/settings"
-                  className="inline-flex h-12 items-center justify-center rounded-3 border border-line px-5 text-lead font-medium text-ink transition-colors hover:border-line-strong"
+                  className="inline-flex h-12 items-center justify-center rounded-3 border border-line px-5 text-body font-medium text-ink transition-colors hover:border-line-strong"
                 >
                   Перенести прежние данные
                 </Link>
@@ -273,30 +274,31 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="anim-rise space-y-7">
-      <DayPlanCard />
-      <GameLifeCard показатели={показателиGameLife} />
-
+    <div className="anim-rise grid gap-5 [&>*]:min-w-0 xl:grid-cols-12">
       {/* --- Сейчас --- */}
-      <section>
-        <Card className="relative overflow-hidden">
+      <section className="xl:col-span-8 xl:row-start-1">
+        <Card className="relative h-full overflow-hidden">
           <AmbientField />
           <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="min-w-0">
-              <p className="text-caption text-ink-3 first-letter:uppercase">
-                {деньНедели(день)}, {деньСловами(день)}
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-caption font-semibold text-accent">
+                <Sparkles size={ЗНАЧОК.подпись} />
+                Главное сейчас
               </p>
-              <h1 className="mt-1.5 text-h2 leading-tight font-semibold text-ink sm:text-h2">
+              <h1 className="mt-3 text-h2 leading-tight font-semibold text-ink sm:text-h1">
                 {следующееДействие.заголовок}
               </h1>
               <p className="mt-1.5 max-w-xl text-meta text-ink-2">
                 {следующееДействие.пояснение}
               </p>
+              <p className="mt-3 text-caption text-ink-3 first-letter:uppercase">
+                {деньНедели(день)}, {деньСловами(день)}
+              </p>
             </div>
             {следующееДействие.ссылка ? (
               <Link
                 to={следующееДействие.ссылка}
-                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-3 bg-accent px-5 text-body font-medium text-on-accent shadow-1 transition-colors hover:bg-accent-hover"
+                className="inline-flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-3 bg-accent px-5 text-body font-medium text-on-accent shadow-1 transition-colors hover:bg-accent-hover sm:w-auto"
               >
                 {следующееДействие.подписьКнопки}
                 <ArrowRight size={16} />
@@ -305,7 +307,7 @@ export function DashboardPage() {
           </div>
 
           <div className="relative grid grid-cols-2 gap-px border-t border-line bg-line sm:grid-cols-4">
-            <div className="bg-card p-4">
+            <div className="min-w-0 bg-card p-4">
               <Metric
                 единица="шт · задачи"
                 подпись="Закрыто сегодня"
@@ -317,7 +319,7 @@ export function DashboardPage() {
                 }
               />
             </div>
-            <div className="bg-card p-4">
+            <div className="min-w-0 bg-card p-4">
               <Metric
                 единица="шт · привычки"
                 подпись="Отмечено сегодня"
@@ -329,7 +331,7 @@ export function DashboardPage() {
                 }
               />
             </div>
-            <div className="bg-card p-4">
+            <div className="min-w-0 bg-card p-4">
               <Metric
                 единица="шт · события"
                 подпись="В календаре"
@@ -337,7 +339,7 @@ export function DashboardPage() {
                 источник={данные.события[0]?.название ?? 'ничего не запланировано'}
               />
             </div>
-            <div className="bg-card p-4">
+            <div className="min-w-0 bg-card p-4">
               <Metric
                 единица="шт · входящие"
                 подпись="Ждут разбора"
@@ -350,8 +352,12 @@ export function DashboardPage() {
         </Card>
       </section>
 
+      <section className="xl:col-span-4 xl:row-start-1 [&>div]:h-full">
+        <DayPlanCard />
+      </section>
+
       {/* --- Сигналы --- */}
-      <section>
+      <section className="xl:col-span-4 xl:col-start-9 xl:row-start-2">
         <SectionTitle
           действие={
             <span className="text-caption text-ink-3">
@@ -381,8 +387,8 @@ export function DashboardPage() {
             </CardBody>
           </Card>
         ) : (
-          <div className="grid gap-2.5 md:grid-cols-2">
-            {остальныеСигналы.slice(0, 6).map((сигнал) => (
+          <div className="grid gap-2.5">
+            {остальныеСигналы.slice(0, 4).map((сигнал) => (
               <SignalRow key={сигнал.id} сигнал={сигнал} />
             ))}
           </div>
@@ -390,10 +396,13 @@ export function DashboardPage() {
       </section>
 
       {/* --- Деньги --- */}
-      <section>
+      <section className="xl:col-span-8 xl:col-start-1 xl:row-start-2">
         <SectionTitle
           действие={
-            <Link to="/finance" className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline">
+            <Link
+              to="/finance"
+              className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline"
+            >
               Все финансы
             </Link>
           }
@@ -401,7 +410,7 @@ export function DashboardPage() {
           Деньги
         </SectionTitle>
 
-        <Card>
+        <Card className="h-full">
           {деньгиПусты ? (
             <EmptyState
               иконка={<Wallet size={ЗНАЧОК.показание} />}
@@ -479,10 +488,13 @@ export function DashboardPage() {
       </section>
 
       {/* --- Движение --- */}
-      <section>
+      <section className="xl:col-span-7 xl:row-start-3">
         <SectionTitle
           действие={
-            <Link to="/goals" className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline">
+            <Link
+              to="/goals"
+              className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline"
+            >
               Все цели
             </Link>
           }
@@ -490,7 +502,7 @@ export function DashboardPage() {
           Движение
         </SectionTitle>
 
-        <Card>
+        <Card className="h-full">
           {активныеЦели.length === 0 ? (
             <EmptyState
               иконка={<Circle size={20} />}
@@ -537,9 +549,13 @@ export function DashboardPage() {
         </Card>
       </section>
 
+      <section className="xl:col-span-5 xl:row-start-3 [&>div]:h-full">
+        <GameLifeCard показатели={показателиGameLife} />
+      </section>
+
       {/* --- Привычки сегодня --- */}
       {активныеПривычки.length > 0 ? (
-        <section>
+        <section className="xl:col-span-12">
           <SectionTitle
             действие={
               <Link
@@ -570,9 +586,7 @@ export function DashboardPage() {
                     {отмечена ? <CheckCircle2 size={14} /> : <Circle size={14} />}
                     {привычка.название}
                     {серия > 1 ? (
-                      <span className="tnum text-micro opacity-70">
-                        {серия} дн
-                      </span>
+                      <span className="tnum text-micro opacity-70">{серия} дн</span>
                     ) : null}
                   </span>
                 )

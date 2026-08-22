@@ -6,7 +6,13 @@ import { собратьПланДня, РАЗДЕЛ_ПО_ВИДУ } from '@/core
 import { новаяЗапись } from '@/core/db/repo'
 import { новыйId, сейчас } from '@/core/db/RecordId'
 import { сегодня } from '@/core/calendar/CalendarRu'
-import { Card, CardHeader, CardBody, CheckMark, Skeleton } from '@/design-system/components'
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CheckMark,
+  Skeleton,
+} from '@/design-system/components'
 import { cn } from '@/design-system/classNames'
 import type { ПунктПлана } from '@/core/db/types'
 
@@ -23,14 +29,15 @@ export function DayPlanCard() {
   const день = сегодня()
 
   const данные = useLiveQuery(async () => {
-    const [задачи, цели, привычки, обязательства, входящие, план] = await Promise.all([
-      база.tasks.toArray(),
-      база.goals.toArray(),
-      база.habits.toArray(),
-      база.obligations.toArray(),
-      база.inbox.toArray(),
-      база.dayPlans.where('день').equals(день).first(),
-    ])
+    const [задачи, цели, привычки, обязательства, входящие, план] =
+      await Promise.all([
+        база.tasks.toArray(),
+        база.goals.toArray(),
+        база.habits.toArray(),
+        база.obligations.toArray(),
+        база.inbox.toArray(),
+        база.dayPlans.where('день').equals(день).first(),
+      ])
     return { задачи, цели, привычки, обязательства, входящие, план }
   }, [день])
 
@@ -114,7 +121,10 @@ export function DayPlanCard() {
       <CardBody>
         <ul className="divide-y divide-line">
           {план.пункты.map((пункт) => (
-            <li key={пункт.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+            <li
+              key={пункт.id}
+              className="flex items-start gap-3 py-3 first:pt-0 last:pb-0"
+            >
               <CheckMark
                 отмечено={пункт.выполнен}
                 подпись={`Отметить «${пункт.заголовок}» выполненным`}
@@ -125,13 +135,22 @@ export function DayPlanCard() {
                 <Link
                   to={РАЗДЕЛ_ПО_ВИДУ[пункт.вид]}
                   className={cn(
-                    'block truncate text-meta font-medium text-ink hover:underline',
-                    пункт.выполнен && 'text-ink-3 line-through',
+                    'flex min-h-11 flex-col justify-center py-0.5 hover:underline',
+                    пункт.выполнен && 'text-ink-3',
                   )}
                 >
-                  {пункт.заголовок}
+                  <span
+                    className={cn(
+                      'block truncate text-meta font-medium text-ink',
+                      пункт.выполнен && 'text-ink-3 line-through',
+                    )}
+                  >
+                    {пункт.заголовок}
+                  </span>
+                  <span className="mt-0.5 block truncate text-caption text-ink-3">
+                    {пункт.зачем}
+                  </span>
                 </Link>
-                <p className="mt-0.5 truncate text-caption text-ink-3">{пункт.зачем}</p>
               </div>
             </li>
           ))}
