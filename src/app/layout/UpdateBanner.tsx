@@ -35,10 +35,12 @@ export function UpdateBanner() {
   return (
     <div
       role="status"
-      onAnimationEnd={наОкончание}
+      onAnimationEnd={(событие) => {
+        if (событие.target === событие.currentTarget) наОкончание()
+      }}
       className={cn(
         'fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3',
-        'rounded-3 border border-line bg-over px-3 py-2 shadow-3',
+        'premium-card rounded-3 px-3 py-2 shadow-3',
         закрывается ? 'anim-pop-уход' : 'anim-pop',
       )}
     >
@@ -51,7 +53,10 @@ export function UpdateBanner() {
       >
         Обновить
       </Button>
-      <IconButton подпись="Скрыть на сейчас" onClick={() => установитьДоступно(false)}>
+      <IconButton
+        подпись="Скрыть на сейчас"
+        onClick={() => установитьДоступно(false)}
+      >
         <X size={ЗНАЧОК.подпись} />
       </IconButton>
     </div>

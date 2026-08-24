@@ -7,7 +7,13 @@
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f4f2ee" />
+    <meta name="theme-color" content="#edf3f6" />
+    <script>
+      ;(() => {
+        const dark = matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+      })()
+    </script>
     <meta
       name="description"
       content="Второй мозг — личная панель управления жизнью: день, цели, привычки, деньги, знания и обзоры."

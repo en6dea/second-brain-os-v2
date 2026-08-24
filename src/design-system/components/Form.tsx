@@ -9,9 +9,8 @@ import {
 import { cn } from '@/design-system/classNames'
 
 const базаПоля =
-  'w-full bg-card border border-line rounded-2 px-3 text-body text-ink ' +
-  'placeholder:text-ink-3 transition-colors duration-150 ' +
-  'hover:border-line-strong focus:border-accent focus:outline-none ' +
+  'field-control w-full rounded-2 px-3 text-body text-ink ' +
+  'placeholder:text-ink-3 focus:outline-none ' +
   'disabled:opacity-50 disabled:pointer-events-none'
 
 export function Field({
@@ -143,18 +142,21 @@ export function Switch({
         role="switch"
         aria-checked={включён}
         onClick={() => наИзменение(!включён)}
-        className={cn(
-          'relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200',
-          включён ? 'bg-accent' : 'bg-line-strong',
-        )}
+        className="button-base button-quiet flex h-11 w-14 shrink-0 items-center justify-center rounded-2"
       >
         <span
           className={cn(
-            'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-1',
-            'transition-transform duration-200',
-            включён ? 'translate-x-[22px]' : 'translate-x-0.5',
+            'relative block h-6 w-11 rounded-full transition-colors duration-200',
+            включён ? 'bg-accent' : 'bg-control-line',
           )}
-        />
+        >
+          <span
+            className={cn(
+              'switch-thumb absolute top-0.5 h-5 w-5 rounded-full bg-over shadow-1',
+              включён ? 'translate-x-[22px]' : 'translate-x-0.5',
+            )}
+          />
+        </span>
       </button>
     </div>
   )
@@ -186,7 +188,9 @@ export function Segmented<T extends string>({
       role="tablist"
       className={cn(
         'items-center gap-0.5 rounded-2 border border-line bg-sunken p-0.5',
-        поле ? 'flex w-full' : 'inline-flex',
+        поле
+          ? 'flex w-full'
+          : 'scrollbar-none inline-flex max-w-full overflow-x-auto',
         className,
       )}
     >
@@ -199,9 +203,9 @@ export function Segmented<T extends string>({
           onClick={() => наВыбор(элемент.ключ)}
           className={cn(
             'rounded-1 font-medium transition-colors duration-150',
-            поле ? 'h-11 flex-1 px-2 text-meta' : 'px-3 py-1.5 text-meta',
+            поле ? 'h-11 flex-1 px-2 text-meta' : 'h-11 px-3 text-meta',
             выбрано === элемент.ключ
-              ? 'bg-card text-ink shadow-1'
+              ? 'bg-raised text-ink shadow-1'
               : 'text-ink-3 hover:text-ink-2',
           )}
         >

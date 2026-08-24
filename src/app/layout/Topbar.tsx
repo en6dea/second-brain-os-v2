@@ -20,7 +20,7 @@ export function Topbar({ имя }: { имя: string }) {
   const открытьБыстроеДобавление = useИнтерфейс((с) => с.открытьБыстроеДобавление)
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-16 items-center gap-2 border-b border-line bg-bg/88 px-3 backdrop-blur-xl sm:px-6 lg:min-h-[72px] lg:px-8">
+    <header className="topbar-shell sticky top-2 z-30 flex min-h-16 items-center gap-2 px-3 sm:px-5 lg:min-h-[68px] lg:px-6">
       <IconButton
         подпись="Открыть меню"
         className="lg:hidden"
@@ -30,7 +30,7 @@ export function Topbar({ имя }: { имя: string }) {
       </IconButton>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-body font-semibold text-ink">
+        <p className="truncate text-body font-medium text-ink">
           {приветствие()}
           {имя ? `, ${имя}` : ''}
         </p>
@@ -43,11 +43,11 @@ export function Topbar({ имя }: { имя: string }) {
       <button
         type="button"
         onClick={() => открытьКомандноеОкно(true)}
-        className="hidden min-h-11 min-w-[260px] items-center gap-2 rounded-3 border border-line bg-card px-3 text-meta text-ink-3 shadow-1 transition-colors hover:border-line-strong hover:bg-hover hover:text-ink-2 md:flex"
+        className="command-trigger hidden min-h-11 min-w-[244px] items-center gap-2 rounded-2 px-3 text-meta md:flex"
       >
         <Search size={ЗНАЧОК.строка} />
         <span>Найти или выполнить</span>
-        <kbd className="ml-auto rounded border border-line bg-sunken px-1.5 py-0.5 text-micro">
+        <kbd className="ml-auto rounded-1 border border-line bg-sunken px-1.5 py-0.5 text-micro">
           {модификатор()} K
         </kbd>
       </button>

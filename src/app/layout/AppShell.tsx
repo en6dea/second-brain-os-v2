@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { NavLink, Outlet, useLocation, useMatches } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -12,11 +12,20 @@ import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
 import { UpdateBanner } from './UpdateBanner'
 import { useИнтерфейс } from '@/app/providers/ui'
-import { подготовитьПервыйЗапуск, читатьПрофиль } from '@/core/db/repo'
+import {
+  подготовитьПервыйЗапуск,
+  читатьНастройки,
+  читатьПрофиль,
+} from '@/core/db/repo'
 import { запроситьПостоянноеХранение } from '@/core/db/Persistence'
 import { cn } from '@/design-system/classNames'
 import { Icon, IconButton } from '@/design-system/components'
 import { useПрисутствие } from '@/design-system/motion/Presence'
+import { useТему } from './useTheme'
+import {
+  естьАктивныйМодальныйСлой,
+  useModalFocus,
+} from '@/design-system/a11y/useModalFocus'
 
 /**
  * Нижнее меню телефона.
@@ -31,6 +40,12 @@ export function AppShell() {
   useСинхронизацию()
   const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
   const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
+  const панельМеню = useRef<HTMLDivElement>(null)
+  const {
+    смонтировано: менюПоказано,
+    закрывается: менюЗакрывается,
+    наОкончание: наОкончаниеМеню,
+  } = useПрисутствие(менюОткрыто)
   const уведомление = useИнтерфейс((с) => с.уведомление)
   const {
     смонтировано: уведомлениеПоказано,
@@ -44,6 +59,12 @@ export function AppShell() {
     if (уведомление !== null) установитьТекстУведомления(уведомление)
   }, [уведомление])
   const открытьКомандноеОкно = useИнтерфейс((с) => с.открытьКомандноеОкно)
+
+  useModalFocus({
+    активно: менюПоказано,
+    контейнер: панельМеню,
+    наEscape: () => открытьМеню(false),
+  })
 
   const расположение = useLocation()
 
@@ -70,7 +91,14 @@ export function AppShell() {
     void запроситьПостоянноеХранение()
   }, [])
 
-  const профиль = useLiveQuery(() => читатьПрофиль(), [])
+  const представление = useLiveQuery(async () => {
+    const [профиль, настройки] = await Promise.all([
+      читатьПрофиль(),
+      читатьНастройки(),
+    ])
+    return { профиль, настройки }
+  }, [])
+  useТему(представление?.настройки.тема ?? 'system')
 
   useEffect(() => {
     const наКлавишу = (событие: KeyboardEvent) => {
@@ -79,6 +107,7 @@ export function AppShell() {
         событие.key.toLowerCase() === 'k'
       ) {
         событие.preventDefault()
+        if (естьАктивныйМодальныйСлой()) return
         открытьКомандноеОкно(true)
       }
     }
@@ -87,22 +116,40 @@ export function AppShell() {
   }, [открытьКомандноеОкно])
 
   return (
-    <div className="flex h-full bg-bg">
+    <div className="app-shell flex h-full">
       {/* Настольное меню */}
-      <aside className="hidden w-[272px] shrink-0 border-r border-line bg-card lg:block">
+      <aside className="app-rail hidden w-[252px] shrink-0 lg:block">
         <Sidebar />
       </aside>
 
       {/* Меню на телефоне */}
-      {менюОткрыто ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
+      {менюПоказано ? (
+        <div
+          className="fixed inset-0 z-50 lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Навигация"
+        >
           <button
             type="button"
             aria-label="Закрыть меню"
             onClick={() => открытьМеню(false)}
-            className="absolute inset-0 bg-black/45"
+            className={cn(
+              'absolute inset-0 bg-black/70',
+              менюЗакрывается ? 'anim-затемнение-наружу' : 'anim-затемнение-внутрь',
+            )}
           />
-          <div className="anim-rise relative h-full w-[268px] border-r border-line shadow-3">
+          <div
+            ref={панельМеню}
+            tabIndex={-1}
+            onAnimationEnd={(событие) => {
+              if (событие.target === событие.currentTarget) наОкончаниеМеню()
+            }}
+            className={cn(
+              'drawer-panel relative h-full w-[276px] border-r border-line shadow-3 outline-none',
+              менюЗакрывается && 'drawer-panel-exit',
+            )}
+          >
             <Sidebar наПереход={() => открытьМеню(false)} />
             <IconButton
               подпись="Закрыть меню"
@@ -115,10 +162,10 @@ export function AppShell() {
         </div>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col bg-bg">
-        <Topbar имя={профиль?.имя ?? ''} />
-        <main className="min-h-0 flex-1 overflow-y-auto px-3 pt-4 pb-24 sm:px-6 lg:px-8 lg:pt-6 lg:pb-10">
-          <div className="mx-auto w-full max-w-[1320px]">
+      <div className="flex min-w-0 flex-1 flex-col bg-transparent">
+        <Topbar имя={представление?.профиль.имя ?? ''} />
+        <main className="min-h-0 flex-1 overflow-y-auto px-4 pt-5 pb-24 sm:px-6 lg:px-8 lg:pt-7 lg:pb-12">
+          <div className="mx-auto w-full max-w-[1380px]">
             <DomainNav />
             <div key={ключРаздела} className="вход-раздела">
               <Outlet />
@@ -128,7 +175,7 @@ export function AppShell() {
       </div>
 
       {/* Нижнее меню телефона — самостоятельное, а не уменьшенное настольное */}
-      <nav className="fixed right-0 bottom-0 left-0 z-30 grid grid-cols-5 border-t border-line bg-card/95 px-1 pb-[env(safe-area-inset-bottom)] shadow-2 backdrop-blur-md lg:hidden">
+      <nav className="mobile-nav fixed right-0 bottom-0 left-0 z-30 grid grid-cols-5 rounded-t-4 px-1 pb-[env(safe-area-inset-bottom)] lg:hidden">
         {МЕНЮ_ТЕЛЕФОНА.map((пункт) => (
           <NavLink
             key={пункт.путь}
@@ -136,14 +183,12 @@ export function AppShell() {
             end={пункт.путь === '/'}
             className={({ isActive }) =>
               cn(
-                'mx-0.5 my-1 flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-3 py-2 text-micro transition-colors',
-                isActive
-                  ? 'bg-accent-soft font-semibold text-accent'
-                  : 'text-ink-3',
+                'mobile-nav-link mx-0.5 my-1 flex min-h-14 flex-col items-center justify-center gap-0.5 py-2 text-micro',
+                isActive ? 'font-medium text-ink' : 'text-ink-3',
               )
             }
           >
-            <Icon значок={пункт.иконка} смысл={пункт.смысл} />
+            <Icon значок={пункт.иконка} смысл={пункт.смысл} монохромный />
             <span>{пункт.название}</span>
           </NavLink>
         ))}
@@ -156,9 +201,11 @@ export function AppShell() {
       {уведомлениеПоказано ? (
         <div
           role="status"
-          onAnimationEnd={наОкончаниеУведомления}
+          onAnimationEnd={(событие) => {
+            if (событие.target === событие.currentTarget) наОкончаниеУведомления()
+          }}
           className={cn(
-            'fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-3 border border-line bg-over px-4 py-2.5 text-meta text-ink shadow-3 lg:bottom-6',
+            'premium-card fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-2 px-4 py-2.5 text-meta text-ink shadow-3 lg:bottom-6',
             уведомлениеУходит ? 'anim-pop-уход' : 'anim-pop',
           )}
         >

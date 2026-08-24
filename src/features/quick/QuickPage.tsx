@@ -1,9 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Check, Terminal, TriangleAlert } from 'lucide-react'
 import { известныеКоманды, разобратьКоманду } from '@/core/quick/Command'
 import { применить, type ИтогКоманды } from '@/core/quick/Intent'
-import { Badge, Button, Card, CardBody, CardHeader, Input } from '@/design-system/components'
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+} from '@/design-system/components'
 
 type Состояние =
   | { вид: 'ждём' }
@@ -64,32 +71,35 @@ export function QuickPage() {
    */
   const выполненная = useRef<string | null>(null)
 
+  const выполнить = useCallback(
+    async (команда: string) => {
+      установитьСостояние({ вид: 'пишем' })
+      const разбор = разобратьКоманду(команда)
+      if (!разбор.намерение) {
+        установитьСостояние({
+          вид: 'ошибка',
+          текст: разбор.ошибка,
+          пример: разбор.пример,
+        })
+        return
+      }
+      const итог = await применить(разбор.намерение)
+      установитьСостояние({ вид: 'готово', итог })
+      // Адрес очищается до /quick, чтобы обновление страницы не повторило
+      // запись. Отметка о выполненной строке при этом снимается: ту же
+      // команду можно прислать снова, и она сработает как новая.
+      выполненная.current = null
+      навигация('/quick', { replace: true })
+    },
+    [навигация],
+  )
+
   useEffect(() => {
     if (!командаИзАдреса || командаИзАдреса === выполненная.current) return
     выполненная.current = командаИзАдреса
     установитьСтроку(decodeURIComponent(командаИзАдреса))
     void выполнить(командаИзАдреса)
-  }, [командаИзАдреса])
-
-  async function выполнить(команда: string) {
-    установитьСостояние({ вид: 'пишем' })
-    const разбор = разобратьКоманду(команда)
-    if (!разбор.намерение) {
-      установитьСостояние({
-        вид: 'ошибка',
-        текст: разбор.ошибка,
-        пример: разбор.пример,
-      })
-      return
-    }
-    const итог = await применить(разбор.намерение)
-    установитьСостояние({ вид: 'готово', итог })
-    // Адрес очищается до /quick, чтобы обновление страницы не повторило
-    // запись. Отметка о выполненной строке при этом снимается: ту же
-    // команду можно прислать снова, и она сработает как новая.
-    выполненная.current = null
-    навигация('/quick', { replace: true })
-  }
+  }, [командаИзАдреса, выполнить])
 
   return (
     <div className="anim-rise mx-auto max-w-xl space-y-5">
@@ -107,7 +117,7 @@ export function QuickPage() {
               <span
                 className={
                   состояние.итог.записано
-                    ? 'inline-flex h-6 w-6 items-center justify-center rounded-full bg-good text-white'
+                    ? 'inline-flex h-6 w-6 items-center justify-center rounded-full bg-good text-on-good'
                     : 'inline-flex h-6 w-6 items-center justify-center rounded-full bg-bad-soft text-bad'
                 }
               >
@@ -205,10 +215,12 @@ export function QuickPage() {
         <CardHeader
           заголовок="Как положить на iPhone"
           подпись="Три минуты один раз, дальше — голосом или с экрана блокировки"
-          действие={<Badge тон="знание">
-            <Terminal size={11} />
-            Команды
-          </Badge>}
+          действие={
+            <Badge тон="знание">
+              <Terminal size={11} />
+              Команды
+            </Badge>
+          }
         />
         <CardBody>
           <ol className="space-y-2 text-meta leading-relaxed text-ink-2">
@@ -235,10 +247,9 @@ export function QuickPage() {
             </li>
           </ol>
           <p className="mt-3 text-caption leading-relaxed text-ink-3">
-            Адрес открывается решёткой намеренно: это часть, которую браузер
-            никогда не отправляет на сервер — ни в запросе, ни в его журналах.
-            Суммы и заметки остаются на устройстве, что бы после решётки ни
-            стояло.
+            Адрес открывается решёткой намеренно: это часть, которую браузер никогда
+            не отправляет на сервер — ни в запросе, ни в его журналах. Суммы и
+            заметки остаются на устройстве, что бы после решётки ни стояло.
           </p>
         </CardBody>
       </Card>

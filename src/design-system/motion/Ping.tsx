@@ -24,22 +24,13 @@ export function Ping({
     <span className={cn('relative inline-flex', className)}>
       {children}
       {активен ? (
-        <>
-          <span
-            aria-hidden="true"
-            className={cn(
-              'импульс pointer-events-none absolute inset-0 rounded-full border-2',
-              цвет,
-            )}
-          />
-          <span
-            aria-hidden="true"
-            className={cn(
-              'импульс импульс-второй pointer-events-none absolute inset-0 rounded-full border',
-              цвет,
-            )}
-          />
-        </>
+        <span
+          aria-hidden="true"
+          className={cn(
+            'импульс pointer-events-none absolute inset-0 rounded-full border',
+            цвет,
+          )}
+        />
       ) : null}
     </span>
   )

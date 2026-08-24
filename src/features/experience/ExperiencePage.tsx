@@ -69,7 +69,7 @@ function ChallengeDay({
   подпись: string
   наОтметку: () => void
 }) {
-  const [отклик, запустить] = useОтклик(900)
+  const [отклик, запустить] = useОтклик(240)
   return (
     <Ping активен={отклик} тон="успех">
       <button
@@ -83,16 +83,16 @@ function ChallengeDay({
         }}
         className={cn(
           'inline-flex h-7 w-7 items-center justify-center rounded-2 border',
-          'transition-[background-color,border-color,transform] duration-150 active:scale-90',
+          'transition-[background-color,border-color,transform] duration-150 active:scale-[0.98]',
           отмечен
-            ? 'border-transparent bg-good text-white'
+            ? 'border-transparent bg-good text-on-good'
             : будущее
               ? 'border-line opacity-35'
               : 'border-line hover:border-accent hover:bg-accent-soft',
         )}
       >
         {отмечен ? (
-          <Check size={13} className={отклик ? 'прочерк' : undefined} />
+          <Check size={14} className={отклик ? 'прочерк' : undefined} />
         ) : null}
       </button>
     </Ping>

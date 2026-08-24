@@ -59,18 +59,25 @@ export function Icon({
   значок: Значок,
   смысл,
   размер = ЗНАЧОК.крупный,
+  монохромный = false,
   className,
 }: {
   значок: LucideIcon
   смысл: СмыслЗначка
   размер?: number
+  /** Навигация использует один цвет; семантика остаётся у значков в данных. */
+  монохромный?: boolean
   className?: string
 }) {
   return (
     <Значок
       size={размер}
       aria-hidden="true"
-      className={cn('shrink-0', ЦВЕТА[смысл], className)}
+      className={cn(
+        'shrink-0',
+        монохромный ? 'text-current' : ЦВЕТА[смысл],
+        className,
+      )}
     />
   )
 }

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
  * посчитано из данных. Движение показывает только переход к нему.
  */
 
-const ДЛИТЕЛЬНОСТЬ = 620
+const ДЛИТЕЛЬНОСТЬ = 420
 
 function замедление(доля: number): number {
   // Быстрый старт, мягкая остановка — так ведёт себя стрелка с успокоителем.
@@ -21,15 +21,15 @@ function движениеРазрешено(): boolean {
 
 export function useПлавноеЧисло(цель: number): number {
   const [значение, установить] = useState(цель)
-  const предыдущее = useRef(цель)
+  const показано = useRef(цель)
   const кадр = useRef(0)
 
   useEffect(() => {
-    const от = предыдущее.current
-    предыдущее.current = цель
+    const от = показано.current
 
     if (от === цель) return
     if (!движениеРазрешено()) {
+      показано.current = цель
       установить(цель)
       return
     }
@@ -37,9 +37,14 @@ export function useПлавноеЧисло(цель: number): number {
     const начало = performance.now()
     const шаг = (сейчас: number) => {
       const доля = Math.min(1, (сейчас - начало) / ДЛИТЕЛЬНОСТЬ)
-      установить(от + (цель - от) * замедление(доля))
+      const следующее = от + (цель - от) * замедление(доля)
+      показано.current = следующее
+      установить(следующее)
       if (доля < 1) кадр.current = requestAnimationFrame(шаг)
-      else установить(цель)
+      else {
+        показано.current = цель
+        установить(цель)
+      }
     }
     кадр.current = requestAnimationFrame(шаг)
 
@@ -53,7 +58,7 @@ export function useПлавноеЧисло(цель: number): number {
  * Отклик на событие: возвращает признак, который держится заданное время.
  * Нужен, чтобы проиграть анимацию один раз и погасить её.
  */
-export function useОтклик(мс = 900): [boolean, () => void] {
+export function useОтклик(мс = 240): [boolean, () => void] {
   const [активен, установить] = useState(false)
   const таймер = useRef<ReturnType<typeof setTimeout>>(undefined)
 
