@@ -1,5 +1,11 @@
-import { describe, expect, it } from 'vitest'
-import { новаяЗапись } from './repo'
+import { afterAll, describe, expect, it } from 'vitest'
+import { база } from './db'
+import { новаяЗапись, подготовитьПервыйЗапуск } from './repo'
+
+afterAll(async () => {
+  база.close()
+  await база.delete()
+})
 
 /**
  * Проверка на возврат ошибки, из-за которой новая запись молча не
@@ -20,7 +26,10 @@ describe('новаяЗапись', () => {
 
   it('отсутствующий идентификатор не оставляет запись без ключа', () => {
     // Именно так приходит черновик формы: поле есть, значения нет.
-    const черновик: Record<string, unknown> = { id: undefined, название: 'Замысел' }
+    const черновик: Record<string, unknown> = {
+      id: undefined,
+      название: 'Замысел',
+    }
     expect(String(новаяЗапись(черновик).id).length).toBeGreaterThan(0)
   })
 
@@ -31,5 +40,14 @@ describe('новаяЗапись', () => {
   it('время из прежней версии переопределяет служебное', () => {
     const запись = новаяЗапись({ createdAt: '2019-05-01T00:00:00.000Z' })
     expect(запись.createdAt).toBe('2019-05-01T00:00:00.000Z')
+  })
+})
+
+describe('подготовитьПервыйЗапуск', () => {
+  it('не создаёт дубли справочников при параллельном запуске', async () => {
+    await Promise.all([подготовитьПервыйЗапуск(), подготовитьПервыйЗапуск()])
+
+    expect(await база.areas.count()).toBe(6)
+    expect(await база.moneyCategories.count()).toBe(17)
   })
 })

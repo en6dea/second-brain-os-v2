@@ -1,6 +1,17 @@
 import { createBrowserRouter, createHashRouter } from 'react-router-dom'
 import { AppShell } from '@/app/layout/AppShell'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
+import { Skeleton } from '@/design-system/components/Data'
+
+function ЗагрузкаМаршрута() {
+  return (
+    <div className="mx-auto flex min-h-screen w-full max-w-5xl items-center px-5">
+      <div className="w-full rounded-4 border border-line bg-card p-5 shadow-card">
+        <Skeleton строк={5} />
+      </div>
+    </div>
+  )
+}
 
 /**
  * Маршруты.
@@ -13,6 +24,7 @@ const маршруты = [
   {
     path: '/',
     element: <AppShell />,
+    HydrateFallback: ЗагрузкаМаршрута,
     children: [
       { index: true, element: <DashboardPage /> },
       {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Plus, Target, Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Compass, Plus, Target, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { SmartReview, WhereToStart } from './SmartReview'
 import { новаяЗапись } from '@/core/db/repo'
@@ -32,6 +33,12 @@ import {
 } from '@/design-system/components'
 import { useСигналыПоРазделам } from '@/features/signals/useSignals'
 import { SignalsStrip } from '@/features/signals/SignalsStrip'
+import { прогрессМиссии, следующийХодМиссии } from './model/Campaign'
+import {
+  GoalNextMoveDialog,
+  type ЧерновикСледующегоХода,
+} from './GoalNextMoveDialog'
+import { ЗНАЧОК } from '@/design-system/iconSize'
 
 /**
  * Показатель цели.
@@ -106,16 +113,21 @@ const ПУСТАЯ_ЦЕЛЬ: Цель = {
 export function GoalsPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
   const [черновик, установитьЧерновик] = useState<Partial<Цель> | null>(null)
+  const [следующийХод, установитьСледующийХод] = useState<Цель | null>(null)
+  const [кУдалению, установитьКУдалению] = useState<Цель | null>(null)
+  const [сфераФильтр, установитьСферуФильтр] = useState('')
   const сигналы = useСигналыПоРазделам(['Цели'])
 
   const данные = useLiveQuery(async () => {
-    const [цели, задачи, привычки, настройки] = await Promise.all([
+    const [цели, задачи, привычки, проекты, сферы, настройки] = await Promise.all([
       база.goals.toArray(),
       база.tasks.toArray(),
       база.habits.toArray(),
+      база.projects.toArray(),
+      база.areas.filter((сфера) => !сфера.архив).sortBy('порядок'),
       читатьНастройки(),
     ])
-    return { цели, задачи, привычки, настройки }
+    return { цели, задачи, привычки, проекты, сферы, настройки }
   }, [])
 
   if (!данные) {
@@ -126,8 +138,24 @@ export function GoalsPage() {
     )
   }
 
-  const активные = данные.цели.filter((ц) => ц.состояние === 'активна')
+  const всеАктивные = данные.цели.filter((ц) => ц.состояние === 'активна')
+  const активные = всеАктивные.filter(
+    (цель) => !сфераФильтр || цель.сфераId === сфераФильтр,
+  )
   const прочие = данные.цели.filter((ц) => ц.состояние !== 'активна')
+  const именаСфер = new Map(данные.сферы.map((сфера) => [сфера.id, сфера.название]))
+  const сРезультатом = всеАктивные.filter(
+    (цель) => прогрессМиссии(цель).значение !== null,
+  ).length
+  const нагрузка = всеАктивные.reduce(
+    (итог, цель) => {
+      const ход = следующийХодМиссии(цель.id, данные.задачи)
+      итог.минут += ход.минутИзвестно
+      итог.безВремени += ход.задачБезВремени
+      return итог
+    },
+    { минут: 0, безВремени: 0 },
+  )
 
   async function сохранить() {
     if (!черновик?.название?.trim()) return
@@ -147,7 +175,7 @@ export function GoalsPage() {
         новаяЗапись({
           название: черновик.название.trim(),
           зачем: черновик.зачем ?? '',
-          сфераId: null,
+          сфераId: черновик.сфераId ?? null,
           состояние: 'активна',
           срок: черновик.срок ?? null,
           цель: черновик.цель ?? null,
@@ -162,6 +190,93 @@ export function GoalsPage() {
       сообщить('Цель создана')
     }
     установитьЧерновик(null)
+  }
+
+  async function создатьСледующийХод(ход: ЧерновикСледующегоХода) {
+    if (!следующийХод) return
+    const цельId = следующийХод.id
+    await база.transaction('rw', база.tasks, база.goals, async () => {
+      await база.tasks.add(
+        новаяЗапись({
+          название: ход.название,
+          заметка: ход.заметка,
+          дата: ход.дата,
+          время: null,
+          длительностьМинут: ход.длительностьМинут,
+          состояние: 'новая' as const,
+          важность: ход.важность,
+          проектId: null,
+          цельId,
+          сфераId: следующийХод.сфераId,
+          выполненаВ: null,
+          переносов: 0,
+          повтор: null,
+        }) as never,
+      )
+      const текущаяЦель = await база.goals.get(цельId)
+      if (текущаяЦель) {
+        await база.goals.put({
+          ...текущаяЦель,
+          последняяАктивность: сейчас(),
+          updatedAt: сейчас(),
+        })
+      }
+    })
+    установитьСледующийХод(null)
+    сообщить('Следующий ход добавлен в задачи')
+  }
+
+  async function удалитьЦель() {
+    if (!кУдалению) return
+    const цельId = кУдалению.id
+    await база.transaction(
+      'rw',
+      база.goals,
+      база.tasks,
+      база.habits,
+      база.projects,
+      async () => {
+        const [задачи, привычки, проекты] = await Promise.all([
+          база.tasks.where('цельId').equals(цельId).toArray(),
+          база.habits.where('цельId').equals(цельId).toArray(),
+          база.projects.toArray(),
+        ])
+        const момент = сейчас()
+        if (задачи.length > 0) {
+          await база.tasks.bulkPut(
+            задачи.map((задача) => ({
+              ...задача,
+              цельId: null,
+              updatedAt: момент,
+            })),
+          )
+        }
+        if (привычки.length > 0) {
+          await база.habits.bulkPut(
+            привычки.map((привычка) => ({
+              ...привычка,
+              цельId: null,
+              updatedAt: момент,
+            })),
+          )
+        }
+        const связанныеПроекты = проекты.filter((проект) =>
+          проект.целиId.includes(цельId),
+        )
+        if (связанныеПроекты.length > 0) {
+          await база.projects.bulkPut(
+            связанныеПроекты.map((проект) => ({
+              ...проект,
+              целиId: проект.целиId.filter((id) => id !== цельId),
+              updatedAt: момент,
+            })),
+          )
+        }
+        await база.goals.delete(цельId)
+      },
+    )
+    установитьКУдалению(null)
+    сообщить('Цель удалена. Связанные записи сохранены без привязки.')
   }
 
   return (
@@ -184,7 +299,64 @@ export function GoalsPage() {
 
       {сигналы && сигналы.length > 0 ? <SignalsStrip сигналы={сигналы} /> : null}
 
-      <WhereToStart цели={активные} наПравку={установитьЧерновик} />
+      <Card>
+        <CardHeader
+          заголовок={
+            <span className="flex items-center gap-2.5">
+              <Compass size={ЗНАЧОК.основной} className="text-accent" />
+              Кампания
+            </span>
+          }
+          подпись="Миссии продвигаются результатом и вехами, а не количеством кликов"
+        />
+        <div className="px-5 pb-5">
+          <Field подпись="Направление" className="w-full sm:max-w-64">
+            <Select
+              value={сфераФильтр}
+              onChange={(событие) => установитьСферуФильтр(событие.target.value)}
+            >
+              <option value="">Все направления</option>
+              {данные.сферы.map((сфера) => (
+                <option key={сфера.id} value={сфера.id}>
+                  {сфера.название}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-4 border-t border-line px-5 py-5 sm:grid-cols-4">
+          <div>
+            <p className="unit">активно</p>
+            <p className="tnum mt-1 text-h3 font-medium text-ink">
+              {всеАктивные.length}
+            </p>
+            <p className="text-caption text-ink-3">миссий</p>
+          </div>
+          <div>
+            <p className="unit">результат виден</p>
+            <p className="tnum mt-1 text-h3 font-medium text-ink">
+              {сРезультатом}/{всеАктивные.length}
+            </p>
+            <p className="text-caption text-ink-3">по числу или вехам</p>
+          </div>
+          <div>
+            <p className="unit">нагрузка</p>
+            <p className="tnum mt-1 text-h3 font-medium text-ink">
+              {нагрузка.минут} мин
+            </p>
+            <p className="text-caption text-ink-3">из известных оценок</p>
+          </div>
+          <div>
+            <p className="unit">неизвестно</p>
+            <p className="tnum mt-1 text-h3 font-medium text-ink">
+              {нагрузка.безВремени}
+            </p>
+            <p className="text-caption text-ink-3">задач без времени</p>
+          </div>
+        </div>
+      </Card>
+
+      <WhereToStart цели={всеАктивные} наПравку={установитьЧерновик} />
 
       {активные.length === 0 ? (
         <Card>
@@ -208,7 +380,8 @@ export function GoalsPage() {
             ).length
             const привычкиЦели = данные.привычки.filter((п) => п.цельId === цель.id)
             const дней = днейДо(цель.срок)
-            const естьЧисло = цель.цель !== null && цель.цель > 0
+            const прогресс = прогрессМиссии(цель)
+            const ход = следующийХодМиссии(цель.id, данные.задачи)
 
             return (
               <Card key={цель.id}>
@@ -237,10 +410,7 @@ export function GoalsPage() {
                       </IconButton>
                       <IconButton
                         подпись="Удалить цель"
-                        onClick={async () => {
-                          await база.goals.delete(цель.id)
-                          сообщить('Цель удалена. Задачи и привычки остались.')
-                        }}
+                        onClick={() => установитьКУдалению(цель)}
                       >
                         <Trash2 size={15} />
                       </IconButton>
@@ -248,15 +418,31 @@ export function GoalsPage() {
                   }
                 />
                 <div className="space-y-3 px-5 pb-5">
-                  {естьЧисло ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge тон="сведения">
+                      {цель.сфераId
+                        ? (именаСфер.get(цель.сфераId) ?? 'Направление удалено')
+                        : 'Без направления'}
+                    </Badge>
+                  </div>
+
+                  {прогресс.источник === 'показатель' ? (
                     <GoalMetric
                       текущее={цель.текущее ?? 0}
                       целевое={цель.цель ?? 1}
                       единица={цель.единица}
                     />
+                  ) : прогресс.источник === 'вехи' ? (
+                    <ProgressBar
+                      значение={прогресс.выполнено}
+                      из={прогресс.всего}
+                      подпись={`Вехи · ${прогресс.выполнено} из ${прогресс.всего}`}
+                      тон={прогресс.значение === 100 ? 'успех' : 'нейтральный'}
+                    />
                   ) : (
                     <p className="text-caption text-ink-3">
-                      Числового показателя нет — прогресс не рассчитывается.
+                      Результат пока не определён числом или вехами — процент не
+                      придумывается.
                     </p>
                   )}
 
@@ -265,6 +451,12 @@ export function GoalsPage() {
                       Задачи: {сделано}/{задачиЦели.length}
                     </Badge>
                     <Badge>Привычки: {привычкиЦели.length}</Badge>
+                    <Badge>
+                      Нагрузка: {ход.минутИзвестно} мин
+                      {ход.задачБезВремени > 0
+                        ? ` · без оценки ${ход.задачБезВремени}`
+                        : ''}
+                    </Badge>
                     {цель.срок ? (
                       <Badge
                         тон={
@@ -290,6 +482,38 @@ export function GoalsPage() {
                       только намерение.
                     </p>
                   ) : null}
+
+                  <div className="rounded-3 border border-line bg-sunken px-3 py-3">
+                    <p className="text-micro font-semibold tracking-[0.12em] text-ink-3 uppercase">
+                      Следующий ход
+                    </p>
+                    {ход.задача ? (
+                      <Link
+                        to="/tasks"
+                        className="mt-1 block text-meta font-medium text-ink hover:text-accent"
+                      >
+                        {ход.задача.название}
+                        <span className="ml-1 text-caption font-normal text-ink-3">
+                          {ход.задача.длительностьМинут === null
+                            ? '· время не указано'
+                            : `· ${ход.задача.длительностьМинут} мин`}
+                        </span>
+                      </Link>
+                    ) : (
+                      <p className="mt-1 text-caption text-ink-3">
+                        Нет открытой связанной задачи. Миссия пока не встроена в
+                        день.
+                      </p>
+                    )}
+                    <Button
+                      вид="контур"
+                      размер="малый"
+                      className="mt-3"
+                      onClick={() => установитьСледующийХод(цель)}
+                    >
+                      Запланировать ход
+                    </Button>
+                  </div>
                 </div>
               </Card>
             )
@@ -398,6 +622,27 @@ export function GoalsPage() {
                 }
               />
             </Field>
+            <Field
+              подпись="Направление жизни"
+              подсказка="Категории берутся из ваших сфер и не назначаются автоматически"
+            >
+              <Select
+                value={черновик.сфераId ?? ''}
+                onChange={(событие) =>
+                  установитьЧерновик({
+                    ...черновик,
+                    сфераId: событие.target.value || null,
+                  })
+                }
+              >
+                <option value="">Без направления</option>
+                {данные.сферы.map((сфера) => (
+                  <option key={сфера.id} value={сфера.id}>
+                    {сфера.название}
+                  </option>
+                ))}
+              </Select>
+            </Field>
             <div className="grid gap-4 sm:grid-cols-3">
               <Field подпись="Цель (число)">
                 <Input
@@ -491,7 +736,9 @@ export function GoalsPage() {
                         установитьЧерновик({
                           ...черновик,
                           вехи: (черновик.вехи ?? []).map((в) =>
-                            в.id === веха.id ? { ...в, выполнена: !в.выполнена } : в,
+                            в.id === веха.id
+                              ? { ...в, выполнена: !в.выполнена }
+                              : в,
                           ),
                         })
                       }
@@ -531,7 +778,9 @@ export function GoalsPage() {
                       onClick={() =>
                         установитьЧерновик({
                           ...черновик,
-                          вехи: (черновик.вехи ?? []).filter((в) => в.id !== веха.id),
+                          вехи: (черновик.вехи ?? []).filter(
+                            (в) => в.id !== веха.id,
+                          ),
                         })
                       }
                     >
@@ -548,7 +797,12 @@ export function GoalsPage() {
                       ...черновик,
                       вехи: [
                         ...(черновик.вехи ?? []),
-                        { id: новыйId(), название: '', срок: null, выполнена: false },
+                        {
+                          id: новыйId(),
+                          название: '',
+                          срок: null,
+                          выполнена: false,
+                        },
                       ],
                     })
                   }
@@ -559,6 +813,34 @@ export function GoalsPage() {
             </Field>
           </div>
         ) : null}
+      </Dialog>
+
+      <GoalNextMoveDialog
+        цель={следующийХод}
+        наЗакрытие={() => установитьСледующийХод(null)}
+        наПодтверждение={создатьСледующийХод}
+      />
+
+      <Dialog
+        открыто={кУдалению !== null}
+        наЗакрытие={() => установитьКУдалению(null)}
+        заголовок="Удалить цель?"
+        подпись={кУдалению?.название}
+        подвал={
+          <>
+            <Button вид="тихая" onClick={() => установитьКУдалению(null)}>
+              Оставить
+            </Button>
+            <Button вид="опасная" onClick={удалитьЦель}>
+              Удалить
+            </Button>
+          </>
+        }
+      >
+        <p className="text-body leading-relaxed text-ink-2">
+          Задачи, привычки и проекты не удалятся: приложение снимет с них связь с
+          целью. Это действие выполняется только после этого подтверждения.
+        </p>
       </Dialog>
     </div>
   )

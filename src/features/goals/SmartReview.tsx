@@ -22,7 +22,7 @@ export function SmartReview({ цель }: { цель: Цель }) {
   return (
     <div className="rounded-3 border border-line bg-sunken p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-meta font-medium text-ink">Разбор по SMART</p>
+        <p className="text-meta font-medium text-ink">Готовность к действию</p>
         <span className="tnum text-caption text-ink-3">
           {разбор.выполнено} из {разбор.всего}
         </span>
