@@ -28,7 +28,7 @@ export function CheckMark({
   disabled?: boolean
   className?: string
 }) {
-  const [отклик, запустить] = useОтклик(900)
+  const [отклик, запустить] = useОтклик(240)
 
   return (
     <Ping активен={отклик} тон="успех" className={className}>
@@ -41,19 +41,28 @@ export function CheckMark({
           if (!отмечено) запустить()
           наПереключение()
         }}
-        style={{ width: размер, height: размер }}
         className={cn(
-          'flex shrink-0 items-center justify-center rounded-full border',
-          'transition-[background-color,border-color,transform] duration-150 active:scale-90',
+          'group flex h-11 w-11 shrink-0 items-center justify-center rounded-2',
+          'transition-transform duration-150 active:scale-[0.98]',
           disabled && 'opacity-40',
-          отмечено
-            ? 'border-transparent bg-good text-white'
-            : 'border-line hover:border-accent hover:bg-accent-soft',
         )}
       >
-        {отмечено ? (
-          <Check size={Math.round(размер * 0.65)} className={отклик ? 'прочерк' : undefined} />
-        ) : null}
+        <span
+          style={{ width: размер, height: размер }}
+          className={cn(
+            'flex items-center justify-center rounded-1 border transition-[background-color,border-color]',
+            отмечено
+              ? 'border-transparent bg-good text-on-good'
+              : 'border-control-line group-hover:border-accent group-hover:bg-accent-soft',
+          )}
+        >
+          {отмечено ? (
+            <Check
+              size={Math.round(размер * 0.65)}
+              className={отклик ? 'прочерк' : undefined}
+            />
+          ) : null}
+        </span>
       </button>
     </Ping>
   )

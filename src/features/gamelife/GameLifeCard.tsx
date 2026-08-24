@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Info, Trophy } from 'lucide-react'
+import { Gauge, Info } from 'lucide-react'
 import type { ПоказателиGameLife } from './model/Levels'
 import { ВЕС } from './model/Levels'
 import { склонение } from '@/core/language/Plural'
@@ -20,16 +20,17 @@ export function GameLifeCard({ показатели }: { показатели: �
     <Card>
       <div className="flex items-center justify-between gap-3 p-4">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
-            <Trophy size={ЗНАЧОК.основной} strokeWidth={1.75} />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2 border border-accent-line bg-transparent text-accent">
+            <Gauge size={ЗНАЧОК.основной} strokeWidth={1.55} />
           </span>
           <div>
             <p className="text-meta font-medium text-ink">
               Уровень {показатели.уровень}
             </p>
             <p className="text-caption text-ink-3">
-              {показатели.очков} {склонение(показатели.очков, 'очко', 'очка', 'очков')} ·
-              ещё {показатели.доСледующегоУровня} до следующего уровня
+              {показатели.очков}{' '}
+              {склонение(показатели.очков, 'очко', 'очка', 'очков')} · ещё{' '}
+              {показатели.доСледующегоУровня} до следующего уровня
             </p>
           </div>
         </div>
@@ -45,7 +46,8 @@ export function GameLifeCard({ показатели }: { показатели: �
         <div className="space-y-1 border-t border-line px-4 py-3 text-caption text-ink-3">
           <p>
             Сделанная задача · {ВЕС.задача}{' '}
-            {склонение(ВЕС.задача, 'очко', 'очка', 'очков')}: {показатели.источники.задачСделано}
+            {склонение(ВЕС.задача, 'очко', 'очка', 'очков')}:{' '}
+            {показатели.источники.задачСделано}
           </p>
           <p>
             Отметка привычки · {ВЕС.привычка}{' '}
@@ -54,11 +56,13 @@ export function GameLifeCard({ показатели }: { показатели: �
           </p>
           <p>
             Достигнутая цель · {ВЕС.цель}{' '}
-            {склонение(ВЕС.цель, 'очко', 'очка', 'очков')}: {показатели.источники.целейДостигнуто}
+            {склонение(ВЕС.цель, 'очко', 'очка', 'очков')}:{' '}
+            {показатели.источники.целейДостигнуто}
           </p>
           <p>
             Закрытый обзор · {ВЕС.обзор}{' '}
-            {склонение(ВЕС.обзор, 'очко', 'очка', 'очков')}: {показатели.источники.обзоровЗакрыто}
+            {склонение(ВЕС.обзор, 'очко', 'очка', 'очков')}:{' '}
+            {показатели.источники.обзоровЗакрыто}
           </p>
         </div>
       ) : null}

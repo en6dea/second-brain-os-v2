@@ -6,14 +6,14 @@ export function FinanceLayout() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-h2 font-semibold text-ink">Финансы</h1>
+        <h1 className="text-h2 font-medium text-ink">Финансы</h1>
         <p className="mt-0.5 text-meta text-ink-3">
           Собственные деньги, обязательства и движение средств. Все суммы считаются
           из операций и остатков счетов.
         </p>
       </div>
 
-      <nav className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
+      <nav className="domain-nav scrollbar-none -mx-1 px-1">
         {МЕНЮ_ФИНАНСОВ.map((пункт) => (
           <NavLink
             key={пункт.путь}
@@ -21,10 +21,8 @@ export function FinanceLayout() {
             end={пункт.путь === '/finance'}
             className={({ isActive }) =>
               cn(
-                'shrink-0 rounded-2 px-3 py-1.5 text-meta font-medium transition-colors',
-                isActive
-                  ? 'bg-accent-soft text-accent'
-                  : 'text-ink-3 hover:bg-hover hover:text-ink',
+                'domain-tab shrink-0 px-0 text-meta',
+                isActive ? 'font-medium text-ink' : 'text-ink-3',
               )
             }
           >

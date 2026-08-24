@@ -1,69 +1,85 @@
 @import 'tailwindcss';
 
-/* ==========================================================================
-   ВТОРОЙ МОЗГ — дизайн-система «Прибор»
+/* ===========================================================================
+   ВТОРОЙ МОЗГ — дизайн-система «Дневная обсерватория»
 
-   Направление: не панель управления и не трекер, а измерительный прибор
-   в покое. Спокойная патина приборного стекла, моноширинные цифры,
-   и — главное — видимая граница знания: то, что системе неизвестно,
-   показывается штриховкой, а не нулём.
-
-   Имена токенов латиницей: это код. Весь текст для человека — по-русски.
+   Интерфейс похож на точный личный инструмент, а не на таблицу и не на игру:
+   жемчужный холст, опаловые поверхности, графитовый текст и преломляющийся
+   голубой свет. Тёмная тема сохраняет ту же материальность вечером.
+   Граница знания видима: неизвестное показывается штриховкой, а не нулём.
    ========================================================================== */
 
 :root {
-  /* --- Поверхности: костяная бумага, карточка чуть теплее фона --- */
-  --surface-bg: #f4f2ee;
-  --surface-card: #fffefc;
-  --surface-over: #fffefc;
-  --surface-sunken: #edeae4;
-  --surface-hover: #eeebe5;
+  /* --- Поверхности: холодный минерал и опаловое стекло --- */
+  --surface-bg: #edf3f6;
+  --surface-sidebar: #f6f9fa;
+  --surface-card: #fbfcfd;
+  --surface-card-deep: #f1f6f8;
+  --surface-raised: #ffffff;
+  --surface-over: #ffffff;
+  --surface-sunken: #e6edf1;
+  --surface-hover: #e1ebf0;
 
-  /* --- Границы: тонкие, почти незаметные --- */
-  --line-soft: #e4e0d8;
-  --line-strong: #cfcabf;
+  /* --- Границы: холодные световые волоски --- */
+  --line-soft: rgba(16, 40, 58, 0.09);
+  --line-strong: rgba(16, 40, 58, 0.17);
+  --control-line: #72818c;
 
-  /* --- Текст: графит --- */
-  --ink: #1e1f23;
-  --ink-2: #5b5d63;
-  --ink-3: #8a8c92;
+  /* --- Текст: графит вместо абсолютного чёрного --- */
+  --ink: #0b1621;
+  --ink-2: #3d5060;
+  --ink-3: #596b7c;
   --ink-on-accent: #ffffff;
+  --ink-on-primary: #061116;
+  --ink-on-good: #041a12;
 
-  /* --- Акцент: лесной нефрит --- */
-  --accent: #22a06b;
-  --accent-hover: #1b8358;
-  --accent-soft: #e6f4ed;
-  --accent-line: #b3ddc8;
+  /* --- Интерфейсный акцент: преломлённый голубой свет --- */
+  --accent: #086f8d;
+  --accent-hover: #005f79;
+  --accent-bright: #54cde4;
+  --accent-soft: rgba(8, 111, 141, 0.075);
+  --accent-line: rgba(8, 111, 141, 0.24);
 
-  /* --- Смысловые состояния --- */
-  --good: #22a06b;
-  --good-soft: #e6f4ed;
-  --bad: #ff6b6b;
-  --bad-soft: #ffeceb;
-  --warn: #f5a623;
-  --warn-soft: #fef2e0;
-  --info: #2563eb;
-  --info-soft: #e7edfd;
-  --know: #a78bfa;
-  --know-soft: #f0ebfe;
+  /* --- Смысловые состояния: цвет только там, где у него есть значение --- */
+  --good: #137a55;
+  --good-soft: rgba(19, 122, 85, 0.08);
+  --bad: #b63a50;
+  --bad-soft: rgba(182, 58, 80, 0.08);
+  --warn: #93600b;
+  --warn-soft: rgba(147, 96, 11, 0.085);
+  --info: #3d65b8;
+  --info-soft: rgba(61, 101, 184, 0.075);
+  --know: #7355aa;
+  --know-soft: rgba(115, 85, 170, 0.075);
 
-  /* --- Тени: мягкие и редкие --- */
-  --shade-1: 0 1px 2px rgba(30, 31, 35, 0.05);
-  --shade-2: 0 4px 16px -6px rgba(30, 31, 35, 0.1);
-  --shade-3: 0 20px 48px -16px rgba(30, 31, 35, 0.18);
+  /* --- Свет и глубина: длинная холодная тень + белая фаска --- */
+  --shade-1:
+    0 1px 0 rgba(255, 255, 255, 0.9), 0 14px 34px -24px rgba(29, 61, 82, 0.24);
+  --shade-2:
+    0 1px 0 rgba(255, 255, 255, 0.96), 0 26px 64px -32px rgba(32, 70, 95, 0.3);
+  --shade-3:
+    0 1px 0 rgba(255, 255, 255, 1), 0 42px 110px -42px rgba(25, 60, 88, 0.38);
 
-  /* --- Радиусы: карточки крупные, контролы сдержанные --- */
+  --ambient-cyan: rgba(74, 197, 222, 0.24);
+  --ambient-blue: rgba(85, 131, 224, 0.13);
+  --ambient-violet: rgba(142, 116, 210, 0.09);
+  --grid-color: rgba(16, 40, 58, 0.026);
+
+  /* --- Радиусы: архитектурные, без игрушечных капсул --- */
   --r1: 8px;
-  --r2: 12px;
-  --r3: 14px;
-  --r4: 20px;
-  --r5: 24px;
+  --r2: 10px;
+  --r3: 12px;
+  --r4: 16px;
+  --r5: 20px;
 
-  /* --- Движение: живое, но тихое --- */
-  --t-fast: 120ms;
-  --t-base: 180ms;
-  --t-slow: 220ms;
-  --ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+  /* --- Движение: быстрый отклик, медленный только у среды --- */
+  --t-press: 110ms;
+  --t-fast: 150ms;
+  --t-base: 190ms;
+  --t-slow: 230ms;
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-soft: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* --- Штриховка «неизвестно» --- */
   --hatch: repeating-linear-gradient(
@@ -75,20 +91,77 @@
   color-scheme: light;
 }
 
+:root[data-theme='dark'] {
+  --surface-bg: #0b1323;
+  --surface-sidebar: #0f192a;
+  --surface-card: #131f32;
+  --surface-card-deep: #0f1a2b;
+  --surface-raised: #19263b;
+  --surface-over: #152238;
+  --surface-sunken: #0c1626;
+  --surface-hover: #1a2940;
+
+  --line-soft: rgba(189, 217, 255, 0.09);
+  --line-strong: rgba(189, 217, 255, 0.18);
+  --control-line: #7e91a5;
+
+  --ink: #f4f8fc;
+  --ink-2: #b7c3d1;
+  --ink-3: #8694a8;
+  --ink-on-accent: #061116;
+  --ink-on-primary: #061116;
+  --ink-on-good: #041a12;
+
+  --accent: #72dff2;
+  --accent-hover: #a0ecf8;
+  --accent-bright: #72dff2;
+  --accent-soft: rgba(114, 223, 242, 0.09);
+  --accent-line: rgba(114, 223, 242, 0.27);
+
+  --good: #73ddb2;
+  --good-soft: rgba(115, 221, 178, 0.09);
+  --bad: #ff9aa8;
+  --bad-soft: rgba(255, 154, 168, 0.09);
+  --warn: #efc986;
+  --warn-soft: rgba(239, 201, 134, 0.1);
+  --info: #96b2ff;
+  --info-soft: rgba(150, 178, 255, 0.09);
+  --know: #c1afff;
+  --know-soft: rgba(193, 175, 255, 0.09);
+
+  --shade-1:
+    0 1px 0 rgba(255, 255, 255, 0.045), 0 14px 34px -24px rgba(0, 0, 0, 0.78);
+  --shade-2:
+    0 1px 0 rgba(255, 255, 255, 0.065), 0 28px 68px -34px rgba(0, 0, 0, 0.88);
+  --shade-3:
+    0 1px 0 rgba(255, 255, 255, 0.08), 0 42px 110px -40px rgba(0, 0, 0, 0.95);
+
+  --ambient-cyan: rgba(71, 174, 222, 0.22);
+  --ambient-blue: rgba(88, 132, 226, 0.14);
+  --ambient-violet: rgba(151, 116, 223, 0.09);
+  --grid-color: rgba(189, 217, 255, 0.022);
+  color-scheme: dark;
+}
+
 @theme inline {
   --color-bg: var(--surface-bg);
   --color-card: var(--surface-card);
+  --color-sidebar: var(--surface-sidebar);
+  --color-raised: var(--surface-raised);
   --color-over: var(--surface-over);
   --color-sunken: var(--surface-sunken);
   --color-hover: var(--surface-hover);
 
   --color-line: var(--line-soft);
   --color-line-strong: var(--line-strong);
+  --color-control-line: var(--control-line);
 
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
   --color-on-accent: var(--ink-on-accent);
+  --color-on-primary: var(--ink-on-primary);
+  --color-on-good: var(--ink-on-good);
 
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
@@ -146,10 +219,10 @@
 /* --- Значки ---------------------------------------------------------------
    Толщина обводки и скругления концов задаются здесь, а не в каждом из ста
    двадцати девяти вызовов. Правило CSS перекрывает атрибут в разметке, поэтому
-   менять сами вызовы не нужно. Значение 1.75 взято из референса.
+   менять сами вызовы не нужно. Значение 1.55 сохраняет тонкую приборную линию.
    -------------------------------------------------------------------------- */
 svg.lucide {
-  stroke-width: 1.75;
+  stroke-width: 1.55;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -163,6 +236,7 @@ body,
 
 body {
   margin: 0;
+  overflow: hidden;
   background: var(--surface-bg);
   color: var(--ink);
   font-family:
@@ -180,20 +254,66 @@ body {
     color var(--t-slow) var(--ease);
 }
 
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  pointer-events: none;
+  inset: 0;
+}
+
+body::before {
+  z-index: 0;
+  inset: -18%;
+  background:
+    radial-gradient(circle at 76% 7%, var(--ambient-cyan), transparent 25%),
+    radial-gradient(circle at 16% 84%, var(--ambient-blue), transparent 30%),
+    radial-gradient(circle at 50% 46%, var(--ambient-violet), transparent 36%);
+  opacity: 0.86;
+  animation: ambient-canvas 26s var(--ease-soft) infinite alternate;
+  transform: translate3d(0, 0, 0) scale(1.02);
+}
+
+body::after {
+  z-index: 0;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at 70% 20%, #000 0, transparent 68%);
+  opacity: 0.72;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
 h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  letter-spacing: -0.011em;
+  font-weight: 560;
+  letter-spacing: -0.025em;
+}
+
+h1.font-semibold,
+h2.font-semibold,
+h3.font-semibold {
+  font-weight: 560;
 }
 
 /* Показания прибора: все числа моноширинные и одинаковой ширины */
 .tnum {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
   letter-spacing: -0.02em;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
 }
 
 /* Надзаголовок-единица: что именно меряет число */
@@ -208,8 +328,8 @@ h3 {
 
 /* --- Фокус: видимый, но спокойный --- */
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
   border-radius: var(--r1);
 }
 
@@ -232,11 +352,740 @@ h3 {
   background: transparent;
 }
 
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Архитектура оболочки ----------------------------------------------- */
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+.app-rail {
+  margin: 12px 0 12px 12px;
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r5);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface-raised) 74%, transparent),
+      transparent 26%
+    ),
+    var(--surface-sidebar);
+  box-shadow: var(--shade-2);
+}
+
+.sidebar-surface {
+  background:
+    radial-gradient(circle at 18% 8%, var(--accent-soft), transparent 24%),
+    var(--surface-sidebar);
+}
+
+.brand-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  border-radius: 13px;
+  background: linear-gradient(145deg, var(--accent-soft), transparent 70%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 72%, transparent),
+    0 0 32px color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+.brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--accent) 10%, transparent);
+  border-radius: 9px;
+}
+
+.side-nav-link {
+  position: relative;
+  color: var(--ink-3);
+  border: 1px solid transparent;
+  border-radius: var(--r2);
+  transition:
+    color var(--t-base) var(--ease),
+    background-color var(--t-base) var(--ease),
+    border-color var(--t-base) var(--ease),
+    transform var(--t-press) var(--ease);
+}
+
+.side-nav-link::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: -1px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 42%, transparent);
+  opacity: 0;
+  transform: scaleY(0.45);
+  transition:
+    opacity var(--t-base) var(--ease),
+    transform var(--t-base) var(--ease);
+}
+
+.side-nav-link[data-active='true'] {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 10%, transparent);
+  background: linear-gradient(90deg, var(--accent-soft), transparent 92%);
+}
+
+.side-nav-link[data-active='true']::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.side-nav-icon {
+  color: currentColor;
+  transition:
+    color var(--t-base) var(--ease),
+    transform var(--t-base) var(--ease);
+}
+
+.side-nav-link[data-active='true'] .side-nav-icon {
+  color: var(--accent);
+}
+
+.topbar-shell {
+  margin: 12px 12px 0;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r4);
+  background: color-mix(in srgb, var(--surface-sidebar) 84%, transparent);
+  box-shadow: var(--shade-1);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+.command-trigger {
+  border: 1px solid var(--line-soft);
+  background: color-mix(in srgb, var(--surface-raised) 38%, transparent);
+  color: var(--ink-3);
+  transition:
+    color var(--t-base) var(--ease),
+    border-color var(--t-base) var(--ease),
+    background-color var(--t-base) var(--ease);
+}
+
+.domain-nav {
+  position: relative;
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.domain-tab {
+  position: relative;
+  min-height: 46px;
+  color: var(--ink-3);
+  transition: color var(--t-base) var(--ease);
+}
+
+.domain-tab::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 38%, transparent);
+  opacity: 0;
+  transform: scaleX(0.35);
+  transform-origin: center;
+  transition:
+    opacity var(--t-base) var(--ease),
+    transform var(--t-base) var(--ease);
+}
+
+.domain-tab[aria-current='page'] {
+  color: var(--ink);
+}
+
+.domain-tab[aria-current='page']::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.mobile-nav {
+  border: 1px solid var(--line-soft);
+  border-bottom: 0;
+  background: color-mix(in srgb, var(--surface-sidebar) 90%, transparent);
+  box-shadow: 0 -18px 48px color-mix(in srgb, var(--ink) 12%, transparent);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+.mobile-nav-link {
+  position: relative;
+  color: var(--ink-3);
+  transition: color var(--t-fast) var(--ease);
+}
+
+.mobile-nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 22px;
+  height: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 42%, transparent);
+  opacity: 0;
+  transform: translateX(-50%) scaleX(0.35);
+  transition:
+    opacity var(--t-fast) var(--ease),
+    transform var(--t-fast) var(--ease);
+}
+
+.mobile-nav-link[aria-current='page'] {
+  color: var(--ink);
+}
+
+.mobile-nav-link[aria-current='page']::before {
+  opacity: 1;
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* --- Поверхности и контролы --------------------------------------------- */
+.premium-card {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, var(--surface-card), var(--surface-card-deep))
+      padding-box,
+    linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--ink-2) 18%, transparent),
+        color-mix(in srgb, var(--accent) 5%, transparent) 42%,
+        color-mix(in srgb, var(--ink-2) 8%, transparent)
+      )
+      border-box;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 72%, transparent),
+    var(--shade-1);
+}
+
+.premium-card-interactive {
+  transition:
+    transform var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease),
+    border-color var(--t-base) var(--ease);
+}
+
+.button-base {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition:
+    transform var(--t-press) var(--ease),
+    color var(--t-base) var(--ease),
+    background-color var(--t-base) var(--ease),
+    border-color var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease);
+}
+
+.button-base:active {
+  transform: scale(0.98);
+}
+
+.button-primary {
+  color: var(--ink-on-primary);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-bright) 74%, white),
+    var(--accent-bright) 58%,
+    color-mix(in srgb, var(--accent-bright) 78%, var(--accent))
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 12px 32px -18px color-mix(in srgb, var(--accent-bright) 72%, transparent);
+}
+
+.button-primary::after {
+  content: '';
+  position: absolute;
+  inset: -60% -35%;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.34),
+    transparent 58%
+  );
+  opacity: 0;
+  transform: translateX(-42%) rotate(8deg);
+  transition:
+    opacity var(--t-fast) var(--ease),
+    transform 520ms var(--ease);
+}
+
+.button-default {
+  color: var(--ink);
+  border-color: var(--line-soft);
+  background: color-mix(in srgb, var(--surface-raised) 52%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--surface-raised) 78%, transparent);
+}
+
+.button-quiet {
+  color: var(--ink-2);
+  background: transparent;
+}
+
+.button-outline {
+  color: var(--accent);
+  border-color: var(--accent-line);
+  background: color-mix(in srgb, var(--accent) 3%, transparent);
+}
+
+.button-danger {
+  color: var(--bad);
+  border-color: color-mix(in srgb, var(--bad) 20%, transparent);
+  background: var(--bad-soft);
+}
+
+.field-control {
+  border: 1px solid var(--control-line);
+  background: color-mix(in srgb, var(--surface-raised) 46%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--surface-raised) 72%, transparent);
+  transition:
+    color var(--t-base) var(--ease),
+    border-color var(--t-base) var(--ease),
+    background-color var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease);
+}
+
+.field-control:focus {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface-raised));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 76%, transparent),
+    0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.switch-thumb {
+  transition: transform 180ms var(--ease);
+}
+
+.dialog-panel {
+  border: 1px solid var(--line-strong);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface-raised) 68%, transparent),
+      transparent 24%
+    ),
+    var(--surface-over);
+  box-shadow: var(--shade-3);
+}
+
+.status-badge {
+  border: 1px solid currentColor;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 12px;
+  line-height: 18px;
+  opacity: 0.92;
+}
+
+.empty-icon {
+  border: 1px solid var(--line-soft);
+  background: color-mix(in srgb, var(--surface-raised) 54%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--surface-raised) 82%, transparent);
+}
+
+.progress-track {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.progress-fill {
+  width: 100%;
+  transform-origin: left center;
+  transition: transform 420ms var(--ease);
+}
+
+.button-trailing {
+  color: var(--ink-on-primary);
+  background: color-mix(in srgb, var(--ink-on-primary) 9%, transparent);
+  transition: transform var(--t-base) var(--ease);
+}
+
+.appearance-surface,
+.coach-surface,
+.knowledge-flow {
+  background:
+    radial-gradient(circle at 88% -18%, var(--accent-soft), transparent 36%),
+    linear-gradient(180deg, var(--surface-raised), var(--surface-card-deep))
+      padding-box,
+    linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent) 14%, transparent),
+        color-mix(in srgb, var(--ink-2) 8%, transparent)
+      )
+      border-box;
+}
+
+.theme-choice {
+  border: 1px solid var(--line-soft);
+  color: var(--ink-2);
+  background: color-mix(in srgb, var(--surface-raised) 46%, transparent);
+  transition:
+    transform var(--t-press) var(--ease),
+    border-color var(--t-base) var(--ease),
+    background-color var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease);
+}
+
+.theme-choice[data-active='true'] {
+  border-color: var(--accent-line);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface-raised));
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.theme-choice-icon {
+  border: 1px solid var(--line-soft);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--surface-raised) 66%, transparent);
+}
+
+.decision-reason {
+  background: color-mix(in srgb, var(--surface-sunken) 72%, transparent);
+}
+
+.coach-cell {
+  position: relative;
+  border-bottom: 1px solid var(--line-soft);
+  transition:
+    background-color var(--t-base) var(--ease),
+    transform var(--t-press) var(--ease);
+}
+
+.flow-step {
+  border: 1px solid transparent;
+  transition:
+    color var(--t-base) var(--ease),
+    border-color var(--t-base) var(--ease),
+    background-color var(--t-base) var(--ease),
+    transform var(--t-press) var(--ease);
+}
+
+.flow-arrow {
+  transition: transform var(--t-base) var(--ease);
+}
+
+@media (min-width: 640px) {
+  .coach-cell:nth-child(odd) {
+    border-right: 1px solid var(--line-soft);
+  }
+}
+
+@media (min-width: 1280px) {
+  .coach-cell {
+    border-right: 1px solid var(--line-soft);
+    border-bottom: 0;
+  }
+
+  .coach-cell:last-child {
+    border-right: 0;
+  }
+}
+
+/* --- Главный экран ------------------------------------------------------- */
+.hero-surface {
+  position: relative;
+  border-color: transparent;
+  background:
+    radial-gradient(circle at 84% 18%, var(--ambient-cyan), transparent 31%),
+    radial-gradient(circle at 18% 92%, var(--ambient-violet), transparent 38%),
+    linear-gradient(
+        145deg,
+        var(--surface-raised),
+        var(--surface-card) 58%,
+        var(--surface-card-deep)
+      )
+      padding-box,
+    linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent-bright) 38%, transparent),
+        color-mix(in srgb, var(--accent) 7%, transparent) 44%,
+        color-mix(in srgb, var(--know) 16%, transparent)
+      )
+      border-box;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 86%, transparent),
+    0 34px 90px -52px color-mix(in srgb, var(--accent) 36%, transparent);
+}
+
+.finance-surface {
+  background:
+    radial-gradient(circle at 18% -20%, var(--good-soft), transparent 34%),
+    linear-gradient(180deg, var(--surface-raised), var(--surface-card-deep))
+      padding-box,
+    linear-gradient(
+        120deg,
+        color-mix(in srgb, var(--good) 20%, transparent),
+        color-mix(in srgb, var(--accent) 5%, transparent) 52%,
+        color-mix(in srgb, var(--ink-2) 9%, transparent)
+      )
+      border-box;
+}
+
+.plan-surface {
+  background:
+    linear-gradient(160deg, var(--info-soft), transparent 38%),
+    linear-gradient(180deg, var(--surface-raised), var(--surface-card-deep))
+      padding-box,
+    linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--ink-2) 18%, transparent),
+        color-mix(in srgb, var(--info) 7%, transparent) 48%,
+        color-mix(in srgb, var(--ink-2) 8%, transparent)
+      )
+      border-box;
+}
+
+.hero-kicker {
+  color: var(--accent);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  max-width: 18ch;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.08;
+  font-weight: 560;
+  letter-spacing: -0.045em;
+}
+
+.metric-cell {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-raised) 38%, transparent),
+    transparent
+  );
+}
+
+.section-rule {
+  position: relative;
+  padding-left: 14px;
+}
+
+.section-rule::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 7px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 36%, transparent);
+  transform: translateY(-50%);
+}
+
+/* --- Абстрактное живое поле вместо буквальных игровых значков ----------- */
+.ambient-field {
+  isolation: isolate;
+  opacity: 0.9;
+  mask-image: radial-gradient(115% 110% at 72% 22%, #000 20%, transparent 76%);
+}
+
+.ambient-orb {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+
+.ambient-orb-a {
+  top: -22%;
+  right: -8%;
+  width: 54%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, var(--ambient-cyan), transparent 67%);
+  animation: ambient-orb-a 22s var(--ease-soft) infinite alternate;
+}
+
+.ambient-orb-b {
+  bottom: -36%;
+  left: 20%;
+  width: 46%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, var(--ambient-violet), transparent 68%);
+  animation: ambient-orb-b 30s var(--ease-soft) infinite alternate;
+}
+
+.ambient-arc {
+  position: absolute;
+  top: -34%;
+  right: 4%;
+  width: 34%;
+  height: 168%;
+  background: linear-gradient(
+    112deg,
+    transparent 34%,
+    color-mix(in srgb, var(--accent-bright) 13%, transparent) 49%,
+    color-mix(in srgb, var(--surface-raised) 42%, transparent) 52%,
+    transparent 67%
+  );
+  opacity: 0.82;
+  transform: rotate(8deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .side-nav-link:hover {
+    color: var(--ink-2);
+    background: color-mix(in srgb, var(--surface-raised) 34%, transparent);
+  }
+
+  .side-nav-link[data-active='true']:hover {
+    color: var(--ink);
+    background: linear-gradient(90deg, var(--accent-soft), transparent 92%);
+  }
+
+  .domain-tab:hover,
+  .mobile-nav-link:hover,
+  .command-trigger:hover {
+    color: var(--ink);
+  }
+
+  .command-trigger:hover {
+    border-color: var(--line-strong);
+    background: color-mix(in srgb, var(--surface-raised) 58%, transparent);
+  }
+
+  .premium-card-interactive:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--surface-raised) 88%, transparent),
+      var(--shade-2);
+  }
+
+  .button-primary:hover::after {
+    opacity: 1;
+    transform: translateX(44%) rotate(8deg);
+  }
+
+  .button-primary:hover .button-trailing {
+    transform: translateX(2px);
+  }
+
+  .button-primary:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.48),
+      0 16px 38px -18px color-mix(in srgb, var(--accent-bright) 80%, transparent);
+  }
+
+  .button-default:hover,
+  .button-quiet:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    background: var(--surface-hover);
+  }
+
+  .button-outline:hover {
+    color: var(--accent-hover);
+    background: var(--accent-soft);
+  }
+
+  .field-control:hover {
+    border-color: var(--line-strong);
+  }
+
+  .theme-choice:hover,
+  .coach-cell:hover,
+  .flow-step:hover {
+    background: color-mix(in srgb, var(--accent) 5%, var(--surface-raised));
+  }
+
+  .theme-choice:hover {
+    transform: translateY(-1px);
+    border-color: var(--line-strong);
+  }
+
+  .flow-step:hover {
+    border-color: var(--line-soft);
+  }
+
+  .flow-step:hover .flow-arrow {
+    transform: translateX(3px);
+  }
+}
+
+@media (max-width: 1023px) {
+  .topbar-shell {
+    margin: calc(8px + env(safe-area-inset-top)) 8px 0;
+  }
+}
+
+@media (pointer: coarse), (max-width: 639px) {
+  body::before,
+  .ambient-orb {
+    animation: none;
+  }
+
+  .topbar-shell,
+  .mobile-nav {
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--surface-sidebar) 96%, transparent);
+  }
+}
+
+@keyframes ambient-canvas {
+  from {
+    opacity: 0.66;
+    transform: translate3d(-1.2%, -0.6%, 0) scale(1.02);
+  }
+  to {
+    opacity: 0.88;
+    transform: translate3d(1.4%, 0.9%, 0) scale(1.045);
+  }
+}
+
+@keyframes ambient-orb-a {
+  from {
+    opacity: 0.65;
+    transform: translate3d(-2%, 1%, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(3%, -2%, 0) scale(1.04);
+  }
+}
+
+@keyframes ambient-orb-b {
+  from {
+    opacity: 0.55;
+    transform: translate3d(1%, -1%, 0) scale(1.02);
+  }
+  to {
+    opacity: 0.9;
+    transform: translate3d(-3%, 2%, 0) scale(0.97);
+  }
+}
+
 /* --- Микродвижение: одна согласованная последовательность, не россыпь --- */
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -255,6 +1104,59 @@ h3 {
   }
 }
 
+@keyframes drawer-in {
+  from {
+    opacity: 0.82;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawer-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0.82;
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0.92;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0.92;
+    transform: translateY(100%);
+  }
+}
+
+.drawer-panel {
+  background: var(--surface-sidebar);
+  animation: drawer-in 240ms var(--ease-drawer) both;
+}
+
+.drawer-panel-exit {
+  animation: drawer-out 170ms var(--ease) both;
+}
+
 @keyframes развернуть {
   from {
     transform: scaleX(0);
@@ -265,11 +1167,22 @@ h3 {
 }
 
 .anim-rise {
-  animation: rise var(--t-slow) var(--ease) both;
+  /* Корень не двигается: каскад ниже анимирует только смысловые блоки. */
+  animation: none;
 }
 
 .anim-pop {
   animation: pop var(--t-slow) var(--ease) both;
+}
+
+@media (max-width: 639px) {
+  .dialog-panel.anim-pop {
+    animation: sheet-in 280ms var(--ease-drawer) both;
+  }
+
+  .dialog-panel.anim-pop-уход {
+    animation: sheet-out 190ms var(--ease) both;
+  }
 }
 
 /* --- Уход: диалоги и всплывающие сообщения появлялись плавно, а исчезали
@@ -330,28 +1243,21 @@ h3 {
    восемь раз подряд.
    --------------------------------------------------------------------- */
 .anim-rise > * {
-  animation: rise var(--t-slow) var(--ease) both;
+  animation: none;
 }
-.anim-rise > *:nth-child(1) {
-  animation-delay: 0ms;
+
+/* Каскад нужен только на Главной и только первым четырём смысловым блокам. */
+.dashboard-reveal > *:nth-child(-n + 4) {
+  animation: rise 240ms var(--ease) both;
 }
-.anim-rise > *:nth-child(2) {
-  animation-delay: 50ms;
+.dashboard-reveal > *:nth-child(2) {
+  animation-delay: 35ms;
 }
-.anim-rise > *:nth-child(3) {
-  animation-delay: 100ms;
+.dashboard-reveal > *:nth-child(3) {
+  animation-delay: 70ms;
 }
-.anim-rise > *:nth-child(4) {
-  animation-delay: 150ms;
-}
-.anim-rise > *:nth-child(5) {
-  animation-delay: 200ms;
-}
-.anim-rise > *:nth-child(6) {
-  animation-delay: 250ms;
-}
-.anim-rise > *:nth-child(n + 7) {
-  animation-delay: 300ms;
+.dashboard-reveal > *:nth-child(4) {
+  animation-delay: 105ms;
 }
 
 /* Шкала известного прочерчивается слева направо */
@@ -368,56 +1274,20 @@ h3 {
    постоянно и ничто не соревнуется за внимание с цифрами.
    ========================================================================== */
 
-/* --- Приборное свечение: знаки медленно дрейфуют в глубине --- */
-@keyframes дрейф {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate3d(18px, -22px, 0) rotate(4deg);
-  }
-  50% {
-    transform: translate3d(-14px, -34px, 0) rotate(-3deg);
-  }
-  75% {
-    transform: translate3d(-24px, -12px, 0) rotate(2deg);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-}
-
-.поле-свечения {
-  mask-image: radial-gradient(120% 100% at 30% 40%, #000 25%, transparent 78%);
-}
-
-.дрейф {
-  opacity: 0.055;
-  animation-name: дрейф;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  will-change: transform;
-}
-
 /* --- Импульс: кольцо расходится от выполненной отметки --- */
 @keyframes импульс {
   0% {
     transform: scale(1);
-    opacity: 0.85;
+    opacity: 0.22;
   }
   100% {
-    transform: scale(2.6);
+    transform: scale(1.45);
     opacity: 0;
   }
 }
 
 .импульс {
-  animation: импульс 780ms var(--ease) forwards;
-}
-
-.импульс-второй {
-  animation-delay: 130ms;
-  animation-duration: 900ms;
+  animation: импульс 220ms var(--ease) forwards;
 }
 
 /* --- Проблеск: цель достигнута, свет проходит один раз --- */
@@ -448,16 +1318,14 @@ h3 {
   0%,
   100% {
     opacity: 1;
-    transform: scale(1);
   }
   50% {
-    opacity: 0.55;
-    transform: scale(0.94);
+    opacity: 0.64;
   }
 }
 
 .дыхание {
-  animation: дыхание 2400ms ease-in-out infinite;
+  animation: дыхание 3200ms var(--ease-soft) 2;
 }
 
 /* --- Галочка прочерчивается, а не появляется --- */
@@ -509,44 +1377,39 @@ h3 {
     box-shadow var(--t-base) var(--ease);
 }
 
-.живая-карта:hover {
-  transform: translateY(-1px);
-  border-color: var(--line-strong);
-  box-shadow: var(--shade-2);
-}
-
 /* --- Переход между разделами --- */
 @keyframes вход-раздела {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
 .вход-раздела {
-  animation: вход-раздела 220ms var(--ease) both;
+  animation: вход-раздела 140ms var(--ease) both;
 }
 
 /* --- Серия привычки подросла --- */
 @keyframes подрос {
   0% {
-    transform: translateY(0) scale(1);
+    opacity: 0.72;
+    transform: scale(1);
   }
-  35% {
-    transform: translateY(-3px) scale(1.18);
+  48% {
+    opacity: 1;
+    transform: scale(1.02);
   }
   100% {
-    transform: translateY(0) scale(1);
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
 .подрос {
   display: inline-block;
-  animation: подрос 620ms var(--ease);
+  animation: подрос 180ms var(--ease);
   color: var(--good);
 }
 
@@ -554,14 +1417,86 @@ h3 {
   *,
   *::before,
   *::after {
+    scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 
-  /* Дрейфующие знаки при отключённом движении не показываются вовсе:
-     неподвижные они превращаются в бессмысленный узор. */
-  .поле-свечения {
+  body::before,
+  .ambient-orb,
+  .дыхание,
+  .импульс,
+  .проблеск::after,
+  .подрос,
+  .шкала-заполнение,
+  .прочерк path,
+  .зачёркнуто::after {
+    animation: none !important;
+  }
+
+  .ambient-field {
     display: none;
+  }
+
+  .anim-rise > *,
+  .dashboard-reveal > *,
+  .вход-раздела,
+  .drawer-panel,
+  .anim-pop,
+  .anim-затемнение-внутрь {
+    animation: затемнение-внутрь 100ms linear both !important;
+    transform: none !important;
+  }
+
+  .drawer-panel-exit,
+  .anim-pop-уход,
+  .anim-затемнение-наружу {
+    animation: затемнение-наружу 80ms linear both !important;
+    transform: none !important;
+  }
+
+  .button-base,
+  .premium-card-interactive,
+  .theme-choice,
+  .side-nav-link,
+  .domain-tab,
+  .mobile-nav-link {
+    transition-property: color, background-color, border-color, opacity !important;
+    transition-duration: 100ms !important;
+    transform: none !important;
+  }
+
+  .progress-fill {
+    transition: none !important;
+  }
+
+  .button-primary::after {
+    display: none !important;
+  }
+
+  .button-base:active,
+  body [class*='active:scale']:active,
+  .premium-card-interactive:hover,
+  .theme-choice:hover,
+  .button-primary:hover .button-trailing,
+  .flow-step:hover .flow-arrow {
+    transform: none !important;
+    scale: none !important;
+  }
+
+  .animate-pulse {
+    animation: none !important;
+    opacity: 0.58;
+  }
+
+  .side-nav-link::before,
+  .domain-tab::after,
+  .mobile-nav-link::before,
+  .switch-thumb,
+  .button-trailing,
+  .flow-arrow {
+    transition: none !important;
   }
 }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ArrowRight, Eye, Info, Sparkles } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CheckCircle2, Eye, Info } from 'lucide-react'
 import type { Сигнал, УровеньСигнала } from '@/core/db/types'
 import { cn } from '@/design-system/classNames'
 import { ЗНАЧОК } from '@/design-system/iconSize'
@@ -8,7 +8,7 @@ const ИКОНКА: Record<УровеньСигнала, typeof Info> = {
   критично: AlertTriangle,
   внимание: Eye,
   наблюдение: Info,
-  хорошо: Sparkles,
+  хорошо: CheckCircle2,
 }
 
 const ТОН: Record<УровеньСигнала, string> = {

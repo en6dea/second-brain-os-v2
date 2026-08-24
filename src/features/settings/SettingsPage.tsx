@@ -1,6 +1,15 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { AlertTriangle, Bell, BellOff, Download, Upload } from 'lucide-react'
+import {
+  AlertTriangle,
+  Bell,
+  BellOff,
+  Download,
+  Monitor,
+  Moon,
+  Sun,
+  Upload,
+} from 'lucide-react'
 import { база, НАЗВАНИЯ_ТАБЛИЦ, ТАБЛИЦЫ } from '@/core/db/db'
 import {
   изменитьНастройки,
@@ -54,7 +63,9 @@ import {
 export function SettingsPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
 
-  const [разрешениеБраузера, установитьРазрешение] = useState(разрешениеУведомлений())
+  const [разрешениеБраузера, установитьРазрешение] = useState(
+    разрешениеУведомлений(),
+  )
 
   const [имя, установитьИмя] = useState<string | null>(null)
   const [резерв, установитьРезерв] = useState<string | null>(null)
@@ -165,8 +176,9 @@ export function SettingsPage() {
       <div>
         <h1 className="text-h2 font-semibold text-ink">Настройки</h1>
         <p className="mt-0.5 text-meta text-ink-3">
-          Данные хранятся в браузере на этом устройстве. Никуда не отправляются, пока
-          вы сами не включите синхронизацию ниже — и то только то, что вы разрешили.
+          Данные хранятся в браузере на этом устройстве. Никуда не отправляются,
+          пока вы сами не включите синхронизацию ниже — и то только то, что вы
+          разрешили.
         </p>
       </div>
 
@@ -199,6 +211,64 @@ export function SettingsPage() {
             >
               Сохранить
             </Button>
+          </div>
+        </CardBody>
+      </Card>
+
+      {/* --- Облик --- */}
+      <Card className="appearance-surface">
+        <CardHeader
+          заголовок="Облик"
+          подпись="Daylight Observatory днём, спокойная глубина вечером"
+        />
+        <CardBody>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {(
+              [
+                {
+                  ключ: 'light',
+                  подпись: 'Светлая',
+                  пояснение: 'Жемчуг и дневной свет',
+                  Иконка: Sun,
+                },
+                {
+                  ключ: 'dark',
+                  подпись: 'Тёмная',
+                  пояснение: 'Глубокий вечерний синий',
+                  Иконка: Moon,
+                },
+                {
+                  ключ: 'system',
+                  подпись: 'Как в системе',
+                  пояснение: 'Меняется вместе с устройством',
+                  Иконка: Monitor,
+                },
+              ] as const
+            ).map(({ ключ, подпись, пояснение, Иконка }) => (
+              <button
+                key={ключ}
+                type="button"
+                data-active={данные.настройки.тема === ключ}
+                aria-pressed={данные.настройки.тема === ключ}
+                onClick={async () => {
+                  await изменитьНастройки({ тема: ключ })
+                  сообщить(`Тема: ${подпись.toLowerCase()}`)
+                }}
+                className="theme-choice group flex min-h-20 items-center gap-3 rounded-3 p-3 text-left"
+              >
+                <span className="theme-choice-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-2">
+                  <Иконка size={18} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-meta font-medium text-ink">
+                    {подпись}
+                  </span>
+                  <span className="mt-0.5 block text-caption leading-snug text-ink-3">
+                    {пояснение}
+                  </span>
+                </span>
+              </button>
+            ))}
           </div>
         </CardBody>
       </Card>
@@ -255,7 +325,7 @@ export function SettingsPage() {
           <div className="flex flex-wrap gap-2">
             <Button
               вид="основная"
-              иконка={<Download size={15} />}
+              иконка={<Download size={14} />}
               onClick={выгрузить}
               disabled={занято}
             >
@@ -263,7 +333,7 @@ export function SettingsPage() {
             </Button>
 
             <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-2 border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-hover">
-              <Upload size={15} />
+              <Upload size={14} />
               Восстановить (дополнить)
               <input
                 type="file"
@@ -325,7 +395,7 @@ export function SettingsPage() {
         />
         <CardBody>
           <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-2 border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-hover">
-            <Upload size={15} />
+            <Upload size={14} />
             Выбрать файл прежней версии
             <input
               type="file"
@@ -413,8 +483,8 @@ export function SettingsPage() {
             </p>
           ) : разрешениеБраузера === 'denied' ? (
             <p className="text-meta leading-relaxed text-ink-2">
-              Уведомления запрещены в настройках браузера. Разрешить их можно
-              только там — приложение само это изменить не может.
+              Уведомления запрещены в настройках браузера. Разрешить их можно только
+              там — приложение само это изменить не может.
             </p>
           ) : (
             <Switch
@@ -449,9 +519,9 @@ export function SettingsPage() {
               <BellOff size={16} className="mt-0.5 shrink-0 text-ink-3" />
             )}
             <p className="text-caption leading-relaxed text-ink-3">
-              На iPhone уведомления работают только у приложения, добавленного
-              на домашний экран через «Поделиться → На экран Домой» — обычная
-              вкладка Safari их не показывает. Это ограничение самой системы.
+              На iPhone уведомления работают только у приложения, добавленного на
+              домашний экран через «Поделиться → На экран Домой» — обычная вкладка
+              Safari их не показывает. Это ограничение самой системы.
             </p>
           </div>
         </CardBody>
@@ -554,7 +624,7 @@ export function SettingsPage() {
         <CardBody>
           <Button
             вид="опасная"
-            иконка={<AlertTriangle size={15} />}
+            иконка={<AlertTriangle size={14} />}
             onClick={() => установитьПодтвердитьОчистку(true)}
           >
             Удалить все данные

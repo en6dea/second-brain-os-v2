@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { Brain } from 'lucide-react'
+import { Brain, Search } from 'lucide-react'
 import { ДОМЕНЫ, доменПоАдресу } from '@/app/navigation'
 import { модификатор } from '@/app/keyboard'
 import { cn } from '@/design-system/classNames'
@@ -12,20 +12,25 @@ export function Sidebar({ наПереход }: { наПереход?: () => voi
   const текущий = доменПоАдресу(pathname)
 
   return (
-    <div className="flex h-full flex-col bg-card">
-      <div className="flex items-center gap-2.5 px-5 pt-5 pb-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-3 bg-accent text-on-accent">
-          <Brain size={ЗНАЧОК.крупный} />
+    <div className="sidebar-surface flex h-full flex-col">
+      <div className="flex items-center gap-3 px-5 pt-6 pb-7">
+        <span className="brand-mark">
+          <Brain size={ЗНАЧОК.основной} />
         </span>
         <span className="min-w-0">
-          <span className="block text-body leading-tight font-semibold text-ink">
+          <span className="block text-body leading-tight font-medium text-ink">
             Второй мозг
           </span>
-          <span className="block text-caption text-ink-3">личная система</span>
+          <span className="mt-1 block text-micro tracking-[0.12em] text-ink-3 uppercase">
+            личная обсерватория
+          </span>
         </span>
       </div>
 
       <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
+        <p className="px-3 pb-3 text-micro font-medium tracking-[0.16em] text-ink-3 uppercase">
+          Пространства
+        </p>
         <ul className="space-y-1">
           {ДОМЕНЫ.map((домен) => {
             // Домен подсвечен, когда открыт любой из его разделов, а не только
@@ -37,15 +42,20 @@ export function Sidebar({ наПереход }: { наПереход?: () => voi
                   to={домен.путь}
                   end={домен.путь === '/'}
                   onClick={наПереход}
+                  data-active={открыт}
                   className={cn(
-                    'group flex min-h-11 items-center gap-3 rounded-3 px-3 py-2.5 text-body',
-                    'transition-colors duration-150',
-                    открыт
-                      ? 'bg-accent-soft font-semibold text-accent'
-                      : 'text-ink-2 hover:bg-hover hover:text-ink',
+                    'side-nav-link group flex min-h-12 items-center gap-3 px-3 py-2.5 text-meta',
+                    открыт ? 'font-medium' : undefined,
                   )}
                 >
-                  <Icon значок={домен.иконка} смысл={домен.смысл} />
+                  <span className="side-nav-icon flex h-8 w-8 shrink-0 items-center justify-center">
+                    <Icon
+                      значок={домен.иконка}
+                      смысл={домен.смысл}
+                      размер={ЗНАЧОК.строка}
+                      монохромный
+                    />
+                  </span>
                   <span className="min-w-0 flex-1 truncate">{домен.название}</span>
                 </NavLink>
               </li>
@@ -54,14 +64,15 @@ export function Sidebar({ наПереход }: { наПереход?: () => voi
         </ul>
       </nav>
 
-      <div className="border-t border-line px-4 py-3">
+      <div className="border-t border-line px-4 py-4">
         <button
           type="button"
           onClick={() => useИнтерфейс.getState().открытьКомандноеОкно(true)}
-          className="flex w-full items-center justify-between rounded-2 border border-line px-2.5 py-1.5 text-left text-meta text-ink-3 transition-colors hover:border-line-strong hover:text-ink-2"
+          className="command-trigger flex min-h-11 w-full items-center gap-2 rounded-2 px-3 text-left text-meta"
         >
-          <span>Поиск и команды</span>
-          <kbd className="rounded border border-line bg-sunken px-1.5 py-0.5 text-micro">
+          <Search size={ЗНАЧОК.строка} />
+          <span className="min-w-0 flex-1 truncate">Поиск и команды</span>
+          <kbd className="rounded-1 border border-line bg-sunken px-1.5 py-0.5 text-micro">
             {модификатор()} K
           </kbd>
         </button>

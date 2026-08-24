@@ -50,16 +50,18 @@ export function Scale({
               aria-pressed={это}
               onClick={() => наИзменение(это ? null : деление.значение)}
               className={cn(
-                'flex h-11 flex-1 items-end justify-center rounded-1 pb-2',
-                'transition-colors duration-150 active:scale-[0.97]',
-                это ? 'bg-accent' : 'bg-card hover:bg-accent-soft',
+                'flex h-11 flex-1 items-end justify-center rounded-1 border pb-2',
+                'transition-[background-color,border-color,transform] duration-150 active:scale-[0.98]',
+                это
+                  ? 'border-accent-line bg-accent-soft'
+                  : 'border-transparent bg-card hover:bg-hover',
               )}
             >
               <span
                 aria-hidden="true"
                 className={cn(
                   'w-3 rounded-full',
-                  это ? 'bg-on-accent' : 'bg-line-strong',
+                  это ? 'bg-accent' : 'bg-line-strong',
                 )}
                 style={{ height: 5 + номер * 4 }}
               />

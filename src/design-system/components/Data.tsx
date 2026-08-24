@@ -6,12 +6,12 @@ type Тон =
   'нейтральный' | 'успех' | 'опасность' | 'внимание' | 'сведения' | 'знание'
 
 const тона: Record<Тон, string> = {
-  нейтральный: 'bg-sunken text-ink-2 border-line',
-  успех: 'bg-good-soft text-good border-transparent',
-  опасность: 'bg-bad-soft text-bad border-transparent',
-  внимание: 'bg-warn-soft text-warn border-transparent',
-  сведения: 'bg-info-soft text-info border-transparent',
-  знание: 'bg-know-soft text-know border-transparent',
+  нейтральный: 'text-ink-3',
+  успех: 'text-good',
+  опасность: 'text-bad',
+  внимание: 'text-warn',
+  сведения: 'text-info',
+  знание: 'text-know',
 }
 
 export function Badge({
@@ -26,8 +26,8 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5',
-        'text-meta leading-5 font-medium whitespace-nowrap',
+        'status-badge inline-flex items-center gap-1 px-2 py-0.5',
+        'font-medium whitespace-nowrap',
         тона[тон],
         className,
       )}
@@ -146,7 +146,7 @@ export function Metric({
       <div
         className={cn(
           // На узких экранах показание уменьшается, чтобы сумма не обрезалась.
-          'tnum mt-1 text-read leading-tight font-medium sm:text-gauge',
+          'tnum mt-1 text-h3 leading-tight font-medium sm:text-h2',
           цветЗначения,
         )}
       >
@@ -193,10 +193,10 @@ export function ProgressBar({
           <span className="tnum">{Math.round(доля)}%</span>
         </div>
       ) : null}
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-sunken">
+      <div className="progress-track h-1.5 w-full overflow-hidden rounded-full">
         <div
-          className={cn('h-full rounded-full transition-[width]', цвет)}
-          style={{ width: `${доля}%`, transitionDuration: '600ms' }}
+          className={cn('progress-fill h-full rounded-full', цвет)}
+          style={{ transform: `scaleX(${доля / 100})` }}
         />
       </div>
     </div>
@@ -217,11 +217,11 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center px-6 py-10 text-center">
       {иконка ? (
-        <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-3 bg-sunken text-ink-3">
+        <div className="empty-icon mb-3 flex h-11 w-11 items-center justify-center rounded-2 text-ink-3">
           {иконка}
         </div>
       ) : null}
-      <p className="text-lead font-medium text-ink">{заголовок}</p>
+      <p className="text-body font-semibold text-ink">{заголовок}</p>
       {подпись ? (
         <p className="mt-1 max-w-sm text-body text-ink-3">{подпись}</p>
       ) : null}

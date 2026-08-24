@@ -50,7 +50,7 @@ function HabitCell({
   подпись: string
   наОтметку: () => void
 }) {
-  const [отклик, запустить] = useОтклик(900)
+  const [отклик, запустить] = useОтклик(240)
 
   return (
     <Ping активен={отклик} тон="успех">
@@ -66,9 +66,9 @@ function HabitCell({
         className={cn(
           'inline-flex h-7 w-7 items-center justify-center rounded-2 border',
           'transition-[background-color,border-color,transform] duration-150',
-          'active:scale-90',
+          'active:scale-[0.98]',
           отмечено
-            ? 'border-transparent bg-good text-white'
+            ? 'border-transparent bg-good text-on-good'
             : будущее
               ? 'border-line opacity-35'
               : 'border-line hover:border-accent hover:bg-accent-soft',
@@ -370,10 +370,10 @@ export function HabitsPage() {
                           title={`${н.началоНедели} — ${н.конецНедели}: ${н.отмечено} из ${н.прошло}`}
                           className="flex flex-1 flex-col items-center gap-1"
                         >
-                          <span className="flex h-9 w-full items-end overflow-hidden rounded-[4px] bg-sunken">
+                          <span className="flex h-9 w-full items-end overflow-hidden rounded-1 bg-sunken">
                             <span
                               className={cn(
-                                'w-full rounded-[4px] transition-[height] duration-500',
+                                'h-full w-full origin-bottom rounded-1 transition-transform duration-300',
                                 н.прошло === 0
                                   ? ''
                                   : доля >= 0.8
@@ -382,7 +382,7 @@ export function HabitsPage() {
                                       ? 'bg-warn'
                                       : 'bg-bad',
                               )}
-                              style={{ height: `${Math.round(доля * 100)}%` }}
+                              style={{ transform: `scaleY(${доля})` }}
                             />
                           </span>
                           <span
@@ -496,7 +496,9 @@ export function HabitsPage() {
                           установитьЧерновик({
                             ...черновик,
                             дниНедели: выбран
-                              ? (черновик.дниНедели ?? []).filter((д) => д !== номер)
+                              ? (черновик.дниНедели ?? []).filter(
+                                  (д) => д !== номер,
+                                )
                               : [...(черновик.дниНедели ?? []), номер].sort(
                                   (а, б) => а - б,
                                 ),

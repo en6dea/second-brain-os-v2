@@ -47,6 +47,8 @@ worker/node_modules
 /backups/
 *.backup.json
 second-brain-backup*.json
+/второй-мозг-копия-*.json
+/второй-мозг-перед-*.json
 *-personal.json
 /private/
 /personal/

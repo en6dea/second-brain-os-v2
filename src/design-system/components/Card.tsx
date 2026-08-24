@@ -13,8 +13,8 @@ export function Card({
   return (
     <div
       className={cn(
-        'bg-card border border-line rounded-4 shadow-1',
-        живая ? 'живая-карта' : 'transition-[border-color,box-shadow] duration-200',
+        'premium-card rounded-4',
+        живая ? 'premium-card-interactive' : undefined,
         className,
       )}
       {...остальное}
@@ -43,9 +43,7 @@ export function CardHeader({
       )}
     >
       <div className="min-w-0">
-        <h2 className="text-lead leading-tight font-semibold text-ink">
-          {заголовок}
-        </h2>
+        <h2 className="text-h3 leading-tight font-medium text-ink">{заголовок}</h2>
         {подпись ? <p className="mt-0.5 text-body text-ink-3">{подпись}</p> : null}
       </div>
       {действие ? <div className="shrink-0">{действие}</div> : null}
@@ -73,7 +71,7 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-3">
-      <h2 className="text-caption font-semibold tracking-[0.14em] text-ink-3 uppercase">
+      <h2 className="section-rule text-caption font-medium tracking-[0.14em] text-ink-3 uppercase">
         {children}
       </h2>
       {действие}

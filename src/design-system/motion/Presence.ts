@@ -22,6 +22,14 @@ export function useПрисутствие(открыто: boolean): {
       установитьЗакрывается(false)
     } else if (смонтировано) {
       установитьЗакрывается(true)
+      // Animation events are not guaranteed: the stylesheet may be late,
+      // an animation can be cancelled, or the user can reduce motion. Keep
+      // the visual exit, but never leave an invisible modal mounted forever.
+      const предохранитель = window.setTimeout(
+        () => установитьСмонтировано(false),
+        250,
+      )
+      return () => window.clearTimeout(предохранитель)
     }
   }, [открыто, смонтировано])
 

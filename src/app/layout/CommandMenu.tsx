@@ -6,6 +6,8 @@ import { useИнтерфейс } from '@/app/providers/ui'
 import { ВСЕ_РАЗДЕЛЫ } from '@/app/navigation'
 import { искать, type НайденноеСовпадение } from '@/core/search/search'
 import { cn } from '@/design-system/classNames'
+import { ЗНАЧОК } from '@/design-system/iconSize'
+import { useModalFocus } from '@/design-system/a11y/useModalFocus'
 
 interface Строка {
   ключ: string
@@ -25,15 +27,22 @@ export function CommandMenu() {
   const [совпадения, установитьСовпадения] = useState<НайденноеСовпадение[]>([])
   const [выбран, установитьВыбран] = useState(0)
   const полеВвода = useRef<HTMLInputElement>(null)
+  const панель = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (открыто) {
       установитьЗапрос('')
       установитьСовпадения([])
       установитьВыбран(0)
-      setTimeout(() => полеВвода.current?.focus(), 30)
     }
   }, [открыто])
+
+  useModalFocus({
+    активно: открыто,
+    контейнер: панель,
+    начальныйФокус: полеВвода,
+    наEscape: () => открыть(false),
+  })
 
   useEffect(() => {
     let отменено = false
@@ -130,11 +139,15 @@ export function CommandMenu() {
         type="button"
         aria-label="Закрыть поиск"
         onClick={() => открыть(false)}
-        className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"
       />
-      <div className="anim-pop relative flex max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-5 border border-line bg-over shadow-3">
+      <div
+        ref={панель}
+        tabIndex={-1}
+        className="dialog-panel relative flex max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-5 outline-none"
+      >
         <div className="flex items-center gap-2.5 border-b border-line px-4 py-3">
-          <Search size={17} className="shrink-0 text-ink-3" />
+          <Search size={ЗНАЧОК.строка} className="shrink-0 text-ink-3" />
           <input
             ref={полеВвода}
             value={запрос}
@@ -174,7 +187,7 @@ export function CommandMenu() {
           ) : (
             Object.entries(группы).map(([название, элементы]) => (
               <div key={название} className="mb-1">
-                <p className="px-4 py-1 text-micro font-semibold tracking-[0.14em] text-ink-3 uppercase">
+                <p className="px-4 py-1 text-micro font-medium tracking-[0.14em] text-ink-3 uppercase">
                   {название}
                 </p>
                 {элементы.map((строка) => {

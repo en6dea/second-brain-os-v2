@@ -2,7 +2,13 @@ import { ArrowRight, Check, CircleDot, X } from 'lucide-react'
 import type { Цель } from '@/core/db/types'
 import { разобратьПоSMART, самаяНеготовая } from './model/Smart'
 import { cn } from '@/design-system/classNames'
-import { Button, Card, CardBody, CardHeader, ProgressBar } from '@/design-system/components'
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  ProgressBar,
+} from '@/design-system/components'
 
 /**
  * Разбор цели по SMART внутри окна правки.
@@ -27,7 +33,11 @@ export function SmartReview({ цель }: { цель: Цель }) {
           значение={разбор.выполнено}
           из={разбор.всего}
           тон={
-            разбор.готова ? 'успех' : разбор.выполнено >= 3 ? 'внимание' : 'опасность'
+            разбор.готова
+              ? 'успех'
+              : разбор.выполнено >= 3
+                ? 'внимание'
+                : 'опасность'
           }
         />
       </div>
@@ -38,7 +48,7 @@ export function SmartReview({ цель }: { цель: Цель }) {
             <span
               className={cn(
                 'mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full',
-                критерий.выполнен ? 'bg-good text-white' : 'bg-bad-soft text-bad',
+                критерий.выполнен ? 'bg-good text-on-good' : 'bg-bad-soft text-bad',
               )}
             >
               {критерий.выполнен ? <Check size={11} /> : <X size={11} />}

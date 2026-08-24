@@ -62,7 +62,7 @@ function PointCheck({
   выполнен: boolean
   наПереключение: () => void
 }) {
-  const [отклик, запустить] = useОтклик(900)
+  const [отклик, запустить] = useОтклик(240)
 
   return (
     <Ping активен={отклик} тон="успех" className="shrink-0">
@@ -76,9 +76,9 @@ function PointCheck({
         }}
         className={cn(
           'inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-1 border',
-          'transition-[background-color,border-color,transform] duration-150 active:scale-90',
+          'transition-[background-color,border-color,transform] duration-150 active:scale-[0.98]',
           выполнен
-            ? 'border-transparent bg-good text-white'
+            ? 'border-transparent bg-good text-on-good'
             : 'border-line hover:border-accent hover:bg-accent-soft',
         )}
       >

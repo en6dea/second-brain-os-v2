@@ -55,12 +55,14 @@ export function LockScreen() {
       <Card>
         <div className="space-y-4 p-6">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2 border border-accent-line bg-transparent text-accent">
               <KeyRound size={ЗНАЧОК.крупный} strokeWidth={1.75} />
             </span>
             <div>
-              <h1 className="text-lead font-semibold text-ink">
-                {хранилищеЕсть ? 'Хранилище заблокировано' : 'Создать хранилище паролей'}
+              <h1 className="text-h3 font-medium text-ink">
+                {хранилищеЕсть
+                  ? 'Хранилище заблокировано'
+                  : 'Создать хранилище паролей'}
               </h1>
               <p className="mt-0.5 text-caption text-ink-3">
                 {хранилищеЕсть
