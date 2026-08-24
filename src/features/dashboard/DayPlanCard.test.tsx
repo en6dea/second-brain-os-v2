@@ -54,9 +54,8 @@ describe('DayPlanCard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     подмены.найтиПлан.mockResolvedValue(undefined)
-    подмены.транзакция.mockImplementation(
-      async (...аргументы: unknown[]) =>
-        (аргументы.at(-1) as () => Promise<unknown>)(),
+    подмены.транзакция.mockImplementation(async (...аргументы: unknown[]) =>
+      (аргументы.at(-1) as () => Promise<unknown>)(),
     )
     подмены.useLiveQuery.mockReturnValue({
       задачи: [
@@ -95,13 +94,23 @@ describe('DayPlanCard', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByText('Предложенный план')).toBeInTheDocument()
+    expect(screen.getByText('Настройка дня')).toBeInTheDocument()
     expect(screen.getByText('Подготовить важный документ')).toBeInTheDocument()
     expect(подмены.добавитьПлан).not.toHaveBeenCalled()
 
-    await человек.click(screen.getByRole('button', { name: 'Принять план' }))
+    await человек.click(screen.getByRole('button', { name: /Принять план/ }))
 
     expect(подмены.добавитьПлан).toHaveBeenCalledTimes(1)
+    expect(подмены.добавитьПлан).toHaveBeenCalledWith(
+      expect.objectContaining({
+        чекИн: {
+          энергия: 3,
+          сонЧасов: null,
+          доступноМинут: 180,
+        },
+        пункты: [expect.objectContaining({ ожидаемоМинут: 30 })],
+      }),
+    )
   })
 
   it('блокирует повторное подтверждение, пока план сохраняется', async () => {
@@ -119,7 +128,7 @@ describe('DayPlanCard', () => {
       </MemoryRouter>,
     )
 
-    const кнопка = screen.getByRole('button', { name: 'Принять план' })
+    const кнопка = screen.getByRole('button', { name: /Принять план/ })
     await человек.click(кнопка)
     expect(screen.getByRole('button', { name: 'Сохраняю…' })).toBeDisabled()
 
@@ -128,7 +137,96 @@ describe('DayPlanCard', () => {
 
     завершить?.()
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Принять план' })).toBeEnabled(),
+      expect(screen.getByRole('button', { name: /Принять план/ })).toBeEnabled(),
+    )
+  })
+
+  it('не сохраняет снятый с плана пункт', async () => {
+    const человек = userEvent.setup()
+    render(
+      <MemoryRouter>
+        <DayPlanCard />
+      </MemoryRouter>,
+    )
+
+    await человек.click(
+      screen.getByRole('button', {
+        name: 'Включить «Подготовить важный документ» в план',
+      }),
+    )
+
+    expect(screen.getByRole('button', { name: /Принять план/ })).toBeDisabled()
+    expect(подмены.добавитьПлан).not.toHaveBeenCalled()
+  })
+
+  it('не сохраняет невозможное значение сна', async () => {
+    const человек = userEvent.setup()
+    render(
+      <MemoryRouter>
+        <DayPlanCard />
+      </MemoryRouter>,
+    )
+
+    await человек.type(screen.getByPlaceholderText('Например, 7,5'), '25')
+    await человек.click(screen.getByRole('button', { name: /Принять план/ }))
+
+    expect(
+      screen.getByText('Укажите число от 0 до 24 или оставьте поле пустым'),
+    ).toBeInTheDocument()
+    expect(подмены.добавитьПлан).not.toHaveBeenCalled()
+  })
+
+  it('добавляет чек-ин к прежнему плану, не меняя его пункты', async () => {
+    const план = {
+      id: 'старый-план',
+      createdAt: '2026-08-22T09:00:00.000Z',
+      updatedAt: '2026-08-22T09:00:00.000Z',
+      день: сегодня(),
+      пункты: [
+        {
+          id: 'пункт-1',
+          вид: 'задача' as const,
+          записьId: 'задача-1',
+          заголовок: 'Подготовить важный документ',
+          зачем: 'Задача на сегодня',
+          порядок: 0,
+          выполнен: false,
+          расширениеБудущейВерсии: { сохранить: true },
+        },
+      ],
+    }
+    подмены.useLiveQuery.mockReturnValue({
+      задачи: [],
+      цели: [],
+      привычки: [],
+      обязательства: [],
+      входящие: [],
+      план,
+    })
+    подмены.получитьПлан.mockResolvedValue(план)
+
+    const человек = userEvent.setup()
+    render(
+      <MemoryRouter>
+        <DayPlanCard />
+      </MemoryRouter>,
+    )
+
+    await человек.click(screen.getByRole('button', { name: 'Настроить' }))
+    await человек.click(screen.getByRole('tab', { name: '4' }))
+    await человек.type(screen.getByPlaceholderText('Например, 7,5'), '8')
+    await человек.selectOptions(
+      screen.getByRole('combobox', { name: /Времени на главное/ }),
+      '60',
+    )
+    await человек.click(screen.getByRole('button', { name: 'Сохранить контекст' }))
+
+    expect(подмены.сохранитьПлан).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: план.id,
+        пункты: план.пункты,
+        чекИн: { энергия: 4, сонЧасов: 8, доступноМинут: 60 },
+      }),
     )
   })
 

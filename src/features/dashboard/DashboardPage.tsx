@@ -291,7 +291,7 @@ export function DashboardPage() {
   return (
     <div className="dashboard-reveal grid gap-6 [&>*]:min-w-0 xl:grid-cols-12">
       {/* --- Ориентир и один объяснимый выбор --- */}
-      <section className="xl:col-span-8 xl:row-start-1 [&>div]:h-full">
+      <section className="xl:col-span-7 xl:row-start-1 [&>div]:h-full">
         {действиеДня ? (
           <NextActionCard действие={действиеДня} />
         ) : (
@@ -323,7 +323,7 @@ export function DashboardPage() {
         )}
       </section>
 
-      <section className="xl:col-span-4 xl:row-start-1 [&>div]:h-full">
+      <section className="xl:col-span-5 xl:row-start-1 [&>div]:h-full">
         <DayPlanCard />
       </section>
 
