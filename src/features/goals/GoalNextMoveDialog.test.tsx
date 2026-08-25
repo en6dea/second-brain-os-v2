@@ -86,4 +86,25 @@ describe('GoalNextMoveDialog', () => {
     ).toBeInTheDocument()
     expect(подтвердить).not.toHaveBeenCalled()
   })
+
+  it('показывает решение из рефлексии как редактируемый предпросмотр', () => {
+    render(
+      <GoalNextMoveDialog
+        цель={ЦЕЛЬ}
+        предложение={{
+          название: 'Провести три интервью',
+          заметка: 'Вывод недельной рефлексии',
+          длительностьМинут: 30,
+        }}
+        наЗакрытие={vi.fn()}
+        наПодтверждение={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByDisplayValue('Провести три интервью')).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue('Вывод недельной рефлексии'),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('spinbutton', { name: /Минут/ })).toHaveValue(30)
+  })
 })
