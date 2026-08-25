@@ -29,6 +29,7 @@ import { cn } from '@/design-system/classNames'
 import { ЗНАЧОК } from '@/design-system/iconSize'
 import type { ПунктПлана, УровеньЭнергии } from '@/core/db/types'
 import { FocusDialog } from './FocusDialog'
+import type { ЧерновикКоучингСессии } from '@/core/day/Coach'
 
 type ЭнергияСтрокой = '1' | '2' | '3' | '4' | '5'
 
@@ -77,6 +78,7 @@ function DayCheckInFields({
           выбрано={энергия}
           наВыбор={наЭнергию}
           размер="поле"
+          ariaLabel="Уровень энергии"
         />
         <p className="mt-1 text-meta text-ink-3">
           {подписьЭнергии(Number(энергия) as УровеньЭнергии)}
@@ -455,6 +457,31 @@ export function DayPlanCard() {
     }
   }
 
+  async function сохранитьМикрошаг(черновик: ЧерновикКоучингСессии) {
+    if (!план || !фокус) return
+
+    await база.transaction('rw', база.dayPlans, async () => {
+      const текущий = await база.dayPlans.get(план.id)
+      if (!текущий || !текущий.пункты.some((пункт) => пункт.id === фокус.id)) return
+
+      const отметкаВремени = сейчас()
+      await база.dayPlans.put({
+        ...текущий,
+        коучингСессии: [
+          ...(текущий.коучингСессии ?? []),
+          {
+            id: новыйId(),
+            пунктId: фокус.id,
+            записьId: фокус.записьId,
+            ...черновик,
+            createdAt: отметкаВремени,
+          },
+        ],
+        updatedAt: отметкаВремени,
+      })
+    })
+  }
+
   const задачиПлана = данные.задачи
   const привычкиПлана = данные.привычки
 
@@ -629,6 +656,14 @@ export function DayPlanCard() {
           перейти(РАЗДЕЛ_ПО_ВИДУ[фокус.вид])
           установитьФокус(null)
         }}
+        сохранённаяСессия={
+          фокус
+            ? ([...(план.коучингСессии ?? [])]
+                .reverse()
+                .find((сессия) => сессия.пунктId === фокус.id) ?? null)
+            : null
+        }
+        наСохранениеМикрошага={сохранитьМикрошаг}
       />
 
       <Dialog

@@ -57,4 +57,72 @@ describe('FocusDialog', () => {
     await человек.click(screen.getByRole('button', { name: 'Открыть источник' }))
     expect(открыть).toHaveBeenCalledTimes(1)
   })
+
+  it('превращает выбранную причину ступора в подтверждённый микрошаг', async () => {
+    const человек = userEvent.setup()
+    const сохранить = vi.fn().mockResolvedValue(undefined)
+    const выполнить = vi.fn().mockResolvedValue(undefined)
+
+    render(
+      <FocusDialog
+        пункт={задача}
+        открыто
+        выполнен={false}
+        наЗакрытие={vi.fn()}
+        наВыполнение={выполнить}
+        наОткрытиеИсточника={vi.fn()}
+        наСохранениеМикрошага={сохранить}
+      />,
+    )
+
+    await человек.click(
+      screen.getByRole('button', { name: 'Застрял — помочь начать' }),
+    )
+    await человек.click(
+      screen.getByRole('radio', { name: 'Страшно сделать плохо' }),
+    )
+
+    expect(screen.getByText('Режим: психолог')).toBeInTheDocument()
+    const поле = screen.getByRole('textbox', { name: 'Первый видимый шаг' })
+    await человек.clear(поле)
+    await человек.type(поле, 'Набросать первые три тезиса')
+    await человек.click(screen.getByRole('button', { name: 'Принять микрошаг' }))
+
+    expect(сохранить).toHaveBeenCalledWith({
+      причина: 'страшно ошибиться',
+      роль: 'психолог',
+      микрошаг: 'Набросать первые три тезиса',
+      минут: 10,
+    })
+    expect(screen.getByText('Набросать первые три тезиса')).toBeInTheDocument()
+    expect(screen.getByText('10:00')).toBeInTheDocument()
+    expect(выполнить).not.toHaveBeenCalled()
+  })
+
+  it('при ошибке сохранения не подменяет исходное действие микрошагом', async () => {
+    const человек = userEvent.setup()
+
+    render(
+      <FocusDialog
+        пункт={задача}
+        открыто
+        выполнен={false}
+        наЗакрытие={vi.fn()}
+        наВыполнение={null}
+        наОткрытиеИсточника={vi.fn()}
+        наСохранениеМикрошага={vi.fn().mockRejectedValue(new Error('storage'))}
+      />,
+    )
+
+    await человек.click(
+      screen.getByRole('button', { name: 'Застрял — помочь начать' }),
+    )
+    await человек.click(screen.getByRole('button', { name: 'Принять микрошаг' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Ваш план не изменён',
+    )
+    expect(screen.getByText(задача.заголовок)).toBeInTheDocument()
+    expect(screen.getByText('45:00')).toBeInTheDocument()
+  })
 })

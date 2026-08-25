@@ -371,4 +371,84 @@ describe('DayPlanCard', () => {
     ).toBeDisabled()
     expect(подмены.транзакция).not.toHaveBeenCalled()
   })
+
+  it('сохраняет подтверждённый микрошаг добавлением и не теряет поля плана', async () => {
+    const задача = {
+      id: 'задача-1',
+      createdAt: '2026-08-22T09:00:00.000Z',
+      updatedAt: '2026-08-22T09:00:00.000Z',
+      название: 'Подготовить важный документ',
+      заметка: '',
+      дата: сегодня(),
+      время: null,
+      длительностьМинут: 30,
+      состояние: 'новая',
+      важность: 'высокая',
+      проектId: null,
+      цельId: null,
+      сфераId: null,
+      выполненаВ: null,
+      переносов: 0,
+      повтор: null,
+    } as const
+    const план = {
+      id: 'план-дня',
+      createdAt: '2026-08-22T09:00:00.000Z',
+      updatedAt: '2026-08-22T09:00:00.000Z',
+      день: сегодня(),
+      пункты: [
+        {
+          id: 'пункт-1',
+          вид: 'задача' as const,
+          записьId: задача.id,
+          заголовок: задача.название,
+          зачем: 'Двигает цель вперёд',
+          порядок: 0,
+          выполнен: false,
+          ожидаемоМинут: 30,
+        },
+      ],
+      расширениеБудущейВерсии: { сохранить: true },
+    }
+    подмены.useLiveQuery.mockReturnValue({
+      задачи: [задача],
+      цели: [],
+      привычки: [],
+      обязательства: [],
+      входящие: [],
+      план,
+    })
+    подмены.получитьПлан.mockResolvedValue(план)
+
+    const человек = userEvent.setup()
+    render(
+      <MemoryRouter>
+        <DayPlanCard />
+      </MemoryRouter>,
+    )
+
+    await человек.click(screen.getByRole('button', { name: 'Фокус' }))
+    await человек.click(
+      screen.getByRole('button', { name: 'Застрял — помочь начать' }),
+    )
+    await человек.click(screen.getByRole('button', { name: 'Принять микрошаг' }))
+
+    await waitFor(() => expect(подмены.сохранитьПлан).toHaveBeenCalledTimes(1))
+    expect(подмены.сохранитьПлан).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: план.id,
+        пункты: план.пункты,
+        расширениеБудущейВерсии: { сохранить: true },
+        коучингСессии: [
+          expect.objectContaining({
+            пунктId: 'пункт-1',
+            записьId: задача.id,
+            причина: 'неясно',
+            роль: 'бизнес-коуч',
+            минут: 10,
+          }),
+        ],
+      }),
+    )
+  })
 })

@@ -175,17 +175,20 @@ export function Segmented<T extends string>({
   наВыбор,
   размер = 'компактный',
   className,
+  ariaLabel,
 }: {
   значения: { ключ: T; подпись: string }[]
   выбрано: T
   наВыбор: (ключ: T) => void
   размер?: 'компактный' | 'поле'
   className?: string
+  ariaLabel?: string
 }) {
   const поле = размер === 'поле'
   return (
     <div
       role="tablist"
+      aria-label={ariaLabel}
       className={cn(
         'items-center gap-0.5 rounded-2 border border-line bg-sunken p-0.5',
         поле
