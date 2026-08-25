@@ -1,17 +1,18 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, Circle, Focus, MoonStar, Timer, Zap } from 'lucide-react'
 import { база } from '@/core/db/db'
 import {
   оценитьЗагрузку,
+  предложитьРазгрузку,
   собратьПланДня,
   РАЗДЕЛ_ПО_ВИДУ,
   type ЧерновикПункта,
 } from '@/core/day/dayPlan'
 import { новаяЗапись } from '@/core/db/repo'
 import { новыйId, сейчас } from '@/core/db/RecordId'
-import { сегодня } from '@/core/calendar/CalendarRu'
+import { сегодня, сдвинутьДень } from '@/core/calendar/CalendarRu'
 import {
   Card,
   CardHeader,
@@ -30,6 +31,7 @@ import { ЗНАЧОК } from '@/design-system/iconSize'
 import type { ПунктПлана, УровеньЭнергии } from '@/core/db/types'
 import { FocusDialog } from './FocusDialog'
 import type { ЧерновикКоучингСессии } from '@/core/day/Coach'
+import { DayLoadAdvisor } from './DayLoadAdvisor'
 
 type ЭнергияСтрокой = '1' | '2' | '3' | '4' | '5'
 
@@ -125,6 +127,13 @@ export function DayPlanCard() {
   const [ошибкаСна, установитьОшибкуСна] = useState('')
   const [доступно, установитьДоступно] = useState('180')
   const [исключены, установитьИсключённые] = useState<Set<string>>(() => new Set())
+  const [отклоненыПереносы, установитьОтклонённыеПереносы] = useState<Set<string>>(
+    () => new Set(),
+  )
+  const [переносится, установитьПереносится] = useState(false)
+  const переносВыполняется = useRef(false)
+  const [ошибкаПереноса, установитьОшибкуПереноса] = useState('')
+  const [перенесеноЗадач, установитьПеренесеноЗадач] = useState(0)
   const [фокус, установитьФокус] = useState<ПунктПлана | null>(null)
   const [контекстОткрыт, установитьКонтекстОткрыт] = useState(false)
 
@@ -170,6 +179,17 @@ export function DayPlanCard() {
   )
   const доступноМинут = Number(доступно)
   const загрузка = оценитьЗагрузку(выбранныйЧерновик, доступноМинут)
+  const разгрузка = предложитьРазгрузку(
+    выбранныйЧерновик,
+    данные.задачи,
+    доступноМинут,
+    Number(энергия) as УровеньЭнергии,
+  )
+  const выбранныеКПереносу = new Set(
+    разгрузка.задачи
+      .filter((задача) => !отклоненыПереносы.has(задача.id))
+      .map((задача) => задача.id),
+  )
 
   function переключитьПунктЧерновика(пункт: ЧерновикПункта) {
     const ключ = ключПункта(пункт)
@@ -179,6 +199,75 @@ export function DayPlanCard() {
       else следующие.add(ключ)
       return следующие
     })
+  }
+
+  function переключитьПеренос(id: string) {
+    установитьОшибкуПереноса('')
+    установитьОтклонённыеПереносы((текущие) => {
+      const следующие = new Set(текущие)
+      if (следующие.has(id)) следующие.delete(id)
+      else следующие.add(id)
+      return следующие
+    })
+  }
+
+  async function перенестиПредложенныеЗадачи() {
+    if (переносВыполняется.current || выбранныеКПереносу.size === 0) return
+    const предложения = разгрузка.задачи.filter((задача) =>
+      выбранныеКПереносу.has(задача.id),
+    )
+    const завтра = сдвинутьДень(день, 1)
+    const перенесённыеId: string[] = []
+
+    установитьОшибкуПереноса('')
+    переносВыполняется.current = true
+    установитьПереносится(true)
+    try {
+      await база.transaction('rw', база.tasks, async () => {
+        for (const предложение of предложения) {
+          const задача = await база.tasks.get(предложение.id)
+          if (
+            !задача ||
+            задача.updatedAt !== предложение.updatedAt ||
+            задача.состояние === 'сделана' ||
+            задача.состояние === 'отменена' ||
+            задача.важность === 'срочная' ||
+            задача.переносов >= 3
+          ) {
+            continue
+          }
+
+          await база.tasks.put({
+            ...задача,
+            дата: завтра,
+            переносов: задача.переносов + 1,
+            updatedAt: сейчас(),
+          })
+          перенесённыеId.push(задача.id)
+        }
+      })
+
+      if (перенесённыеId.length === 0) {
+        установитьОшибкуПереноса(
+          'Задачи уже изменились. Предложение обновлено — проверьте его ещё раз.',
+        )
+        return
+      }
+
+      установитьИсключённые((текущие) => {
+        const следующие = new Set(текущие)
+        for (const id of перенесённыеId) следующие.add(`задача:${id}`)
+        return следующие
+      })
+      установитьПеренесеноЗадач(перенесённыеId.length)
+    } catch {
+      установитьОшибкуПереноса(
+        'Не удалось перенести задачи. Их даты не изменены — попробуйте ещё раз.',
+      )
+    } finally {
+      переносВыполняется.current = false
+      установитьПереносится(false)
+    }
   }
 
   async function принятьПлан() {
@@ -323,6 +412,28 @@ export function DayPlanCard() {
                       : 'Неизвестное время не превращается в подставную оценку.'}
                 </p>
               </div>
+
+              <DayLoadAdvisor
+                разгрузка={разгрузка}
+                выбранныеId={выбранныеКПереносу}
+                наПереключение={переключитьПеренос}
+                наПеренос={перенестиПредложенныеЗадачи}
+                переносится={переносится}
+                ошибка={ошибкаПереноса}
+              />
+
+              {перенесеноЗадач > 0 ? (
+                <p
+                  className="mt-3 text-caption leading-relaxed text-good"
+                  role="status"
+                >
+                  {перенесеноЗадач}{' '}
+                  {перенесеноЗадач === 1
+                    ? 'задача перенесена'
+                    : 'задачи перенесены'}{' '}
+                  на завтра. Остальные записи не изменены.
+                </p>
+              ) : null}
 
               <ul className="flex-1 divide-y divide-line">
                 {черновик.map((пункт) => (

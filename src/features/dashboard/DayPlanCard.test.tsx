@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { сегодня } from '@/core/calendar/CalendarRu'
+import { сегодня, сдвинутьДень } from '@/core/calendar/CalendarRu'
 import { DayPlanCard } from './DayPlanCard'
 
 const подмены = vi.hoisted(() => ({
@@ -449,6 +449,83 @@ describe('DayPlanCard', () => {
           }),
         ],
       }),
+    )
+  })
+
+  it('показывает перенос заранее и меняет только подтверждённую задачу', async () => {
+    const важная = {
+      id: 'важная',
+      createdAt: '2026-08-22T09:00:00.000Z',
+      updatedAt: '2026-08-22T09:00:00.000Z',
+      название: 'Подготовить важный документ',
+      заметка: '',
+      дата: сегодня(),
+      время: null,
+      длительностьМинут: 90,
+      состояние: 'новая',
+      важность: 'высокая',
+      проектId: null,
+      цельId: null,
+      сфераId: null,
+      выполненаВ: null,
+      переносов: 0,
+      повтор: null,
+    } as const
+    const низкая = {
+      ...важная,
+      id: 'низкая',
+      название: 'Разобрать необязательные заметки',
+      длительностьМинут: 60,
+      важность: 'низкая' as const,
+      расширениеБудущейВерсии: { сохранить: true },
+    }
+    подмены.useLiveQuery.mockReturnValue({
+      задачи: [важная, низкая],
+      цели: [],
+      привычки: [],
+      обязательства: [],
+      входящие: [],
+      план: undefined,
+    })
+    подмены.получитьЗадачу.mockImplementation(async (id: string) =>
+      id === низкая.id ? низкая : важная,
+    )
+
+    const человек = userEvent.setup()
+    render(
+      <MemoryRouter>
+        <DayPlanCard />
+      </MemoryRouter>,
+    )
+
+    await человек.selectOptions(
+      screen.getByRole('combobox', { name: /Времени на главное/ }),
+      '120',
+    )
+
+    expect(
+      screen.getByText('Тайм-менеджер предлагает разгрузку'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {
+        name: 'Перенести «Разобрать необязательные заметки» на завтра',
+      }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(подмены.сохранитьЗадачу).not.toHaveBeenCalled()
+
+    await человек.click(
+      screen.getByRole('button', { name: 'Перенести на завтра · 1' }),
+    )
+
+    await waitFor(() => expect(подмены.сохранитьЗадачу).toHaveBeenCalledTimes(1))
+    expect(подмены.сохранитьЗадачу).toHaveBeenCalledWith({
+      ...низкая,
+      дата: сдвинутьДень(сегодня(), 1),
+      переносов: 1,
+      updatedAt: expect.any(String),
+    })
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '1 задача перенесена на завтра',
     )
   })
 })
