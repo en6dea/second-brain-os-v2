@@ -40,6 +40,7 @@ import {
 } from '@/core/db/Persistence'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { SyncCard } from './SyncCard'
+import { TelegramCard } from './TelegramCard'
 import {
   поддерживаются as уведомленияПоддерживаются,
   разрешение as разрешениеУведомлений,
@@ -529,6 +530,8 @@ export function SettingsPage() {
 
       {/* --- Синхронизация --- */}
       <SyncCard настройки={данные.настройки} />
+
+      <TelegramCard настройки={данные.настройки} />
 
       {/* --- Обложки --- */}
       <Card>

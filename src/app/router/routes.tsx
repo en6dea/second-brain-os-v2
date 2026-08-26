@@ -150,6 +150,13 @@ const маршруты = [
         }),
       },
       {
+        path: 'capture/:kind?',
+        lazy: async () => ({
+          Component: (await import('@/features/quick/CaptureLauncherPage'))
+            .CaptureLauncherPage,
+        }),
+      },
+      {
         path: 'planner',
         lazy: async () => ({
           Component: (await import('@/features/planner/PlannerPage')).PlannerPage,

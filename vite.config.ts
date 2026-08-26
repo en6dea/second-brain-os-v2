@@ -6,6 +6,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // База для GitHub Pages. Локально и в тестах остаётся корнем.
 const base = process.env.DEPLOY_TARGET === 'pages' ? '/second-brain-os-v2/' : '/'
+const быстрыйПуть = (вид: 'task' | 'note') => `${base}#/capture/${вид}`
 
 const версия = process.env.npm_package_version ?? '2.0.0-alpha.1'
 
@@ -24,6 +25,7 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
+        id: base,
         name: 'Второй мозг — панель управления жизнью',
         short_name: 'Второй мозг',
         description:
@@ -43,6 +45,22 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
+          },
+        ],
+        shortcuts: [
+          {
+            name: 'Новая задача',
+            short_name: 'Задача',
+            description: 'Сразу открыть создание задачи',
+            url: быстрыйПуть('task'),
+            icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
+          },
+          {
+            name: 'Быстрая заметка',
+            short_name: 'Заметка',
+            description: 'Сразу открыть создание заметки',
+            url: быстрыйПуть('note'),
+            icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }],
           },
         ],
       },

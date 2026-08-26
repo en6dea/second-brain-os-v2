@@ -7,6 +7,7 @@ import { Topbar } from './Topbar'
 import { DomainNav } from './DomainNav'
 import { useНапоминания } from './useReminders'
 import { useСинхронизацию } from './useSync'
+import { useTelegramBridge } from './useTelegramBridge'
 import { ДОМЕНЫ } from '@/app/navigation'
 import { CommandMenu } from './CommandMenu'
 import { QuickAdd } from './QuickAdd'
@@ -38,6 +39,7 @@ const МЕНЮ_ТЕЛЕФОНА = ДОМЕНЫ.filter((домен) => домен
 export function AppShell() {
   useНапоминания()
   useСинхронизацию()
+  useTelegramBridge()
   const менюОткрыто = useИнтерфейс((с) => с.менюНаТелефоне)
   const открытьМеню = useИнтерфейс((с) => с.открытьМеню)
   const панельМеню = useRef<HTMLDivElement>(null)

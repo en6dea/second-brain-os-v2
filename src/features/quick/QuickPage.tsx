@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Check, Terminal, TriangleAlert } from 'lucide-react'
+import { Check, FilePlus2, ListPlus, Terminal, TriangleAlert } from 'lucide-react'
 import { известныеКоманды, разобратьКоманду } from '@/core/quick/Command'
 import { применить, type ИтогКоманды } from '@/core/quick/Intent'
+import { ЗНАЧОК } from '@/design-system/iconSize'
 import {
   Badge,
   Button,
@@ -213,8 +214,40 @@ export function QuickPage() {
 
       <Card>
         <CardHeader
+          заголовок="Два быстрых действия"
+          подпись="Открывают сразу нужную форму — сохранение остаётся под вашим контролем"
+        />
+        <CardBody className="grid gap-2 sm:grid-cols-2">
+          <Link to="/capture/task">
+            <Button
+              вид="основная"
+              наВсюШирину
+              иконка={<ListPlus size={ЗНАЧОК.строка} />}
+            >
+              Новая задача
+            </Button>
+          </Link>
+          <Link to="/capture/note">
+            <Button
+              вид="контур"
+              наВсюШирину
+              иконка={<FilePlus2 size={ЗНАЧОК.строка} />}
+            >
+              Быстрая заметка
+            </Button>
+          </Link>
+          <p className="text-caption leading-relaxed text-ink-3 sm:col-span-2">
+            На Android, Windows и macOS эти пункты появятся в меню установленного
+            приложения. На iPhone добавьте их в виджет приложения «Команды» — iOS
+            пока не показывает веб-действия по долгому нажатию на значок PWA.
+          </p>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader
           заголовок="Как положить на iPhone"
-          подпись="Три минуты один раз, дальше — голосом или с экрана блокировки"
+          подпись="Иконка приложения плюс виджет с задачей и заметкой"
           действие={
             <Badge тон="знание">
               <Terminal size={11} />
@@ -230,7 +263,9 @@ export function QuickPage() {
             </li>
             <li>
               <span className="font-medium text-ink">2.</span> Впишите адрес этой
-              страницы, дописав команду через слэш. Например:
+              страницы: <code>…#/capture/task</code> для задачи или{' '}
+              <code>…#/capture/note</code> для заметки. Для голосового ввода можно
+              использовать командный адрес, например:
               <code className="mt-1 block break-all rounded-2 bg-sunken px-2.5 py-1.5 text-caption text-ink">
                 {примерАдреса}
               </code>

@@ -1,8 +1,16 @@
 name = "second-brain-assistant"
 main = "src/index.ts"
-compatibility_date = "2026-08-01"
+compatibility_date = "2026-08-26"
+
+[[d1_databases]]
+binding = "TELEGRAM_DB"
+database_name = "second-brain-telegram"
+migrations_dir = "migrations"
 
 # Секреты не описываются здесь — они задаются командой
 # `wrangler secret put ИМЯ` и хранятся у Cloudflare, а не в репозитории:
 #   ANTHROPIC_API_KEY   — ключ Anthropic
 #   ОБЩИЙ_ТОКЕН         — токен, которым приложение подтверждает себя воркеру
+#   TELEGRAM_BOT_TOKEN  — токен от @BotFather
+#   TELEGRAM_WEBHOOK_SECRET — случайная строка для проверки Telegram webhook
+#   TELEGRAM_BOT_USERNAME — имя бота без @, например second_brain_private_bot

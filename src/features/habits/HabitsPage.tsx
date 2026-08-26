@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Check, Plus, Trash2 } from 'lucide-react'
+import { Check, Plus, Sparkles, Trash2 } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
-import type { Привычка } from '@/core/db/types'
+import type { ВосстановлениеПривычки, Привычка } from '@/core/db/types'
 import { длинаСерии } from '@/core/signals/engine'
 import { границыНедели, сдвинутьДень, сегодня } from '@/core/calendar/CalendarRu'
 import { склонение } from '@/core/language/Plural'
@@ -12,6 +12,7 @@ import { сейчас } from '@/core/db/RecordId'
 import { useИнтерфейс } from '@/app/providers/ui'
 import { читатьНастройки } from '@/core/db/repo'
 import { cn } from '@/design-system/classNames'
+import { ЗНАЧОК } from '@/design-system/iconSize'
 import { useОтклик } from '@/design-system/motion/CountUp'
 import { Ping } from '@/design-system/motion/Ping'
 import {
@@ -30,6 +31,9 @@ import {
 } from '@/design-system/components'
 import { useСигналыПоРазделам } from '@/features/signals/useSignals'
 import { SignalsStrip } from '@/features/signals/SignalsStrip'
+import { новыйId } from '@/core/db/RecordId'
+import { HabitRecoveryDialog } from './HabitRecoveryDialog'
+import { отметокЗаСемьДней } from './model/Recovery'
 
 const ДНИ = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 
@@ -104,6 +108,7 @@ export function HabitsPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
   const день = сегодня()
   const [черновик, установитьЧерновик] = useState<Partial<Привычка> | null>(null)
+  const [восстановить, установитьВосстановить] = useState<Привычка | null>(null)
   const сигналы = useСигналыПоРазделам(['Привычки'])
 
   const привычки = useLiveQuery(() => база.habits.toArray(), [])
@@ -173,6 +178,31 @@ export function HabitsPage() {
       сообщить('Привычка добавлена')
     }
     установитьЧерновик(null)
+  }
+
+  async function сохранитьВосстановление(
+    снимок: Привычка,
+    черновикВосстановления: Omit<ВосстановлениеПривычки, 'id' | 'createdAt'>,
+  ) {
+    await база.transaction('rw', база.habits, async () => {
+      const текущая = await база.habits.get(снимок.id)
+      if (!текущая) throw new Error('Привычка больше не существует')
+      const момент = сейчас()
+      await база.habits.put({
+        ...текущая,
+        восстановления: [
+          ...(текущая.восстановления ?? []),
+          {
+            id: новыйId(),
+            createdAt: момент,
+            ...черновикВосстановления,
+          },
+        ],
+        updatedAt: момент,
+      })
+    })
+    установитьВосстановить(null)
+    сообщить('План возвращения сохранён')
   }
 
   return (
@@ -263,7 +293,7 @@ export function HabitsPage() {
                   <th className="w-16 px-3 py-2 text-right text-micro font-medium text-ink-3">
                     Серия
                   </th>
-                  <th className="w-10" />
+                  <th className="w-20" />
                 </tr>
               </thead>
               <tbody>
@@ -309,15 +339,23 @@ export function HabitsPage() {
                       <StreakCount длина={длинаСерии(привычка, день)} />
                     </td>
                     <td className="px-2">
-                      <IconButton
-                        подпись={`Удалить привычку ${привычка.название}`}
-                        onClick={async () => {
-                          await база.habits.delete(привычка.id)
-                          сообщить('Привычка удалена вместе с отметками')
-                        }}
-                      >
-                        <Trash2 size={14} />
-                      </IconButton>
+                      <div className="flex items-center justify-end gap-1">
+                        <IconButton
+                          подпись={`Помочь вернуться к привычке ${привычка.название}`}
+                          onClick={() => установитьВосстановить(привычка)}
+                        >
+                          <Sparkles size={ЗНАЧОК.строка} />
+                        </IconButton>
+                        <IconButton
+                          подпись={`Удалить привычку ${привычка.название}`}
+                          onClick={async () => {
+                            await база.habits.delete(привычка.id)
+                            сообщить('Привычка удалена вместе с отметками')
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </IconButton>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -400,6 +438,38 @@ export function HabitsPage() {
                 </div>
               )
             })}
+          </div>
+        </Card>
+      ) : null}
+
+      {активные.length > 0 ? (
+        <Card className="coach-surface overflow-hidden">
+          <div className="grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
+            <div>
+              <p className="flex items-center gap-2 text-caption font-medium text-accent">
+                <Sparkles size={ЗНАЧОК.строка} />
+                Мягкое возвращение
+              </p>
+              <h2 className="mt-1 text-h3 font-medium text-ink">
+                Срыв — это данные, а не приговор
+              </h2>
+              <p className="mt-1 max-w-2xl text-meta leading-relaxed text-ink-3">
+                Выберите привычку, назовите реальное препятствие и сохраните
+                минимальный шаг. Приложение не обнуляет историю и не ставит отметку
+                вместо вас.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:max-w-xs sm:justify-end">
+              {активные.slice(0, 3).map((привычка) => (
+                <Button
+                  key={привычка.id}
+                  вид="контур"
+                  onClick={() => установитьВосстановить(привычка)}
+                >
+                  {привычка.название}
+                </Button>
+              ))}
+            </div>
           </div>
         </Card>
       ) : null}
@@ -583,6 +653,13 @@ export function HabitsPage() {
           </div>
         ) : null}
       </Dialog>
+
+      <HabitRecoveryDialog
+        привычка={восстановить}
+        отметокЗаНеделю={восстановить ? отметокЗаСемьДней(восстановить, день) : 0}
+        наЗакрытие={() => установитьВосстановить(null)}
+        наПодтверждение={сохранитьВосстановление}
+      />
     </div>
   )
 }
