@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
@@ -206,8 +207,19 @@ export function DashboardPage() {
   const остальныеСигналы = [...требуютВнимания, ...хорошее].filter(
     (сигнал) => !(действиеДня && сигнал.id.includes(действиеДня.источникId)),
   )
+  const сигналыТребующиеДействия = остальныеСигналы.filter(
+    (сигнал) => сигнал.уровень !== 'хорошо',
+  )
+  const сигналыДляГлавной = (
+    сигналыТребующиеДействия.length > 0
+      ? сигналыТребующиеДействия
+      : остальныеСигналы.filter((сигнал) => сигнал.уровень === 'хорошо')
+  ).slice(0, 2)
 
   const активныеЦели = данные.цели.filter((ц) => ц.состояние === 'активна')
+  const целиДляГлавной = [...активныеЦели]
+    .sort((а, б) => а.порядок - б.порядок)
+    .slice(0, 2)
   const естьХотьЧтоТо =
     данные.задачи.length + данные.привычки.length + данные.операции.length > 0
   const деньгиПусты = данные.счета.length === 0 && данные.операции.length === 0
@@ -340,229 +352,233 @@ export function DashboardPage() {
         />
       </section>
 
-      {/* --- Сигналы --- */}
-      <section className="xl:col-span-4 xl:col-start-9 xl:row-start-3">
-        <SectionTitle
-          действие={
-            <span className="text-caption text-ink-3">
-              {требуютВнимания.length === 0
-                ? 'ничего не требует вмешательства'
-                : `${требуютВнимания.length} ${склонение(требуютВнимания.length, 'сигнал', 'сигнала', 'сигналов')}`}
-            </span>
-          }
-        >
-          Сигналы
-        </SectionTitle>
+      {/* Нижние блоки живут в двух независимых колонках. Их высота больше не
+          растягивает соседнюю карточку и не ломает следующий ряд. */}
+      <div className="grid gap-6 xl:col-span-12 xl:row-start-3 xl:grid-cols-12 xl:items-start">
+        <div className="contents xl:col-span-8 xl:grid xl:content-start xl:gap-6">
+          <DashboardSection
+            className="order-2 xl:order-none"
+            название="Деньги"
+            действие={
+              <Link
+                to="/finance"
+                className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline"
+              >
+                Все финансы
+              </Link>
+            }
+          >
+            <Card className="finance-surface">
+              {деньгиПусты ? (
+                <EmptyState
+                  иконка={<Wallet size={ЗНАЧОК.показание} />}
+                  заголовок="Счетов ещё нет"
+                  подпись="Четыре нуля здесь ничего не значат: пока нет счетов и операций, считать не из чего. Заведите счёт — и суммы появятся."
+                  действие={
+                    <Link
+                      to="/finance/accounts"
+                      className="button-base button-outline inline-flex h-11 items-center rounded-2 px-4 text-body font-medium"
+                    >
+                      Завести счёт
+                    </Link>
+                  }
+                />
+              ) : (
+                <div className="grid grid-cols-2 gap-5 p-5 lg:grid-cols-4">
+                  <Metric
+                    единица="₽ · остаток"
+                    подпись="Собственные деньги"
+                    значение={деньгиИзвестны ? undefined : 'неизвестно'}
+                    счётчик={
+                      деньгиИзвестны
+                        ? { число: счета.собственные, запись: деньги }
+                        : undefined
+                    }
+                    источник={
+                      !деньгиИзвестны
+                        ? 'нет подтверждённого остатка собственного счёта'
+                        : счета.счетовБезОстатка > 0
+                          ? `не заполнено: ${счета.названияБезОстатка.join(', ')}`
+                          : 'подтверждено по всем счетам'
+                    }
+                    тон={счета.счетовБезОстатка > 0 ? 'внимание' : 'нейтральный'}
+                    шкала={{
+                      известно: счета.счетовУчтено,
+                      неизвестно: счета.счетовБезОстатка,
+                    }}
+                  />
+                  <Metric
+                    единица="₽ · свободно"
+                    подпись="Доступно по заполненным данным"
+                    значение={деньгиИзвестны ? undefined : 'неизвестно'}
+                    счётчик={
+                      деньгиИзвестны
+                        ? { число: свободно, запись: деньги }
+                        : undefined
+                    }
+                    источник={
+                      данныеДенегПолны
+                        ? 'собственные − обязательства − резерв'
+                        : 'расчёт неполный: заполните счета и все части обязательств'
+                    }
+                    тон={
+                      !данныеДенегПолны
+                        ? 'внимание'
+                        : свободно < 0
+                          ? 'опасность'
+                          : 'нейтральный'
+                    }
+                  />
+                  <Metric
+                    единица="₽ · за месяц"
+                    подпись="Получено"
+                    счётчик={{ число: периодМесяца.доходы, запись: деньги }}
+                    источник={`${периодМесяца.операций} ${склонение(периодМесяца.операций, 'операция', 'операции', 'операций')}`}
+                    тон={периодМесяца.доходы > 0 ? 'успех' : 'нейтральный'}
+                  />
+                  <Metric
+                    единица="₽ · за месяц"
+                    подпись="Израсходовано"
+                    счётчик={{ число: периодМесяца.расходы, запись: деньги }}
+                    источник="переводы не в счёт"
+                    тон={
+                      периодМесяца.расходы > периодМесяца.доходы
+                        ? 'опасность'
+                        : 'нейтральный'
+                    }
+                  />
+                </div>
+              )}
 
-        {сигналы.length === 0 ? (
-          <Card>
-            <EmptyState
-              иконка={<CheckCircle2 size={ЗНАЧОК.показание} />}
-              заголовок="Пока сигналов нет"
-              подпись="Сигналы появятся, когда в данных возникнет то, что требует решения: просроченная задача, близкий платёж, цель без движения."
-            />
-          </Card>
-        ) : остальныеСигналы.length === 0 ? (
-          <Card>
-            <CardBody>
-              <p className="text-meta text-ink-3">
-                Единственный сигнал показан наверху — повторять его здесь незачем.
-              </p>
-            </CardBody>
-          </Card>
-        ) : (
-          <div className="grid gap-2.5">
-            {остальныеСигналы.slice(0, 4).map((сигнал) => (
-              <SignalRow key={сигнал.id} сигнал={сигнал} />
-            ))}
-          </div>
-        )}
-      </section>
+              {периодМесяца.доходы > 0 ? (
+                <div className="border-t border-line px-5 py-4">
+                  <ProgressBar
+                    значение={периодМесяца.расходы}
+                    из={периодМесяца.доходы}
+                    тон={
+                      периодМесяца.расходы > периодМесяца.доходы
+                        ? 'опасность'
+                        : 'успех'
+                    }
+                    подпись="Израсходовано от полученного за месяц"
+                  />
+                </div>
+              ) : null}
+            </Card>
+          </DashboardSection>
 
-      {/* --- Деньги --- */}
-      <section className="xl:col-span-8 xl:col-start-1 xl:row-start-3">
-        <SectionTitle
-          действие={
-            <Link
-              to="/finance"
-              className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline"
-            >
-              Все финансы
-            </Link>
-          }
-        >
-          Деньги
-        </SectionTitle>
-
-        <Card className="finance-surface h-full">
-          {деньгиПусты ? (
-            <EmptyState
-              иконка={<Wallet size={ЗНАЧОК.показание} />}
-              заголовок="Счетов ещё нет"
-              подпись="Четыре нуля здесь ничего не значат: пока нет счетов и операций, считать не из чего. Заведите счёт — и суммы появятся."
-              действие={
-                <Link
-                  to="/finance/accounts"
-                  className="button-base button-outline inline-flex h-11 items-center rounded-2 px-4 text-body font-medium"
-                >
-                  Завести счёт
-                </Link>
-              }
-            />
-          ) : (
-            <div className="grid grid-cols-2 gap-5 p-5 lg:grid-cols-4">
-              <Metric
-                единица="₽ · остаток"
-                подпись="Собственные деньги"
-                значение={деньгиИзвестны ? undefined : 'неизвестно'}
-                счётчик={
-                  деньгиИзвестны
-                    ? { число: счета.собственные, запись: деньги }
-                    : undefined
-                }
-                источник={
-                  !деньгиИзвестны
-                    ? 'нет подтверждённого остатка собственного счёта'
-                    : счета.счетовБезОстатка > 0
-                      ? `не заполнено: ${счета.названияБезОстатка.join(', ')}`
-                      : 'подтверждено по всем счетам'
-                }
-                тон={счета.счетовБезОстатка > 0 ? 'внимание' : 'нейтральный'}
-                шкала={{
-                  известно: счета.счетовУчтено,
-                  неизвестно: счета.счетовБезОстатка,
-                }}
-              />
-              <Metric
-                единица="₽ · свободно"
-                подпись="Доступно по заполненным данным"
-                значение={деньгиИзвестны ? undefined : 'неизвестно'}
-                счётчик={
-                  деньгиИзвестны ? { число: свободно, запись: деньги } : undefined
-                }
-                источник={
-                  данныеДенегПолны
-                    ? 'собственные − обязательства − резерв'
-                    : 'расчёт неполный: заполните счета и все части обязательств'
-                }
-                тон={
-                  !данныеДенегПолны
-                    ? 'внимание'
-                    : свободно < 0
-                      ? 'опасность'
-                      : 'нейтральный'
-                }
-              />
-              <Metric
-                единица="₽ · за месяц"
-                подпись="Получено"
-                счётчик={{ число: периодМесяца.доходы, запись: деньги }}
-                источник={`${периодМесяца.операций} ${склонение(периодМесяца.операций, 'операция', 'операции', 'операций')}`}
-                тон={периодМесяца.доходы > 0 ? 'успех' : 'нейтральный'}
-              />
-              <Metric
-                единица="₽ · за месяц"
-                подпись="Израсходовано"
-                счётчик={{ число: периодМесяца.расходы, запись: деньги }}
-                источник="переводы не в счёт"
-                тон={
-                  периодМесяца.расходы > периодМесяца.доходы
-                    ? 'опасность'
-                    : 'нейтральный'
-                }
-              />
-            </div>
-          )}
-
-          {периодМесяца.доходы > 0 ? (
-            <div className="border-t border-line px-5 py-4">
-              <ProgressBar
-                значение={периодМесяца.расходы}
-                из={периодМесяца.доходы}
-                тон={
-                  периодМесяца.расходы > периодМесяца.доходы ? 'опасность' : 'успех'
-                }
-                подпись="Израсходовано от полученного за месяц"
-              />
-            </div>
-          ) : null}
-        </Card>
-      </section>
-
-      {/* --- Движение --- */}
-      <section className="xl:col-span-7 xl:row-start-4">
-        <SectionTitle
-          действие={
-            <Link
-              to="/goals"
-              className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline"
-            >
-              Все цели
-            </Link>
-          }
-        >
-          Движение
-        </SectionTitle>
-
-        <Card className="h-full">
-          {активныеЦели.length === 0 ? (
-            <EmptyState
-              иконка={<Circle size={20} />}
-              заголовок="Активных целей нет"
-              подпись="Цель задаёт направление: без неё задачи и привычки остаются набором дел."
-              действие={
-                <Link
-                  to="/goals"
-                  className="button-base button-outline inline-flex h-11 items-center rounded-2 px-4 text-meta font-medium"
-                >
-                  Открыть цели
-                </Link>
-              }
-            />
-          ) : (
-            <div className="divide-y divide-line">
-              {активныеЦели.slice(0, 4).map((цель) => {
-                const естьЧисло = цель.цель !== null && цель.цель > 0
-                return (
-                  <div key={цель.id} className="px-5 py-4">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <p className="min-w-0 truncate text-meta font-medium text-ink">
-                        {цель.название}
-                      </p>
-                      <span className="tnum shrink-0 text-meta text-ink-2">
-                        {естьЧисло
-                          ? `${число(цель.текущее ?? 0)} / ${число(цель.цель)} ${цель.единица}`
-                          : 'без числового показателя'}
-                      </span>
-                    </div>
-                    {естьЧисло ? (
-                      <div className="mt-2.5">
-                        <ProgressBar
-                          значение={цель.текущее ?? 0}
-                          из={цель.цель ?? 1}
-                        />
+          <DashboardSection
+            className="order-3 xl:order-none"
+            название="Движение"
+            действие={
+              <Link
+                to="/goals"
+                className="-mr-2 inline-flex min-h-11 items-center px-2 text-caption text-accent hover:underline"
+              >
+                Все цели
+              </Link>
+            }
+          >
+            <Card>
+              {активныеЦели.length === 0 ? (
+                <EmptyState
+                  иконка={<Circle size={20} />}
+                  заголовок="Активных целей нет"
+                  подпись="Цель задаёт направление: без неё задачи и привычки остаются набором дел."
+                  действие={
+                    <Link
+                      to="/goals"
+                      className="button-base button-outline inline-flex h-11 items-center rounded-2 px-4 text-meta font-medium"
+                    >
+                      Открыть цели
+                    </Link>
+                  }
+                />
+              ) : (
+                <div className="divide-y divide-line">
+                  {целиДляГлавной.map((цель) => {
+                    const естьЧисло = цель.цель !== null && цель.цель > 0
+                    return (
+                      <div key={цель.id} className="px-5 py-4">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <p className="min-w-0 truncate text-meta font-medium text-ink">
+                            {цель.название}
+                          </p>
+                          <span className="tnum shrink-0 text-meta text-ink-2">
+                            {естьЧисло
+                              ? `${число(цель.текущее ?? 0)} / ${число(цель.цель)} ${цель.единица}`
+                              : 'без числового показателя'}
+                          </span>
+                        </div>
+                        {естьЧисло ? (
+                          <div className="mt-2.5">
+                            <ProgressBar
+                              значение={цель.текущее ?? 0}
+                              из={цель.цель ?? 1}
+                            />
+                          </div>
+                        ) : null}
                       </div>
-                    ) : null}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </Card>
-      </section>
+                    )
+                  })}
+                </div>
+              )}
+            </Card>
+          </DashboardSection>
+        </div>
 
-      <section className="xl:col-span-5 xl:row-start-4 [&>div]:h-full">
-        <SecondBrainFlow
-          входящих={данные.входящие}
-          активныхПроектов={активныхПроектов}
-          обзоровСВыводом={обзоровСВыводом}
-          закрытоИзЗадачНаСегодня={закрытоИзЗадачНаСегодня.length}
-        />
-      </section>
+        <div className="contents xl:col-span-4 xl:grid xl:content-start xl:gap-6">
+          <DashboardSection
+            className="order-1 xl:order-none"
+            название="Сигналы"
+            действие={
+              <span className="text-caption text-ink-3">
+                {требуютВнимания.length === 0
+                  ? 'ничего срочного'
+                  : `${требуютВнимания.length} ${склонение(требуютВнимания.length, 'сигнал', 'сигнала', 'сигналов')}`}
+              </span>
+            }
+          >
+            {сигналы.length === 0 ? (
+              <Card>
+                <EmptyState
+                  иконка={<CheckCircle2 size={ЗНАЧОК.показание} />}
+                  заголовок="Пока сигналов нет"
+                  подпись="Они появятся, когда в данных возникнет то, что требует решения."
+                />
+              </Card>
+            ) : сигналыДляГлавной.length === 0 ? (
+              <Card>
+                <CardBody>
+                  <p className="text-meta text-ink-3">
+                    Главный сигнал уже показан наверху — повторять его здесь
+                    незачем.
+                  </p>
+                </CardBody>
+              </Card>
+            ) : (
+              <div className="grid gap-2.5">
+                {сигналыДляГлавной.map((сигнал) => (
+                  <SignalRow key={сигнал.id} сигнал={сигнал} />
+                ))}
+              </div>
+            )}
+          </DashboardSection>
+
+          <div className="order-4 min-w-0 xl:order-none">
+            <SecondBrainFlow
+              входящих={данные.входящие}
+              активныхПроектов={активныхПроектов}
+              обзоровСВыводом={обзоровСВыводом}
+              закрытоИзЗадачНаСегодня={закрытоИзЗадачНаСегодня.length}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* --- Привычки сегодня --- */}
       {активныеПривычки.length > 0 ? (
-        <section className="xl:col-span-12">
+        <section className="xl:col-span-12 xl:row-start-4">
           <SectionTitle
             действие={
               <Link
@@ -581,10 +597,12 @@ export function DashboardPage() {
                 const отмечена = (привычка.отметки[день] ?? 0) > 0
                 const серия = длинаСерии(привычка, день)
                 return (
-                  <span
+                  <Link
                     key={привычка.id}
+                    to="/habits"
+                    aria-label={`Открыть привычку ${привычка.название}`}
                     className={cn(
-                      'inline-flex min-h-10 items-center gap-2 rounded-2 border px-3 py-2 text-meta',
+                      'inline-flex min-h-11 items-center gap-2 rounded-2 border px-3 py-2 text-meta transition-colors hover:border-control-line',
                       отмечена
                         ? 'border-good/25 bg-transparent text-good'
                         : 'border-line text-ink-2',
@@ -595,7 +613,7 @@ export function DashboardPage() {
                     {серия > 1 ? (
                       <span className="tnum text-micro text-ink-3">{серия} дн</span>
                     ) : null}
-                  </span>
+                  </Link>
                 )
               })}
             </div>
@@ -603,6 +621,25 @@ export function DashboardPage() {
         </section>
       ) : null}
     </div>
+  )
+}
+
+function DashboardSection({
+  название,
+  действие,
+  className,
+  children,
+}: {
+  название: ReactNode
+  действие?: ReactNode
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <section className={cn('min-w-0', className)}>
+      <SectionTitle действие={действие}>{название}</SectionTitle>
+      {children}
+    </section>
   )
 }
 

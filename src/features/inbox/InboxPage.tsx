@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ArrowRight, Trash2 } from 'lucide-react'
+import { Archive, ArrowRight, Sparkles } from 'lucide-react'
 import { база } from '@/core/db/db'
 import { новаяЗапись } from '@/core/db/repo'
 import type { Входящее } from '@/core/db/types'
@@ -17,11 +17,19 @@ import {
   EmptyState,
   CardHeader,
   CardBody,
+  Badge,
 } from '@/design-system/components'
+import { ЗНАЧОК } from '@/design-system/iconSize'
+import {
+  InboxReviewDialog,
+  type ЧерновикЗадачиРазбора,
+  type ЧерновикЗаметкиРазбора,
+} from './InboxReviewDialog'
 
 export function InboxPage() {
   const сообщить = useИнтерфейс((с) => с.сообщить)
   const [новая, установитьНовую] = useState('')
+  const [разборОткрыт, установитьРазборОткрыт] = useState(false)
 
   const записи = useLiveQuery(
     () => база.inbox.filter((з) => !з.разобрано).toArray(),
@@ -48,45 +56,73 @@ export function InboxPage() {
     установитьНовую('')
   }
 
-  async function вЗадачу(запись: Входящее) {
-    await база.tasks.add(
-      новаяЗапись({
-        название: запись.текст.slice(0, 200),
-        заметка: '',
-        дата: сегодня(),
-        время: null,
-        длительностьМинут: null,
-        состояние: 'новая',
-        важность: 'обычная',
-        проектId: null,
-        цельId: null,
-        сфераId: null,
-        выполненаВ: null,
-        переносов: 0,
-        повтор: null,
-      }) as never,
+  async function вЗадачу(
+    запись: Входящее,
+    черновик: ЧерновикЗадачиРазбора = {
+      название: запись.текст.slice(0, 200),
+      заметка: '',
+      дата: сегодня(),
+      длительностьМинут: null,
+      важность: 'обычная',
+    },
+  ) {
+    await база.transaction('rw', база.tasks, база.inbox, async () => {
+      await база.tasks.add(
+        новаяЗапись({
+          название: черновик.название,
+          заметка: черновик.заметка,
+          дата: черновик.дата,
+          время: null,
+          длительностьМинут: черновик.длительностьМинут,
+          состояние: 'новая',
+          важность: черновик.важность,
+          проектId: null,
+          цельId: null,
+          сфераId: null,
+          выполненаВ: null,
+          переносов: 0,
+          повтор: null,
+        }) as never,
+      )
+      await база.inbox.put({ ...запись, разобрано: true, updatedAt: сейчас() })
+    })
+    сообщить(
+      черновик.дата === сегодня()
+        ? 'Стало задачей на сегодня'
+        : 'Стало задачей без даты',
     )
-    await база.inbox.put({ ...запись, разобрано: true, updatedAt: сейчас() })
-    сообщить('Стало задачей на сегодня')
   }
 
-  async function вЗаметку(запись: Входящее) {
-    await база.knowledge.add(
-      новаяЗапись({
-        заголовок: запись.текст.slice(0, 80),
-        вид: 'заметка',
-        текст: запись.текст,
-        ссылка: '',
-        постер: '',
-        меткиId: [],
-        папкаId: null,
-        проектId: null,
-        цельId: null,
-        избранное: false,
-      }) as never,
-    )
-    await база.inbox.put({ ...запись, разобрано: true, updatedAt: сейчас() })
+  async function вЗаметку(
+    запись: Входящее,
+    черновик: ЧерновикЗаметкиРазбора = {
+      заголовок: запись.текст.slice(0, 80),
+      текст: запись.текст,
+    },
+  ) {
+    await база.transaction('rw', база.knowledge, база.inbox, async () => {
+      await база.knowledge.add(
+        новаяЗапись({
+          заголовок: черновик.заголовок,
+          вид: 'заметка',
+          текст: черновик.текст,
+          ссылка: '',
+          постер: '',
+          меткиId: [],
+          папкаId: null,
+          проектId: null,
+          цельId: null,
+          избранное: false,
+        }) as never,
+      )
+      await база.inbox.put({ ...запись, разобрано: true, updatedAt: сейчас() })
+    })
     сообщить('Сохранено в знания')
+  }
+
+  async function отпустить(запись: Входящее) {
+    await база.inbox.put({ ...запись, разобрано: true, updatedAt: сейчас() })
+    сообщить('Убрано из разбора — исходная запись сохранена')
   }
 
   return (
@@ -95,9 +131,37 @@ export function InboxPage() {
         <h1 className="text-h2 font-semibold text-ink">Разбор</h1>
         <p className="mt-0.5 text-meta text-ink-3">
           Сюда попадает всё, что записано на бегу. Разобрать — значит превратить
-          мысль в задачу, заметку или удалить.
+          мысль в действие, знание или спокойно отпустить.
         </p>
       </div>
+
+      <Card className="overflow-hidden">
+        <CardBody className="grid gap-5 pt-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-h3 font-medium text-ink">Разбор за 5 минут</h2>
+              <Badge тон={записи.length > 0 ? 'знание' : 'нейтральный'}>
+                {записи.length}{' '}
+                {склонение(записи.length, 'запись', 'записи', 'записей')}
+              </Badge>
+            </div>
+            <p className="mt-2 max-w-2xl text-meta leading-relaxed text-ink-2">
+              Одна мысль за раз: выделить микрошаг, сохранить вывод или убрать из
+              очереди без удаления. Решение попадёт в данные только после
+              подтверждения.
+            </p>
+          </div>
+          <Button
+            вид="основная"
+            размер="большой"
+            иконка={<Sparkles size={ЗНАЧОК.строка} />}
+            disabled={записи.length === 0}
+            onClick={() => установитьРазборОткрыт(true)}
+          >
+            {записи.length === 0 ? 'Очередь пуста' : 'Начать разбор'}
+          </Button>
+        </CardBody>
+      </Card>
 
       <Card>
         <CardBody className="pt-5">
@@ -134,9 +198,7 @@ export function InboxPage() {
                 key={запись.id}
                 className="flex flex-wrap items-center gap-3 px-5 py-3"
               >
-                <p className="min-w-0 flex-1 text-meta text-ink">
-                  {запись.текст}
-                </p>
+                <p className="min-w-0 flex-1 text-meta text-ink">{запись.текст}</p>
                 <div className="flex shrink-0 gap-1.5">
                   <Button
                     размер="малый"
@@ -149,13 +211,10 @@ export function InboxPage() {
                     В знания
                   </Button>
                   <IconButton
-                    подпись="Удалить запись"
-                    onClick={async () => {
-                      await база.inbox.delete(запись.id)
-                      сообщить('Удалено')
-                    }}
+                    подпись="Убрать из разбора без удаления"
+                    onClick={() => void отпустить(запись)}
                   >
-                    <Trash2 size={15} />
+                    <Archive size={15} />
                   </IconButton>
                 </div>
               </div>
@@ -163,6 +222,15 @@ export function InboxPage() {
           </div>
         )}
       </Card>
+
+      <InboxReviewDialog
+        открыто={разборОткрыт}
+        записи={записи}
+        наЗакрытие={() => установитьРазборОткрыт(false)}
+        наЗадачу={вЗадачу}
+        наЗаметку={вЗаметку}
+        наОтпустить={отпустить}
+      />
     </div>
   )
 }

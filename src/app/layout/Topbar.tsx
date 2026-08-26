@@ -61,6 +61,7 @@ export function Topbar({ имя }: { имя: string }) {
       </IconButton>
 
       <Button
+        aria-label="Добавить запись"
         вид="основная"
         размер="малый"
         иконка={<Plus size={ЗНАЧОК.основной} />}

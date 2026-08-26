@@ -92,7 +92,7 @@ export function Dialog({
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
 
         {подвал ? (
-          <div className="flex items-center justify-end gap-2 border-t border-line bg-sunken/70 px-5 py-3">
+          <div className="flex items-center justify-end gap-2 border-t border-line bg-sunken/70 px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:py-3">
             {подвал}
           </div>
         ) : null}

@@ -33,8 +33,7 @@ export function CourseOfDay({
   const факты = [
     {
       название: 'Фокус',
-      значение:
-        задачВсего === 0 ? 'задач нет' : `${задачОткрыто} из ${задачВсего}`,
+      значение: задачВсего === 0 ? 'задач нет' : `${задачОткрыто} из ${задачВсего}`,
       пояснение:
         задачВсего === 0
           ? 'план задач на сегодня пуст'
@@ -148,42 +147,59 @@ export function SecondBrainFlow({
       путь: '/tasks',
     },
   ]
+  const естьДвижение = шаги.some((шаг) => шаг.значение > 0)
 
   return (
-    <Card className="knowledge-flow h-full overflow-hidden">
+    <Card className="knowledge-flow overflow-hidden">
       <CardHeader
-        заголовок="Контур Second Brain"
-        подпись="Знание приносит пользу, когда доходит до действия"
+        заголовок="Цикл Second Brain"
+        подпись="Где знание ждёт следующего шага"
       />
-      <CardBody className="pt-1">
-        <ol className="space-y-1">
-          {шаги.map((шаг) => (
-            <li key={шаг.номер}>
-              <Link
-                to={шаг.путь}
-                className="flow-step group flex min-h-16 items-center gap-3 rounded-2 px-3 py-2"
-              >
-                <span className="unit w-6 shrink-0">{шаг.номер}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-meta font-medium text-ink">
-                    {шаг.название}
+      {естьДвижение ? (
+        <CardBody className="pt-1">
+          <ol className="grid gap-1 xl:grid-cols-2">
+            {шаги.map((шаг) => (
+              <li key={шаг.номер}>
+                <Link
+                  to={шаг.путь}
+                  className="flow-step group flex min-h-16 items-center gap-3 rounded-2 px-3 py-2"
+                >
+                  <span className="unit w-6 shrink-0">{шаг.номер}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-meta font-medium text-ink">
+                      {шаг.название}
+                    </span>
+                    <span className="block text-caption text-ink-3">
+                      {шаг.пояснение}
+                    </span>
                   </span>
-                  <span className="block text-caption text-ink-3">
-                    {шаг.пояснение}
+                  <span className="tnum text-h3 font-medium text-ink">
+                    {шаг.значение}
                   </span>
-                </span>
-                <span className="tnum text-h3 font-medium text-ink">
-                  {шаг.значение}
-                </span>
-                <ArrowRight
-                  size={ЗНАЧОК.строка}
-                  className="flow-arrow shrink-0 text-ink-3"
-                />
-              </Link>
-            </li>
-          ))}
-        </ol>
-      </CardBody>
+                  <ArrowRight
+                    size={ЗНАЧОК.строка}
+                    className="flow-arrow shrink-0 text-ink-3"
+                  />
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </CardBody>
+      ) : (
+        <CardBody>
+          <p className="max-w-sm text-meta leading-relaxed text-ink-3">
+            Контур пока свободен. Зафиксируйте одну мысль — система поможет
+            превратить её в следующий шаг.
+          </p>
+          <Link
+            to="/quick"
+            className="button-base button-outline mt-4 inline-flex min-h-11 items-center gap-2 rounded-2 px-4 text-meta font-medium"
+          >
+            Быстро зафиксировать
+            <ArrowRight size={ЗНАЧОК.строка} />
+          </Link>
+        </CardBody>
+      )}
     </Card>
   )
 }
